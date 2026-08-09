@@ -1,0 +1,3290 @@
+{
+  "tier1": [
+    {
+      "id": 1,
+      "explanation": "\"SAN\" stands for \"Storage Area Network\" (Network+)."
+    },
+    {
+      "id": 2,
+      "explanation": "\"DKIM\" stands for \"DomainKeys Identified Mail\" (A+ Core 2)."
+    },
+    {
+      "id": 3,
+      "explanation": "\"RAM\" stands for \"Random-access Memory\" (A+ Core 2)."
+    },
+    {
+      "id": 4,
+      "explanation": "\"OT\" stands for \"Operational Technology\" (Security+)."
+    },
+    {
+      "id": 5,
+      "explanation": "\"ST\" stands for \"Straight Tip\" (Network+)."
+    },
+    {
+      "id": 6,
+      "explanation": "\"MOU\" stands for \"Memorandum of Understanding\" (Network+)."
+    },
+    {
+      "id": 7,
+      "explanation": "\"CIO\" stands for \"Chief Information Officer\" (Security+)."
+    },
+    {
+      "id": 8,
+      "explanation": "\"WLAN\" stands for \"Wireless LAN\" (Network+)."
+    },
+    {
+      "id": 9,
+      "explanation": "\"NDA\" stands for \"Non-disclosure Agreement\" (Network+)."
+    },
+    {
+      "id": 10,
+      "explanation": "\"PAC\" stands for \"Proxy Auto Configuration\" (Security+)."
+    },
+    {
+      "id": 11,
+      "explanation": "\"NIDS\" stands for \"Network-based Intrusion Detection System\" (Security+)."
+    },
+    {
+      "id": 12,
+      "explanation": "\"SSO\" stands for \"Single Sign-on\" (A+ Core 2)."
+    },
+    {
+      "id": 13,
+      "explanation": "\"MSSP\" stands for \"Managed Security Service Provider\" (Security+)."
+    },
+    {
+      "id": 14,
+      "explanation": "\"VGA\" stands for \"Video Graphics Array\" (A+ Core 1)."
+    },
+    {
+      "id": 15,
+      "explanation": "\"WTLS\" stands for \"Wireless TLS\" (Security+)."
+    },
+    {
+      "id": 16,
+      "explanation": "\"DB-9\" stands for \"Serial Communications D-Shell Connector, 9 pins\" (A+ Core 2)."
+    },
+    {
+      "id": 17,
+      "explanation": "\"AP\" stands for \"Access Point\" (A+ Core 1)."
+    },
+    {
+      "id": 18,
+      "explanation": "\"LC\" stands for \"Lucent Connector\" (A+ Core 2)."
+    },
+    {
+      "id": 19,
+      "explanation": "\"NAS\" stands for \"Network Access Server\" (A+ Core 2)."
+    },
+    {
+      "id": 20,
+      "explanation": "\"DIMM\" stands for \"Dual In-line Memory Module\" (A+ Core 1)."
+    },
+    {
+      "id": 21,
+      "explanation": "\"DAC\" stands for \"Direct Attach Copper\" (Network+)."
+    },
+    {
+      "id": 22,
+      "explanation": "\"SHTTP\" stands for \"Secure Hypertext Transfer Protocol\" (Security+)."
+    },
+    {
+      "id": 23,
+      "explanation": "\"CIDR\" stands for \"Classless Inter-domain Routing\" (Network+)."
+    },
+    {
+      "id": 24,
+      "explanation": "\"WISP\" stands for \"Written Internet Service Provider\" (A+ Core 2)."
+    },
+    {
+      "id": 25,
+      "explanation": "\"SAML\" stands for \"Security Assertion Markup Language\" (Network+)."
+    },
+    {
+      "id": 26,
+      "explanation": "\"SHA\" stands for \"Secure Hashing Algorithm\" (Security+)."
+    },
+    {
+      "id": 27,
+      "explanation": "\"OAUTH\" stands for \"Open Authorization\" (Security+)."
+    },
+    {
+      "id": 28,
+      "explanation": "\"SPF\" stands for \"Sender Policy Framework\" (Security+)."
+    },
+    {
+      "id": 29,
+      "explanation": "\"VPN\" stands for \"Virtual Private Network\" (A+ Core 1)."
+    },
+    {
+      "id": 30,
+      "explanation": "\"MPO\" stands for \"Multifiber Push On\" (Network+)."
+    },
+    {
+      "id": 31,
+      "explanation": "\"API\" stands for \"Application Programming Interface\" (Network+)."
+    },
+    {
+      "id": 32,
+      "explanation": "\"SMTP\" stands for \"Simple Mail Transfer Protocol\" (A+ Core 2)."
+    },
+    {
+      "id": 33,
+      "explanation": "\"ESP\" stands for \"Encapsulating Security Payload\" (Network+)."
+    },
+    {
+      "id": 34,
+      "explanation": "\"ARM\" stands for \"Advanced RISC [Reduced Instruction Set Computer] Machine\" (A+ Core 2)."
+    },
+    {
+      "id": 35,
+      "explanation": "\"IPAM\" stands for \"Internet Protocol Address Management\" (Network+)."
+    },
+    {
+      "id": 36,
+      "explanation": "\"LDAP\" stands for \"Lightweight Directory Access Protocol\" (Network+)."
+    },
+    {
+      "id": 37,
+      "explanation": "\"IMAP\" stands for \"Internet Mail Access Protocol\" (A+ Core 1)."
+    },
+    {
+      "id": 38,
+      "explanation": "\"HTTPS\" stands for \"Hypertext Transfer Protocol Secure\" (A+ Core 1)."
+    },
+    {
+      "id": 39,
+      "explanation": "\"VPC\" stands for \"Virtual Private Cloud\" (Network+)."
+    },
+    {
+      "id": 40,
+      "explanation": "\"GRE\" stands for \"Generic Routing Encapsulation\" (Security+)."
+    },
+    {
+      "id": 41,
+      "explanation": "\"VM\" stands for \"Virtual Machine\" (A+ Core 1)."
+    },
+    {
+      "id": 42,
+      "explanation": "\"UAC\" stands for \"User Account Control\" (A+ Core 2)."
+    },
+    {
+      "id": 43,
+      "explanation": "\"MMS\" stands for \"Multimedia Message Service\" (Security+)."
+    },
+    {
+      "id": 44,
+      "explanation": "\"UPS\" stands for \"Uninterruptible Power Supply\" (Network+)."
+    },
+    {
+      "id": 45,
+      "explanation": "\"XSS\" stands for \"Cross-site Scripting\" (A+ Core 2)."
+    },
+    {
+      "id": 46,
+      "explanation": "\"TKIP\" stands for \"Temporal Key Integrity Protocol\" (A+ Core 2)."
+    },
+    {
+      "id": 47,
+      "explanation": "\"CMS\" stands for \"Content Management System\" (Security+)."
+    },
+    {
+      "id": 48,
+      "explanation": "\"PIV\" stands for \"Personal Identity Verification\" (A+ Core 1)."
+    },
+    {
+      "id": 49,
+      "explanation": "\"SLAAC\" stands for \"Stateless Address Autoconfiguration\" (Network+)."
+    },
+    {
+      "id": 50,
+      "explanation": "\"UTM\" stands for \"Unified Threat Management\" (A+ Core 1)."
+    },
+    {
+      "id": 51,
+      "explanation": "\"NTFS\" stands for \"New Technology File System\" (A+ Core 2)."
+    },
+    {
+      "id": 52,
+      "explanation": "\"HDMI\" stands for \"High-definition Media Interface\" (A+ Core 2)."
+    },
+    {
+      "id": 53,
+      "explanation": "\"SSID\" stands for \"Service Set Identifier\" (A+ Core 2)."
+    },
+    {
+      "id": 54,
+      "explanation": "\"IRC\" stands for \"Internet Relay Chat\" (Security+)."
+    },
+    {
+      "id": 55,
+      "explanation": "\"UDP\" stands for \"User Datagram Protocol\" (A+ Core 1)."
+    },
+    {
+      "id": 56,
+      "explanation": "\"OTA\" stands for \"Over the Air\" (Security+)."
+    },
+    {
+      "id": 57,
+      "explanation": "\"PCL\" stands for \"Printer Command Language\" (A+ Core 1)."
+    },
+    {
+      "id": 58,
+      "explanation": "\"IAM\" stands for \"Identity and Access Management\" (A+ Core 1)."
+    },
+    {
+      "id": 59,
+      "explanation": "\"MAN\" stands for \"Metropolitan Area Network\" (Security+)."
+    },
+    {
+      "id": 60,
+      "explanation": "\"HA\" stands for \"High Availability\" (Security+)."
+    },
+    {
+      "id": 61,
+      "explanation": "\"FQDN\" stands for \"Fully Qualified Domain Name\" (Network+)."
+    },
+    {
+      "id": 62,
+      "explanation": "\"OCSP\" stands for \"Online Certificate Status Protocol\" (Security+)."
+    },
+    {
+      "id": 63,
+      "explanation": "\"APIPA\" stands for \"Automatic Private Internet Protocol Addressing\" (A+ Core 1)."
+    },
+    {
+      "id": 64,
+      "explanation": "\"CMDB\" stands for \"Configuration Management Database\" (A+ Core 2)."
+    },
+    {
+      "id": 65,
+      "explanation": "\"LED\" stands for \"Light-emitting Diode\" (A+ Core 1)."
+    },
+    {
+      "id": 66,
+      "explanation": "\"RDP\" stands for \"Remote Desktop Protocol\" (A+ Core 2)."
+    },
+    {
+      "id": 67,
+      "explanation": "\"APU\" stands for \"Audio Processing Unit\" (Network+)."
+    },
+    {
+      "id": 68,
+      "explanation": "\"SSO\" stands for \"Single Sign-on\" (Network+)."
+    },
+    {
+      "id": 69,
+      "explanation": "\"MX\" stands for \"Mail Exchange\" (Security+)."
+    },
+    {
+      "id": 70,
+      "explanation": "\"IMAP\" stands for \"Internet Mail Access Protocol\" (A+ Core 2)."
+    },
+    {
+      "id": 71,
+      "explanation": "\"WAN\" stands for \"Wide Area Network\" (Network+)."
+    },
+    {
+      "id": 72,
+      "explanation": "\"POP\" stands for \"Post Office Protocol\" (A+ Core 1)."
+    },
+    {
+      "id": 73,
+      "explanation": "\"ESD\" stands for \"Electrostatic Discharge\" (A+ Core 1)."
+    },
+    {
+      "id": 74,
+      "explanation": "\"WEP\" stands for \"Wired Equivalent Privacy\" (Security+)."
+    },
+    {
+      "id": 75,
+      "explanation": "\"VLAN\" stands for \"Virtual Local Area Network\" (Network+)."
+    },
+    {
+      "id": 76,
+      "explanation": "\"MOU\" stands for \"Memorandum of Understanding\" (Security+)."
+    },
+    {
+      "id": 77,
+      "explanation": "\"COOP\" stands for \"Continuity of Operation Planning\" (Security+)."
+    },
+    {
+      "id": 78,
+      "explanation": "\"VLSM\" stands for \"Variable Length Subnet Masking\" (Security+)."
+    },
+    {
+      "id": 79,
+      "explanation": "\"DRP\" stands for \"Disaster Recovery Plan\" (Security+)."
+    },
+    {
+      "id": 80,
+      "explanation": "\"HTTPS\" stands for \"Hypertext Transfer Protocol Secure\" (Security+)."
+    },
+    {
+      "id": 81,
+      "explanation": "\"TOTP\" stands for \"Time-based One-time Password\" (A+ Core 2)."
+    },
+    {
+      "id": 82,
+      "explanation": "\"EULA\" stands for \"End-user License Agreement\" (Network+)."
+    },
+    {
+      "id": 83,
+      "explanation": "\"CNAME\" stands for \"Canonical Name\" (A+ Core 2)."
+    },
+    {
+      "id": 84,
+      "explanation": "\"CSR\" stands for \"Certificate Signing Request\" (Security+)."
+    },
+    {
+      "id": 85,
+      "explanation": "\"WAF\" stands for \"Web Application Firewall\" (Network+)."
+    },
+    {
+      "id": 86,
+      "explanation": "\"SSE\" stands for \"Security Service Edge\" (Network+)."
+    },
+    {
+      "id": 87,
+      "explanation": "\"SOHO\" stands for \"Small Office/Home Office\" (A+ Core 1)."
+    },
+    {
+      "id": 88,
+      "explanation": "\"WAP\" stands for \"Wireless Access Point\" (A+ Core 2)."
+    },
+    {
+      "id": 89,
+      "explanation": "\"MX\" stands for \"Mail Exchange\" (A+ Core 1)."
+    },
+    {
+      "id": 90,
+      "explanation": "\"DIMM\" stands for \"Dual In-line Memory Module\" (A+ Core 2)."
+    },
+    {
+      "id": 91,
+      "explanation": "\"ONT\" stands for \"Optical Network Terminal\" (A+ Core 2)."
+    },
+    {
+      "id": 92,
+      "explanation": "\"TOTP\" stands for \"Time-based One-time Password\" (A+ Core 1)."
+    },
+    {
+      "id": 93,
+      "explanation": "\"APIPA\" stands for \"Automatic Private Internet Protocol Addressing\" (Network+)."
+    },
+    {
+      "id": 94,
+      "explanation": "\"MBR\" stands for \"Master Boot Record\" (A+ Core 1)."
+    },
+    {
+      "id": 95,
+      "explanation": "\"RX\" stands for \"Receiver\" (Network+)."
+    },
+    {
+      "id": 96,
+      "explanation": "\"FRR\" stands for \"False Rejection Rate\" (Security+)."
+    },
+    {
+      "id": 97,
+      "explanation": "\"AV\" stands for \"Antivirus\" (Security+)."
+    },
+    {
+      "id": 98,
+      "explanation": "\"ST\" stands for \"Straight Tip\" (A+ Core 2)."
+    },
+    {
+      "id": 99,
+      "explanation": "\"UEFI\" stands for \"Unified Extensible Firmware Interface\" (A+ Core 1)."
+    },
+    {
+      "id": 100,
+      "explanation": "\"ARP\" stands for \"Address Resolution Protocol\" (Network+)."
+    },
+    {
+      "id": 101,
+      "explanation": "\"ISSO\" stands for \"Information Systems Security Officer\" (Security+)."
+    },
+    {
+      "id": 102,
+      "explanation": "\"SOAP\" stands for \"Simple Object Access Protocol\" (Security+)."
+    },
+    {
+      "id": 103,
+      "explanation": "\"DSL\" stands for \"Digital Subscriber Line\" (Security+)."
+    },
+    {
+      "id": 104,
+      "explanation": "\"MAN\" stands for \"Metropolitan Area Network\" (A+ Core 1)."
+    },
+    {
+      "id": 105,
+      "explanation": "\"WIDS\" stands for \"Wireless Intrusion Detection System\" (Security+)."
+    },
+    {
+      "id": 106,
+      "explanation": "\"POST\" stands for \"Power-on Self-test\" (A+ Core 1)."
+    },
+    {
+      "id": 107,
+      "explanation": "\"NGFW\" stands for \"Next-generation Firewall\" (Security+)."
+    },
+    {
+      "id": 108,
+      "explanation": "\"UTP\" stands for \"Unshielded Twisted Pair\" (Network+)."
+    },
+    {
+      "id": 109,
+      "explanation": "\"SFP\" stands for \"Small Form-factor Pluggable\" (Network+)."
+    },
+    {
+      "id": 110,
+      "explanation": "\"AH\" stands for \"Authentication Header\" (Network+)."
+    },
+    {
+      "id": 111,
+      "explanation": "\"TTL\" stands for \"Time to Live\" (Network+)."
+    },
+    {
+      "id": 112,
+      "explanation": "\"GUI\" stands for \"Graphical User Interface\" (Network+)."
+    },
+    {
+      "id": 113,
+      "explanation": "\"FTP\" stands for \"File Transfer Protocol\" (Security+)."
+    },
+    {
+      "id": 114,
+      "explanation": "\"PPTP\" stands for \"Point-to-point Tunneling Protocol\" (Network+)."
+    },
+    {
+      "id": 115,
+      "explanation": "\"VBA\" stands for \"Visual Basic\" (Security+)."
+    },
+    {
+      "id": 116,
+      "explanation": "\"UAV\" stands for \"Unmanned Aerial Vehicle\" (Security+)."
+    },
+    {
+      "id": 117,
+      "explanation": "\"RJ45\" stands for \"Registered Jack Function 45\" (A+ Core 2)."
+    },
+    {
+      "id": 118,
+      "explanation": "\"DPO\" stands for \"Data Privacy Officer\" (Security+)."
+    },
+    {
+      "id": 119,
+      "explanation": "\"EDR\" stands for \"Endpoint Detection and Response\" (A+ Core 1)."
+    },
+    {
+      "id": 120,
+      "explanation": "\"DLP\" stands for \"Data Loss Prevention\" (A+ Core 2)."
+    },
+    {
+      "id": 121,
+      "explanation": "\"FAT32\" stands for \"32-bit File Allocation Table\" (A+ Core 1)."
+    },
+    {
+      "id": 122,
+      "explanation": "\"BPDU\" stands for \"Bridge Protocol Data Unit\" (Security+)."
+    },
+    {
+      "id": 123,
+      "explanation": "\"SOP\" stands for \"Standard Operating Procedure\" (A+ Core 1)."
+    },
+    {
+      "id": 124,
+      "explanation": "\"CIFS\" stands for \"Common Internet File System\" (A+ Core 1)."
+    },
+    {
+      "id": 125,
+      "explanation": "\"ERP\" stands for \"Enterprise Resource Planning\" (Security+)."
+    },
+    {
+      "id": 126,
+      "explanation": "\"DMARC\" stands for \"Domain-based Message Authentication, Reporting, and Conformance\" (A+ Core 2)."
+    },
+    {
+      "id": 127,
+      "explanation": "\"CDP\" stands for \"Cisco Discovery Protocol\" (Network+)."
+    },
+    {
+      "id": 128,
+      "explanation": "\"CRC\" stands for \"Cyclic Redundancy Check\" (Network+)."
+    },
+    {
+      "id": 129,
+      "explanation": "\"AES\" stands for \"Advanced Encryption Standard\" (Network+)."
+    },
+    {
+      "id": 130,
+      "explanation": "\"ATX\" stands for \"Advanced Technology Extended\" (A+ Core 1)."
+    },
+    {
+      "id": 131,
+      "explanation": "\"MAC\" stands for \"Message Authentication Code\" (Security+)."
+    },
+    {
+      "id": 132,
+      "explanation": "\"HOTP\" stands for \"HMAC-based One-time Password\" (Security+)."
+    },
+    {
+      "id": 133,
+      "explanation": "\"XDR\" stands for \"Extended Detection and Response\" (A+ Core 1)."
+    },
+    {
+      "id": 134,
+      "explanation": "\"FRT\" stands for \"Facial Recognition Technology\" (A+ Core 2)."
+    },
+    {
+      "id": 135,
+      "explanation": "\"RMM\" stands for \"Remote Monitoring and Management\" (A+ Core 2)."
+    },
+    {
+      "id": 136,
+      "explanation": "\"CHAP\" stands for \"Challenge Handshake Authentication Protocol\" (Security+)."
+    },
+    {
+      "id": 137,
+      "explanation": "\"POST\" stands for \"Power-on Self-test\" (A+ Core 2)."
+    },
+    {
+      "id": 138,
+      "explanation": "\"SDLM\" stands for \"Software Development Lifecycle Methodology\" (Security+)."
+    },
+    {
+      "id": 139,
+      "explanation": "\"IPS\" stands for \"Intrusion Prevention System\" (Security+)."
+    },
+    {
+      "id": 140,
+      "explanation": "\"ECDSA\" stands for \"Elliptic Curve Digital Signature Algorithm\" (Security+)."
+    },
+    {
+      "id": 141,
+      "explanation": "\"RDP\" stands for \"Remote Desktop Protocol\" (Network+)."
+    },
+    {
+      "id": 142,
+      "explanation": "\"LAN\" stands for \"Local Area Network\" (A+ Core 2)."
+    },
+    {
+      "id": 143,
+      "explanation": "\"RFID\" stands for \"Radio Frequency Identifier\" (Security+)."
+    },
+    {
+      "id": 144,
+      "explanation": "\"CAS\" stands for \"Column Address Strobe\" (A+ Core 1)."
+    },
+    {
+      "id": 145,
+      "explanation": "\"RPM\" stands for \"Revolutions Per Minute\" (A+ Core 2)."
+    },
+    {
+      "id": 146,
+      "explanation": "\"IP\" stands for \"Internet Protocol\" (Security+)."
+    },
+    {
+      "id": 147,
+      "explanation": "\"SSH\" stands for \"Secure Shell\" (A+ Core 2)."
+    },
+    {
+      "id": 148,
+      "explanation": "\"EDR\" stands for \"Endpoint Detection and Response\" (A+ Core 2)."
+    },
+    {
+      "id": 149,
+      "explanation": "\"SD\" stands for \"Secure Digital\" (A+ Core 1)."
+    },
+    {
+      "id": 150,
+      "explanation": "\"VDI\" stands for \"Virtual Desktop Infrastructure\" (A+ Core 2)."
+    },
+    {
+      "id": 151,
+      "explanation": "\"PAP\" stands for \"Password Authentication Protocol\" (Security+)."
+    },
+    {
+      "id": 152,
+      "explanation": "\"SDK\" stands for \"Software Development Kit\" (Security+)."
+    },
+    {
+      "id": 153,
+      "explanation": "\"XDR\" stands for \"Extended Detection and Response\" (Security+)."
+    },
+    {
+      "id": 154,
+      "explanation": "\"AAA\" stands for \"Authentication, Authorization, and Accounting\" (A+ Core 2)."
+    },
+    {
+      "id": 155,
+      "explanation": "\"VNC\" stands for \"Virtual Network Computer\" (A+ Core 1)."
+    },
+    {
+      "id": 156,
+      "explanation": "\"TCP/IP\" stands for \"Transmission Control Protocol/Internet Protocol\" (Security+)."
+    },
+    {
+      "id": 157,
+      "explanation": "\"HD\" stands for \"High Definition\" (A+ Core 2)."
+    },
+    {
+      "id": 158,
+      "explanation": "\"AMD\" stands for \"Advanced Micro Devices, Inc.\" (A+ Core 1)."
+    },
+    {
+      "id": 159,
+      "explanation": "\"ISP\" stands for \"Internet Service Provider\" (A+ Core 1)."
+    },
+    {
+      "id": 160,
+      "explanation": "\"WWAN\" stands for \"Wireless Wide Area Network\" (A+ Core 1)."
+    },
+    {
+      "id": 161,
+      "explanation": "\"PIV\" stands for \"Personal Identity Verification\" (Security+)."
+    },
+    {
+      "id": 162,
+      "explanation": "\"DDR\" stands for \"Double Data Rate\" (A+ Core 2)."
+    },
+    {
+      "id": 163,
+      "explanation": "Syslog uses port 514 (source: Network+)."
+    },
+    {
+      "id": 164,
+      "explanation": "Domain Name System (DNS) uses port 53 (source: Network+)."
+    },
+    {
+      "id": 165,
+      "explanation": "Hypertext Transfer Protocol Secure (HTTPS) uses port 443 (source: A+ Core 2)."
+    },
+    {
+      "id": 166,
+      "explanation": "Secure Shell (SSH) uses port 22 (source: Network+)."
+    },
+    {
+      "id": 167,
+      "explanation": "Post Office Protocol 3 (POP3) uses port 110 (source: A+ Core 1)."
+    },
+    {
+      "id": 168,
+      "explanation": "Internet Mail Access Protocol (IMAP) uses port 143 (source: A+ Core 1)."
+    },
+    {
+      "id": 169,
+      "explanation": "Post Office Protocol 3 (POP3) uses port 110 (source: Security+)."
+    },
+    {
+      "id": 170,
+      "explanation": "Post Office Protocol 3 (POP3) uses port 110 (source: A+ Core 2)."
+    },
+    {
+      "id": 171,
+      "explanation": "Server Message Block (SMB)/Common Internet File System (CIFS) uses port 445 (source: Security+)."
+    },
+    {
+      "id": 172,
+      "explanation": "Lightweight Directory Access Protocol (LDAP) uses port 389 (source: Security+)."
+    },
+    {
+      "id": 173,
+      "explanation": "Server Message Block (SMB)/Common Internet File System (CIFS) uses port 445 (source: A+ Core 1)."
+    },
+    {
+      "id": 174,
+      "explanation": "Remote Desktop Protocol (RDP) uses port 3389 (source: A+ Core 1)."
+    },
+    {
+      "id": 175,
+      "explanation": "Internet Mail Access Protocol (IMAP) uses port 143 (source: A+ Core 2)."
+    },
+    {
+      "id": 176,
+      "explanation": "Dynamic Host Configuration Protocol (DHCP) uses port 67/68 (source: Security+)."
+    },
+    {
+      "id": 177,
+      "explanation": "Remote Desktop Protocol (RDP) uses port 3389 (source: Security+)."
+    },
+    {
+      "id": 178,
+      "explanation": "Server Message Block (SMB)/Common Internet File System (CIFS) uses port 445 (source: A+ Core 2)."
+    },
+    {
+      "id": 179,
+      "explanation": "Remote Desktop Protocol (RDP) uses port 3389 (source: A+ Core 2)."
+    },
+    {
+      "id": 180,
+      "explanation": "Domain Name System (DNS) uses port 53 (source: A+ Core 1)."
+    },
+    {
+      "id": 181,
+      "explanation": "Server Message Block (SMB) uses port 445 (source: Network+)."
+    },
+    {
+      "id": 182,
+      "explanation": "Structured Query Language (SQL) Server uses port 1433 (source: Network+)."
+    },
+    {
+      "id": 183,
+      "explanation": "Simple Mail Transfer Protocol (SMTP) uses port 25 (source: Security+)."
+    },
+    {
+      "id": 184,
+      "explanation": "Hypertext Transfer Protocol (HTTP) uses port 80 (source: A+ Core 2)."
+    },
+    {
+      "id": 185,
+      "explanation": "Telnet uses port 23 (source: A+ Core 2)."
+    },
+    {
+      "id": 186,
+      "explanation": "Telnet uses port 23 (source: A+ Core 1)."
+    },
+    {
+      "id": 187,
+      "explanation": "Hypertext Transfer Protocol (HTTP) uses port 80 (source: A+ Core 1)."
+    },
+    {
+      "id": 188,
+      "explanation": "File Transfer Protocol (FTP) uses port 20-21 (source: A+ Core 1)."
+    },
+    {
+      "id": 189,
+      "explanation": "Hypertext Transfer Protocol Secure (HTTPS) uses port 443 (source: A+ Core 1)."
+    },
+    {
+      "id": 190,
+      "explanation": "File Transfer Protocol (FTP) uses port 20-21 (source: Security+)."
+    },
+    {
+      "id": 191,
+      "explanation": "Secure Shell (SSH) uses port 22 (source: Security+)."
+    },
+    {
+      "id": 192,
+      "explanation": "Domain Name System (DNS) uses port 53 (source: Security+)."
+    },
+    {
+      "id": 193,
+      "explanation": "Lightweight Directory Access Protocol (LDAP) uses port 389 (source: A+ Core 2)."
+    },
+    {
+      "id": 194,
+      "explanation": "Secure Shell (SSH) uses port 22 (source: A+ Core 1)."
+    },
+    {
+      "id": 195,
+      "explanation": "File Transfer Protocol (FTP) uses port 20-21 (source: A+ Core 2)."
+    },
+    {
+      "id": 196,
+      "explanation": "Telnet uses port 23 (source: Network+)."
+    },
+    {
+      "id": 197,
+      "explanation": "Telnet uses port 23 (source: Security+)."
+    },
+    {
+      "id": 198,
+      "explanation": "Domain Name System (DNS) uses port 53 (source: A+ Core 2)."
+    },
+    {
+      "id": 199,
+      "explanation": "Lightweight Directory Access Protocol (LDAP) uses port 389 (source: A+ Core 1)."
+    },
+    {
+      "id": 200,
+      "explanation": "Simple Mail Transfer Protocol (SMTP) uses port 25 (source: A+ Core 1)."
+    },
+    {
+      "id": 201,
+      "explanation": "Simple Mail Transfer Protocol (SMTP) uses port 25 (source: A+ Core 2)."
+    },
+    {
+      "id": 202,
+      "explanation": "Network Basic Input/Output System (NetBIOS)/NetBIOS over TCP/IP (NetBT) uses port 137-139 (source: Security+)."
+    },
+    {
+      "id": 203,
+      "explanation": "Network Basic Input/Output System (NetBIOS)/NetBIOS over TCP/IP (NetBT) uses port 137-139 (source: A+ Core 2)."
+    },
+    {
+      "id": 204,
+      "explanation": "Hypertext Transfer Protocol (HTTP) uses port 80 (source: Security+)."
+    },
+    {
+      "id": 205,
+      "explanation": "Dynamic Host Configuration Protocol (DHCP) uses port 67/68 (source: A+ Core 1)."
+    },
+    {
+      "id": 206,
+      "explanation": "Network Basic Input/Output System (NetBIOS)/NetBIOS over TCP/IP (NetBT) uses port 137-139 (source: A+ Core 1)."
+    },
+    {
+      "id": 207,
+      "explanation": "Dynamic Host Configuration Protocol (DHCP) uses port 67/68 (source: A+ Core 2)."
+    },
+    {
+      "id": 208,
+      "explanation": "Internet Mail Access Protocol (IMAP) uses port 143 (source: Security+)."
+    },
+    {
+      "id": 209,
+      "explanation": "Secure Shell (SSH) uses port 22 (source: A+ Core 2)."
+    },
+    {
+      "id": 210,
+      "explanation": "Hypertext Transfer Protocol Secure (HTTPS) uses port 443 (source: Security+)."
+    },
+    {
+      "id": 211,
+      "explanation": "\"Port states • Incorrect default gateway\" is a Network+ concept related to Port states • Incorrect default gateway."
+    },
+    {
+      "id": 212,
+      "explanation": "\"Extensible Authentication\" is a Security+ concept related to Extensible Authentication."
+    },
+    {
+      "id": 213,
+      "explanation": "\"Identify, analyze, and respond to security events and incidents.\" is a Security+ concept related to Identify, analyze, and respond to security events and incidents.."
+    },
+    {
+      "id": 214,
+      "explanation": "\"Wireless - Bluetooth adapter\" is a A+ Core 1 concept related to Wireless - Bluetooth adapter."
+    },
+    {
+      "id": 215,
+      "explanation": "\"Application allow list − Host-based intrusion\" is a Security+ concept related to Application allow list − Host-based intrusion."
+    },
+    {
+      "id": 216,
+      "explanation": "\"Dynamic inventories\" is a Network+ concept related to Dynamic inventories."
+    },
+    {
+      "id": 217,
+      "explanation": "\"Accessories\" is a A+ Core 1 concept related to Accessories."
+    },
+    {
+      "id": 218,
+      "explanation": "\"Program and Features − Hide extensions • Ease of Access\" is a A+ Core 2 concept related to Program and Features − Hide extensions • Ease of Access."
+    },
+    {
+      "id": 219,
+      "explanation": "\"IaaS cloud lab/demo accounts\" is a Network+ concept related to IaaS cloud lab/demo accounts."
+    },
+    {
+      "id": 220,
+      "explanation": "\"Time-of-check (TOC) − Jailbreaking\" is a Security+ concept related to Time-of-check (TOC) − Jailbreaking."
+    },
+    {
+      "id": 221,
+      "explanation": "\"Bandwidth գ Channel overlap\" is a Network+ concept related to Bandwidth գ Channel overlap."
+    },
+    {
+      "id": 222,
+      "explanation": "\"Network loops − Default routes\" is a Network+ concept related to Network loops − Default routes."
+    },
+    {
+      "id": 223,
+      "explanation": "\"Physical and virtual appliances • Applications\" is a Network+ concept related to Physical and virtual appliances • Applications."
+    },
+    {
+      "id": 224,
+      "explanation": "\"GBICs • DNS service\" is a Security+ concept related to GBICs • DNS service."
+    },
+    {
+      "id": 225,
+      "explanation": "\"Wireless access point • Packet capture software\" is a Security+ concept related to Wireless access point • Packet capture software."
+    },
+    {
+      "id": 226,
+      "explanation": "\"Spectrum analyzer\" is a Network+ concept related to Spectrum analyzer."
+    },
+    {
+      "id": 227,
+      "explanation": "\"Security information and\" is a Network+ concept related to Security information and."
+    },
+    {
+      "id": 228,
+      "explanation": "\"Frequencies identification (RFID)\" is a A+ Core 1 concept related to Frequencies identification (RFID)."
+    },
+    {
+      "id": 229,
+      "explanation": "\"Cloud gateways\" is a Network+ concept related to Cloud gateways."
+    },
+    {
+      "id": 230,
+      "explanation": "\"Tablet • Wi-Fi analyzer • Access to cloud environments\" is a Security+ concept related to Tablet • Wi-Fi analyzer • Access to cloud environments."
+    },
+    {
+      "id": 231,
+      "explanation": "\"20+4 pin motherboard connector\" is a A+ Core 1 concept related to 20+4 pin motherboard connector."
+    },
+    {
+      "id": 232,
+      "explanation": "\"Domain joined vs. workgroup • Establish network connections\" is a A+ Core 2 concept related to Domain joined vs. workgroup • Establish network connections."
+    },
+    {
+      "id": 233,
+      "explanation": "\"Data at rest ը Role-based access control Security Standards (PCI DSS)\" is a Network+ concept related to Data at rest ը Role-based access control Security Standards (PCI DSS)."
+    },
+    {
+      "id": 234,
+      "explanation": "\"Security concerns • Common symptoms − Fake security warnings\" is a A+ Core 2 concept related to Security concerns • Common symptoms − Fake security warnings."
+    },
+    {
+      "id": 235,
+      "explanation": "\"Navigation • Disk management − winver\" is a A+ Core 2 concept related to Navigation • Disk management − winver."
+    },
+    {
+      "id": 236,
+      "explanation": "\"File − Data masking\" is a Security+ concept related to File − Data masking."
+    },
+    {
+      "id": 237,
+      "explanation": "\".app − Privacy\" is a A+ Core 2 concept related to .app − Privacy."
+    },
+    {
+      "id": 238,
+      "explanation": "\"Physical access security − Zero Trust model management (PAM)\" is a A+ Core 2 concept related to Physical access security − Zero Trust model management (PAM)."
+    },
+    {
+      "id": 239,
+      "explanation": "\"Progress notes − Incident reports − Knowledge base/articles\" is a A+ Core 2 concept related to Progress notes − Incident reports − Knowledge base/articles."
+    },
+    {
+      "id": 240,
+      "explanation": "\"Access points control (MAC) address\" is a A+ Core 1 concept related to Access points control (MAC) address."
+    },
+    {
+      "id": 241,
+      "explanation": "\"Global\" is a Security+ concept related to Global."
+    },
+    {
+      "id": 242,
+      "explanation": "\"Storage • Licensing assignment\" is a A+ Core 2 concept related to Storage • Licensing assignment."
+    },
+    {
+      "id": 243,
+      "explanation": "\"IPS • Kali Linux\" is a Security+ concept related to IPS • Kali Linux."
+    },
+    {
+      "id": 244,
+      "explanation": "\"Frequencies • Channels • Bluetooth\" is a A+ Core 1 concept related to Frequencies • Channels • Bluetooth."
+    },
+    {
+      "id": 245,
+      "explanation": "\"corporate environments.\" is a A+ Core 1 concept related to corporate environments.."
+    },
+    {
+      "id": 246,
+      "explanation": "\"Administrative − ps • Root account\" is a A+ Core 2 concept related to Administrative − ps • Root account."
+    },
+    {
+      "id": 247,
+      "explanation": "\"Documented business processes − Scope of the change − Risk analysis\" is a A+ Core 2 concept related to Documented business processes − Scope of the change − Risk analysis."
+    },
+    {
+      "id": 248,
+      "explanation": "\"Motherboard form factors • BIOS/Unified Extensible Firmware • Expansion cards\" is a A+ Core 1 concept related to Motherboard form factors • BIOS/Unified Extensible Firmware • Expansion cards."
+    },
+    {
+      "id": 249,
+      "explanation": "\"Log data • Data sources\" is a Security+ concept related to Log data • Data sources."
+    },
+    {
+      "id": 250,
+      "explanation": "\"Bug bounty program − Risk tolerance • Reporting\" is a Security+ concept related to Bug bounty program − Risk tolerance • Reporting."
+    },
+    {
+      "id": 251,
+      "explanation": "\"Motivations\" is a Security+ concept related to Motivations."
+    },
+    {
+      "id": 252,
+      "explanation": "\"Apply troubleshooting skills and provide customer support using appropriate communication skills.\" is a A+ Core 2 concept related to Apply troubleshooting skills and provide customer support using appropriate communication skills.."
+    },
+    {
+      "id": 253,
+      "explanation": "\"Garbled print • Double/echo images on the print • Tray not recognized\" is a A+ Core 1 concept related to Garbled print • Double/echo images on the print • Tray not recognized."
+    },
+    {
+      "id": 254,
+      "explanation": "\"Understand networking basics and apply basic cybersecurity methods to mitigate threats.\" is a A+ Core 1 concept related to Understand networking basics and apply basic cybersecurity methods to mitigate threats.."
+    },
+    {
+      "id": 255,
+      "explanation": "\"Windows tablet • Hard drives • Wire cutters\" is a A+ Core 2 concept related to Windows tablet • Hard drives • Wire cutters."
+    },
+    {
+      "id": 256,
+      "explanation": "\"Monitor network activity and troubleshoot performance and availability issues.\" is a Network+ concept related to Monitor network activity and troubleshoot performance and availability issues.."
+    },
+    {
+      "id": 257,
+      "explanation": "\"OS components\" is a A+ Core 2 concept related to OS components."
+    },
+    {
+      "id": 258,
+      "explanation": "\"Policy Engine • Deception and disruption technology\" is a Security+ concept related to Policy Engine • Deception and disruption technology."
+    },
+    {
+      "id": 259,
+      "explanation": "\"Application fails to launch • Random reboots\" is a A+ Core 2 concept related to Application fails to launch • Random reboots."
+    },
+    {
+      "id": 260,
+      "explanation": "\"Sound − Hibernate • Privacy\" is a A+ Core 2 concept related to Sound − Hibernate • Privacy."
+    },
+    {
+      "id": 261,
+      "explanation": "\"Vertical alignment (VA) − Refresh rates\" is a A+ Core 1 concept related to Vertical alignment (VA) − Refresh rates."
+    },
+    {
+      "id": 262,
+      "explanation": "\"Random-access memory (RAM) • Microphone\" is a A+ Core 1 concept related to Random-access memory (RAM) • Microphone."
+    },
+    {
+      "id": 263,
+      "explanation": "\"Layer 1 գ Operating system (OS)\" is a Network+ concept related to Layer 1 գ Operating system (OS)."
+    },
+    {
+      "id": 264,
+      "explanation": "\"User Accounts − Power plans • System\" is a A+ Core 2 concept related to User Accounts − Power plans • System."
+    },
+    {
+      "id": 265,
+      "explanation": "\"Web filter • Email security\" is a Security+ concept related to Web filter • Email security."
+    },
+    {
+      "id": 266,
+      "explanation": "\"Issue description • Types of documents գ External/third-party\" is a A+ Core 2 concept related to Issue description • Types of documents գ External/third-party."
+    },
+    {
+      "id": 267,
+      "explanation": "\"Managed Switch\" is a Security+ concept related to Managed Switch."
+    },
+    {
+      "id": 268,
+      "explanation": "\"Multiple prints pending in queue\" is a A+ Core 1 concept related to Multiple prints pending in queue."
+    },
+    {
+      "id": 269,
+      "explanation": "\"Hardware • Change management\" is a Network+ concept related to Hardware • Change management."
+    },
+    {
+      "id": 270,
+      "explanation": "\"Partition − Tokenization\" is a Security+ concept related to Partition − Tokenization."
+    }
+  ],
+  "tier2": [
+    {
+      "id": 271,
+      "explanation": "\"RISC\" stands for \"Reduced Instruction Set Computer\" (A+ Core 2)."
+    },
+    {
+      "id": 272,
+      "explanation": "\"WPA\" stands for \"Wi-Fi Protected Access\" (A+ Core 2)."
+    },
+    {
+      "id": 273,
+      "explanation": "\"CIA\" stands for \"Confidentiality, Integrity, and Availability\" (Network+)."
+    },
+    {
+      "id": 274,
+      "explanation": "\"NAT\" stands for \"Network Address Translation\" (Network+)."
+    },
+    {
+      "id": 275,
+      "explanation": "\"SNMP\" stands for \"Simple Network Management Protocol\" (A+ Core 1)."
+    },
+    {
+      "id": 276,
+      "explanation": "\"CRL\" stands for \"Certificate Revocation List\" (Security+)."
+    },
+    {
+      "id": 277,
+      "explanation": "\"NTFS\" stands for \"New Technology File System\" (A+ Core 1)."
+    },
+    {
+      "id": 278,
+      "explanation": "\"IP\" stands for \"Internet Protocol\" (Network+)."
+    },
+    {
+      "id": 279,
+      "explanation": "\"NDA\" stands for \"Non-disclosure Agreement\" (A+ Core 1)."
+    },
+    {
+      "id": 280,
+      "explanation": "\"ISSO\" stands for \"Information Systems Security Officer\" (Security+)."
+    },
+    {
+      "id": 281,
+      "explanation": "\"GRE\" stands for \"Generic Routing Encapsulation\" (Security+)."
+    },
+    {
+      "id": 282,
+      "explanation": "\"RTBH\" stands for \"Remotely Triggered Black Hole\" (Security+)."
+    },
+    {
+      "id": 283,
+      "explanation": "\"SSH\" stands for \"Secure Shell\" (A+ Core 2)."
+    },
+    {
+      "id": 284,
+      "explanation": "\"MTBF\" stands for \"Mean Time Between Failures\" (Security+)."
+    },
+    {
+      "id": 285,
+      "explanation": "\"DHE\" stands for \"Diffie-Hellman Ephemeral\" (Security+)."
+    },
+    {
+      "id": 286,
+      "explanation": "\"FRT\" stands for \"Facial Recognition Technology\" (A+ Core 1)."
+    },
+    {
+      "id": 287,
+      "explanation": "\"SQL\" stands for \"Structured Query Language\" (Network+)."
+    },
+    {
+      "id": 288,
+      "explanation": "\"TKIP\" stands for \"Temporal Key Integrity Protocol\" (A+ Core 2)."
+    },
+    {
+      "id": 289,
+      "explanation": "\"SMB\" stands for \"Server Message Block\" (Network+)."
+    },
+    {
+      "id": 290,
+      "explanation": "\"TSIG\" stands for \"Transaction Signature\" (Security+)."
+    },
+    {
+      "id": 291,
+      "explanation": "\"RAID\" stands for \"Redundant Array of Independent Disks\" (A+ Core 2)."
+    },
+    {
+      "id": 292,
+      "explanation": "\"PAT\" stands for \"Port Address Translation\" (Network+)."
+    },
+    {
+      "id": 293,
+      "explanation": "\"VBA\" stands for \"Visual Basic\" (Security+)."
+    },
+    {
+      "id": 294,
+      "explanation": "\"SOHO\" stands for \"Small Office/Home Office\" (A+ Core 2)."
+    },
+    {
+      "id": 295,
+      "explanation": "\"HTTPS\" stands for \"Hypertext Transfer Protocol Secure\" (Security+)."
+    },
+    {
+      "id": 296,
+      "explanation": "\"IMAP\" stands for \"Internet Mail Access Protocol\" (A+ Core 1)."
+    },
+    {
+      "id": 297,
+      "explanation": "\"PTP\" stands for \"Precision Time Protocol\" (Network+)."
+    },
+    {
+      "id": 298,
+      "explanation": "\"RA\" stands for \"Registration Authority\" (Security+)."
+    },
+    {
+      "id": 299,
+      "explanation": "\"GPU\" stands for \"Graphics Processing Unit\" (A+ Core 2)."
+    },
+    {
+      "id": 300,
+      "explanation": "\"RADIUS\" stands for \"Remote Authentication Dial-in User Service\" (Security+)."
+    },
+    {
+      "id": 301,
+      "explanation": "\"SAE\" stands for \"Simultaneous Authentication of Equals\" (Security+)."
+    },
+    {
+      "id": 302,
+      "explanation": "\"DRM\" stands for \"Digital Rights Management\" (A+ Core 2)."
+    },
+    {
+      "id": 303,
+      "explanation": "\"SFTP\" stands for \"Secure File Transfer Protocol\" (Network+)."
+    },
+    {
+      "id": 304,
+      "explanation": "\"FIM\" stands for \"File Integrity Management\" (Security+)."
+    },
+    {
+      "id": 305,
+      "explanation": "\"ATX\" stands for \"Advanced Technology Extended\" (A+ Core 2)."
+    },
+    {
+      "id": 306,
+      "explanation": "\"ESN\" stands for \"Electronic Serial Number\" (Security+)."
+    },
+    {
+      "id": 307,
+      "explanation": "\"NGFW\" stands for \"Next-generation Firewall\" (Security+)."
+    },
+    {
+      "id": 308,
+      "explanation": "\"GPG\" stands for \"Gnu Privacy Guard\" (Security+)."
+    },
+    {
+      "id": 309,
+      "explanation": "\"EULA\" stands for \"End-user License Agreement\" (A+ Core 2)."
+    },
+    {
+      "id": 310,
+      "explanation": "\"RSR\" stands for \"Rapid Security Response\" (A+ Core 1)."
+    },
+    {
+      "id": 311,
+      "explanation": "\"PTR\" stands for \"Pointer\" (Network+)."
+    },
+    {
+      "id": 312,
+      "explanation": "\"OTP\" stands for \"One-time Password/Passcode\" (A+ Core 2)."
+    },
+    {
+      "id": 313,
+      "explanation": "\"AH\" stands for \"Authentication Header\" (Security+)."
+    },
+    {
+      "id": 314,
+      "explanation": "\"NIST\" stands for \"National Institute of Standards & Technology\" (Security+)."
+    },
+    {
+      "id": 315,
+      "explanation": "\"MDR\" stands for \"Managed Detection and Response\" (A+ Core 2)."
+    },
+    {
+      "id": 316,
+      "explanation": "\"DVI\" stands for \"Digital Visual Interface\" (A+ Core 2)."
+    },
+    {
+      "id": 317,
+      "explanation": "\"CIO\" stands for \"Chief Information Officer\" (Security+)."
+    },
+    {
+      "id": 318,
+      "explanation": "\"WLAN\" stands for \"Wireless LAN [Local Area Network]\" (A+ Core 2)."
+    },
+    {
+      "id": 319,
+      "explanation": "\"IMAP\" stands for \"Internet Mail Access Protocol\" (A+ Core 2)."
+    },
+    {
+      "id": 320,
+      "explanation": "\"VPN\" stands for \"Virtual Private Network\" (A+ Core 2)."
+    },
+    {
+      "id": 321,
+      "explanation": "\"SWG\" stands for \"Secure Web Gateway\" (Security+)."
+    },
+    {
+      "id": 322,
+      "explanation": "\"NDA\" stands for \"Non-Disclosure Agreement\" (A+ Core 2)."
+    },
+    {
+      "id": 323,
+      "explanation": "\"PAP\" stands for \"Password Authentication Protocol\" (Security+)."
+    },
+    {
+      "id": 324,
+      "explanation": "\"SIM\" stands for \"Subscriber Identity Module\" (A+ Core 2)."
+    },
+    {
+      "id": 325,
+      "explanation": "\"EQUIPMENT\" stands for \"TOOLS                                                            OTHER\" (Security+)."
+    },
+    {
+      "id": 326,
+      "explanation": "\"SSE\" stands for \"Security Service Edge\" (Network+)."
+    },
+    {
+      "id": 327,
+      "explanation": "\"SDN\" stands for \"Software-defined Network\" (Network+)."
+    },
+    {
+      "id": 328,
+      "explanation": "\"MFA\" stands for \"Multifactor Authentication\" (A+ Core 1)."
+    },
+    {
+      "id": 329,
+      "explanation": "\"CLI\" stands for \"Command-line Interface\" (Network+)."
+    },
+    {
+      "id": 330,
+      "explanation": "\"S.M.A.R.T\" stands for \"Self-monitoring Analysis and Reporting Technology\" (A+ Core 2)."
+    },
+    {
+      "id": 331,
+      "explanation": "\"BNC\" stands for \"Bayonet Neill–Concelman\" (Network+)."
+    },
+    {
+      "id": 332,
+      "explanation": "\"ECDHE\" stands for \"Elliptic Curve Diffie-Hellman Ephemeral\" (Security+)."
+    },
+    {
+      "id": 333,
+      "explanation": "\"SSO\" stands for \"Single Sign-on\" (A+ Core 1)."
+    },
+    {
+      "id": 334,
+      "explanation": "\"ACL\" stands for \"Access Control List\" (Security+)."
+    },
+    {
+      "id": 335,
+      "explanation": "\"HSM\" stands for \"Hardware Security Module\" (A+ Core 1)."
+    },
+    {
+      "id": 336,
+      "explanation": "\"SMTP\" stands for \"Simple Mail Transfer Protocol\" (A+ Core 1)."
+    },
+    {
+      "id": 337,
+      "explanation": "\"RDP\" stands for \"Remote Desktop Protocol\" (A+ Core 2)."
+    },
+    {
+      "id": 338,
+      "explanation": "\"PED\" stands for \"Personal Electronic Device\" (Security+)."
+    },
+    {
+      "id": 339,
+      "explanation": "\"LDAP\" stands for \"Lightweight Directory Access Protocol\" (A+ Core 2)."
+    },
+    {
+      "id": 340,
+      "explanation": "\"HSM\" stands for \"Hardware Security Module\" (A+ Core 2)."
+    },
+    {
+      "id": 341,
+      "explanation": "\"SQL\" stands for \"Structured Query Language\" (Security+)."
+    },
+    {
+      "id": 342,
+      "explanation": "\"CCTV\" stands for \"Closed-circuit Television\" (Security+)."
+    },
+    {
+      "id": 343,
+      "explanation": "\"APFS\" stands for \"Apple File System\" (A+ Core 1)."
+    },
+    {
+      "id": 344,
+      "explanation": "\"MX\" stands for \"Mail Exchange\" (Network+)."
+    },
+    {
+      "id": 345,
+      "explanation": "\"OTA\" stands for \"Over the Air\" (Security+)."
+    },
+    {
+      "id": 346,
+      "explanation": "\"VDI\" stands for \"Virtual Desktop Infrastructure\" (A+ Core 2)."
+    },
+    {
+      "id": 347,
+      "explanation": "\"FTPS\" stands for \"File Transfer Protocol Secure\" (Network+)."
+    },
+    {
+      "id": 348,
+      "explanation": "\"PCI\" stands for \"Peripheral Component Interconnect\" (A+ Core 2)."
+    },
+    {
+      "id": 349,
+      "explanation": "\"WO\" stands for \"Work Order\" (Security+)."
+    },
+    {
+      "id": 350,
+      "explanation": "\"CMS\" stands for \"Content Management System\" (Security+)."
+    },
+    {
+      "id": 351,
+      "explanation": "\"MMS\" stands for \"Multimedia Message Service\" (Security+)."
+    },
+    {
+      "id": 352,
+      "explanation": "\"MTU\" stands for \"Maximum Transmission Unit\" (Network+)."
+    },
+    {
+      "id": 353,
+      "explanation": "\"DES\" stands for \"Digital Encryption Standard\" (Security+)."
+    },
+    {
+      "id": 354,
+      "explanation": "\"WAP\" stands for \"Wireless Access Protocol\" (Network+)."
+    },
+    {
+      "id": 355,
+      "explanation": "\"TCP\" stands for \"Transmission Control Protocol\" (A+ Core 1)."
+    },
+    {
+      "id": 356,
+      "explanation": "\"SCSI\" stands for \"Small Computer System Interface\" (A+ Core 1)."
+    },
+    {
+      "id": 357,
+      "explanation": "\"MPO\" stands for \"Multifiber Push On\" (Network+)."
+    },
+    {
+      "id": 358,
+      "explanation": "\"SATA\" stands for \"Serial Advanced Technology Attachment\" (A+ Core 2)."
+    },
+    {
+      "id": 359,
+      "explanation": "\"SDLC\" stands for \"Software Development Lifecycle\" (Security+)."
+    },
+    {
+      "id": 360,
+      "explanation": "\"AMD\" stands for \"Advanced Micro Devices, Inc.\" (A+ Core 2)."
+    },
+    {
+      "id": 361,
+      "explanation": "\"POST\" stands for \"Power-on Self-test\" (A+ Core 2)."
+    },
+    {
+      "id": 362,
+      "explanation": "\"MTBF\" stands for \"Mean Time Between Failure\" (Network+)."
+    },
+    {
+      "id": 363,
+      "explanation": "\"IRC\" stands for \"Internet Relay Chat\" (Security+)."
+    },
+    {
+      "id": 364,
+      "explanation": "\"CAC\" stands for \"Calling-card Authorization Computer\" (A+ Core 2)."
+    },
+    {
+      "id": 365,
+      "explanation": "\"CAR\" stands for \"Corrective Action Report\" (Security+)."
+    },
+    {
+      "id": 366,
+      "explanation": "\"PAM\" stands for \"Privileged Access Management\" (Security+)."
+    },
+    {
+      "id": 367,
+      "explanation": "\"RAID\" stands for \"Redundant Array of Independent Disks\" (A+ Core 1)."
+    },
+    {
+      "id": 368,
+      "explanation": "\"ASLR\" stands for \"Address Space Layout Randomization\" (Security+)."
+    },
+    {
+      "id": 369,
+      "explanation": "\"IOPS\" stands for \"Input/Output Operations Per Second\" (A+ Core 2)."
+    },
+    {
+      "id": 370,
+      "explanation": "\"XDR\" stands for \"Extended Detection and Response\" (A+ Core 1)."
+    },
+    {
+      "id": 371,
+      "explanation": "\"TN\" stands for \"Twisted Nematic\" (A+ Core 2)."
+    },
+    {
+      "id": 372,
+      "explanation": "\"IDEA\" stands for \"International Data Encryption Algorithm\" (Security+)."
+    },
+    {
+      "id": 373,
+      "explanation": "\"USB-C\" stands for \"Universal Serial Bus Type C\" (A+ Core 2)."
+    },
+    {
+      "id": 374,
+      "explanation": "\"AH\" stands for \"Authentication Header\" (Network+)."
+    },
+    {
+      "id": 375,
+      "explanation": "\"FDE\" stands for \"Full Disk Encryption\" (Security+)."
+    },
+    {
+      "id": 376,
+      "explanation": "\"TOTP\" stands for \"Time-based One-time Password\" (A+ Core 2)."
+    },
+    {
+      "id": 377,
+      "explanation": "\"SASE\" stands for \"Secure Access Service Edge\" (Security+)."
+    },
+    {
+      "id": 378,
+      "explanation": "\"RIPEMD\" stands for \"RACE Integrity Primitives Evaluation Message Digest\" (Security+)."
+    },
+    {
+      "id": 379,
+      "explanation": "\"MAN\" stands for \"Metropolitan Area Network\" (Security+)."
+    },
+    {
+      "id": 380,
+      "explanation": "\"TOTP\" stands for \"Time-based One-time Password\" (A+ Core 1)."
+    },
+    {
+      "id": 381,
+      "explanation": "\"PAM\" stands for \"Pluggable Authentication Modules\" (Security+)."
+    },
+    {
+      "id": 382,
+      "explanation": "\"MMC\" stands for \"Microsoft Management Console\" (A+ Core 2)."
+    },
+    {
+      "id": 383,
+      "explanation": "\"FRT\" stands for \"Facial Recognition Technology\" (A+ Core 2)."
+    },
+    {
+      "id": 384,
+      "explanation": "\"GUI\" stands for \"Graphical User Interface\" (A+ Core 2)."
+    },
+    {
+      "id": 385,
+      "explanation": "\"PDU\" stands for \"Power Distribution Unit\" (Network+)."
+    },
+    {
+      "id": 386,
+      "explanation": "\"MNDA\" stands for \"Mutual Non-Disclosure Agreement\" (A+ Core 2)."
+    },
+    {
+      "id": 387,
+      "explanation": "\"SLA\" stands for \"Service-level Agreement\" (A+ Core 2)."
+    },
+    {
+      "id": 388,
+      "explanation": "\"LEAP\" stands for \"Lightweight Extensible Authentication Protocol\" (Security+)."
+    },
+    {
+      "id": 389,
+      "explanation": "\"ML\" stands for \"Machine Learning\" (Security+)."
+    },
+    {
+      "id": 390,
+      "explanation": "\"TKIP\" stands for \"Temporal Key Integrity Protocol\" (A+ Core 1)."
+    },
+    {
+      "id": 391,
+      "explanation": "\"OSPF\" stands for \"Open Shortest Path First\" (Security+)."
+    },
+    {
+      "id": 392,
+      "explanation": "\"EOL\" stands for \"End-of-life\" (A+ Core 2)."
+    },
+    {
+      "id": 393,
+      "explanation": "\"SDS\" stands for \"Safety Data Sheet\" (A+ Core 1)."
+    },
+    {
+      "id": 394,
+      "explanation": "\"HOTP\" stands for \"HMAC-based One-time Password\" (Security+)."
+    },
+    {
+      "id": 395,
+      "explanation": "\"BNC\" stands for \"Bayonet Neill-Concelman\" (A+ Core 2)."
+    },
+    {
+      "id": 396,
+      "explanation": "\"AES\" stands for \"Advanced Encryption Standard\" (Security+)."
+    },
+    {
+      "id": 397,
+      "explanation": "\"WPA\" stands for \"Wi-Fi Protected Access\" (Network+)."
+    },
+    {
+      "id": 398,
+      "explanation": "\"RC4\" stands for \"Rivest Cipher version 4\" (Security+)."
+    },
+    {
+      "id": 399,
+      "explanation": "\"UDP\" stands for \"User Datagram Protocol\" (A+ Core 1)."
+    },
+    {
+      "id": 400,
+      "explanation": "\"IPAM\" stands for \"Internet Protocol Address Management\" (Network+)."
+    },
+    {
+      "id": 401,
+      "explanation": "\"OWASP\" stands for \"Open Worldwide Application Security Project\" (Security+)."
+    },
+    {
+      "id": 402,
+      "explanation": "\"EFS\" stands for \"Encrypting File System\" (A+ Core 2)."
+    },
+    {
+      "id": 403,
+      "explanation": "\"CA\" stands for \"Certificate Authority\" (Security+)."
+    },
+    {
+      "id": 404,
+      "explanation": "\"DLP\" stands for \"Data Loss Prevention\" (A+ Core 2)."
+    },
+    {
+      "id": 405,
+      "explanation": "\"BNC\" stands for \"Bayonet Neill-Concelman\" (A+ Core 1)."
+    },
+    {
+      "id": 406,
+      "explanation": "\"WTLS\" stands for \"Wireless TLS\" (Security+)."
+    },
+    {
+      "id": 407,
+      "explanation": "\"XSS\" stands for \"Cross-site Scripting\" (A+ Core 2)."
+    },
+    {
+      "id": 408,
+      "explanation": "\"FAT32\" stands for \"32-bit File Allocation Table\" (A+ Core 1)."
+    },
+    {
+      "id": 409,
+      "explanation": "\"PAM\" stands for \"Privileged Access Management\" (A+ Core 1)."
+    },
+    {
+      "id": 410,
+      "explanation": "\"IOPS\" stands for \"Input/Output Operations Per Second\" (A+ Core 1)."
+    },
+    {
+      "id": 411,
+      "explanation": "\"ECDSA\" stands for \"Elliptic Curve Digital Signature Algorithm\" (Security+)."
+    },
+    {
+      "id": 412,
+      "explanation": "\"UEFI\" stands for \"Unified Extensible Firmware Interface\" (A+ Core 1)."
+    },
+    {
+      "id": 413,
+      "explanation": "\"URL\" stands for \"Universal Resource Locator\" (Security+)."
+    },
+    {
+      "id": 414,
+      "explanation": "\"WEP\" stands for \"Wired Equivalent Privacy\" (A+ Core 1)."
+    },
+    {
+      "id": 415,
+      "explanation": "\"CMOS\" stands for \"Complementary Metal-Oxide Semiconductor\" (A+ Core 1)."
+    },
+    {
+      "id": 416,
+      "explanation": "\"UDP\" stands for \"User Datagram Protocol\" (Network+)."
+    },
+    {
+      "id": 417,
+      "explanation": "\"XXS\" stands for \"Cross-site Scripting\" (A+ Core 1)."
+    },
+    {
+      "id": 418,
+      "explanation": "\"USB\" stands for \"Universal Serial Bus\" (A+ Core 2)."
+    },
+    {
+      "id": 419,
+      "explanation": "\"SAML\" stands for \"Security Assertions Markup Language\" (A+ Core 1)."
+    },
+    {
+      "id": 420,
+      "explanation": "\"IR\" stands for \"Incident Response\" (Security+)."
+    },
+    {
+      "id": 421,
+      "explanation": "\"SPF\" stands for \"Sender Policy Framework\" (Security+)."
+    },
+    {
+      "id": 422,
+      "explanation": "\"DB-9\" stands for \"Serial Communications D-Shell Connector, 9 pins\" (A+ Core 1)."
+    },
+    {
+      "id": 423,
+      "explanation": "\"MTU\" stands for \"Maximum Transmission Unit\" (Security+)."
+    },
+    {
+      "id": 424,
+      "explanation": "\"MAC\" stands for \"Mandatory Access Control\" (Security+)."
+    },
+    {
+      "id": 425,
+      "explanation": "\"SMS\" stands for \"Short Message Service\" (A+ Core 2)."
+    },
+    {
+      "id": 426,
+      "explanation": "\"CERT\" stands for \"Computer Emergency Response Team\" (Security+)."
+    },
+    {
+      "id": 427,
+      "explanation": "\"WAP\" stands for \"Wireless Access Point\" (A+ Core 1)."
+    },
+    {
+      "id": 428,
+      "explanation": "\"PIN\" stands for \"Personal Identification Number\" (A+ Core 1)."
+    },
+    {
+      "id": 429,
+      "explanation": "\"AP\" stands for \"Access Point\" (Security+)."
+    },
+    {
+      "id": 430,
+      "explanation": "\"VLSM\" stands for \"Variable Length Subnet Masking\" (Security+)."
+    },
+    {
+      "id": 431,
+      "explanation": "\"SD-WAN\" stands for \"Software-defined Wide Area Network\" (Network+)."
+    },
+    {
+      "id": 432,
+      "explanation": "\"RAM\" stands for \"Random-access Memory\" (A+ Core 2)."
+    },
+    {
+      "id": 433,
+      "explanation": "Dynamic Host Configuration Protocol (DHCP) uses port 67/68 (source: A+ Core 1)."
+    },
+    {
+      "id": 434,
+      "explanation": "Secure Shell (SSH) uses port 22 (source: A+ Core 2)."
+    },
+    {
+      "id": 435,
+      "explanation": "Domain Name System (DNS) uses port 53 (source: Security+)."
+    },
+    {
+      "id": 436,
+      "explanation": "Hypertext Transfer Protocol Secure (HTTPS) uses port 443 (source: Security+)."
+    },
+    {
+      "id": 437,
+      "explanation": "Post Office Protocol 3 (POP3) uses port 110 (source: A+ Core 1)."
+    },
+    {
+      "id": 438,
+      "explanation": "Network Basic Input/Output System (NetBIOS)/NetBIOS over TCP/IP (NetBT) uses port 137-139 (source: A+ Core 1)."
+    },
+    {
+      "id": 439,
+      "explanation": "Telnet uses port 23 (source: A+ Core 2)."
+    },
+    {
+      "id": 440,
+      "explanation": "Telnet uses port 23 (source: A+ Core 1)."
+    },
+    {
+      "id": 441,
+      "explanation": "Server Message Block (SMB)/Common Internet File System (CIFS) uses port 445 (source: A+ Core 1)."
+    },
+    {
+      "id": 442,
+      "explanation": "Lightweight Directory Access Protocol (LDAP) uses port 389 (source: Security+)."
+    },
+    {
+      "id": 443,
+      "explanation": "Remote Desktop Protocol (RDP) uses port 3389 (source: Security+)."
+    },
+    {
+      "id": 444,
+      "explanation": "Internet Mail Access Protocol (IMAP) uses port 143 (source: A+ Core 2)."
+    },
+    {
+      "id": 445,
+      "explanation": "Lightweight Directory Access Protocol (LDAP) uses port 389 (source: A+ Core 1)."
+    },
+    {
+      "id": 446,
+      "explanation": "Domain Name System (DNS) uses port 53 (source: A+ Core 1)."
+    },
+    {
+      "id": 447,
+      "explanation": "Domain Name System (DNS) uses port 53 (source: A+ Core 2)."
+    },
+    {
+      "id": 448,
+      "explanation": "Post Office Protocol 3 (POP3) uses port 110 (source: A+ Core 2)."
+    },
+    {
+      "id": 449,
+      "explanation": "Syslog uses port 514 (source: Network+)."
+    },
+    {
+      "id": 450,
+      "explanation": "Simple Mail Transfer Protocol (SMTP) uses port 25 (source: Security+)."
+    },
+    {
+      "id": 451,
+      "explanation": "Structured Query Language (SQL) Server uses port 1433 (source: Network+)."
+    },
+    {
+      "id": 452,
+      "explanation": "Lightweight Directory Access Protocol (LDAP) uses port 389 (source: A+ Core 2)."
+    },
+    {
+      "id": 453,
+      "explanation": "Remote Desktop Protocol (RDP) uses port 3389 (source: A+ Core 1)."
+    },
+    {
+      "id": 454,
+      "explanation": "Server Message Block (SMB)/Common Internet File System (CIFS) uses port 445 (source: A+ Core 2)."
+    },
+    {
+      "id": 455,
+      "explanation": "Hypertext Transfer Protocol (HTTP) uses port 80 (source: Security+)."
+    },
+    {
+      "id": 456,
+      "explanation": "Hypertext Transfer Protocol Secure (HTTPS) uses port 443 (source: A+ Core 1)."
+    },
+    {
+      "id": 457,
+      "explanation": "Simple Mail Transfer Protocol (SMTP) uses port 25 (source: A+ Core 1)."
+    },
+    {
+      "id": 458,
+      "explanation": "File Transfer Protocol (FTP) uses port 20-21 (source: A+ Core 1)."
+    },
+    {
+      "id": 459,
+      "explanation": "Hypertext Transfer Protocol Secure (HTTPS) uses port 443 (source: A+ Core 2)."
+    },
+    {
+      "id": 460,
+      "explanation": "Telnet uses port 23 (source: Network+)."
+    },
+    {
+      "id": 461,
+      "explanation": "Hypertext Transfer Protocol (HTTP) uses port 80 (source: A+ Core 1)."
+    },
+    {
+      "id": 462,
+      "explanation": "Network Basic Input/Output System (NetBIOS)/NetBIOS over TCP/IP (NetBT) uses port 137-139 (source: Security+)."
+    },
+    {
+      "id": 463,
+      "explanation": "Domain Name System (DNS) uses port 53 (source: Network+)."
+    },
+    {
+      "id": 464,
+      "explanation": "Secure Shell (SSH) uses port 22 (source: Security+)."
+    },
+    {
+      "id": 465,
+      "explanation": "File Transfer Protocol (FTP) uses port 20-21 (source: Security+)."
+    },
+    {
+      "id": 466,
+      "explanation": "Internet Mail Access Protocol (IMAP) uses port 143 (source: Security+)."
+    },
+    {
+      "id": 467,
+      "explanation": "Internet Mail Access Protocol (IMAP) uses port 143 (source: A+ Core 1)."
+    },
+    {
+      "id": 468,
+      "explanation": "File Transfer Protocol (FTP) uses port 20-21 (source: A+ Core 2)."
+    },
+    {
+      "id": 469,
+      "explanation": "Server Message Block (SMB)/Common Internet File System (CIFS) uses port 445 (source: Security+)."
+    },
+    {
+      "id": 470,
+      "explanation": "Secure Shell (SSH) uses port 22 (source: A+ Core 1)."
+    },
+    {
+      "id": 471,
+      "explanation": "Dynamic Host Configuration Protocol (DHCP) uses port 67/68 (source: A+ Core 2)."
+    },
+    {
+      "id": 472,
+      "explanation": "Telnet uses port 23 (source: Security+)."
+    },
+    {
+      "id": 473,
+      "explanation": "Secure Shell (SSH) uses port 22 (source: Network+)."
+    },
+    {
+      "id": 474,
+      "explanation": "Dynamic Host Configuration Protocol (DHCP) uses port 67/68 (source: Security+)."
+    },
+    {
+      "id": 475,
+      "explanation": "Hypertext Transfer Protocol (HTTP) uses port 80 (source: A+ Core 2)."
+    },
+    {
+      "id": 476,
+      "explanation": "Network Basic Input/Output System (NetBIOS)/NetBIOS over TCP/IP (NetBT) uses port 137-139 (source: A+ Core 2)."
+    },
+    {
+      "id": 477,
+      "explanation": "Post Office Protocol 3 (POP3) uses port 110 (source: Security+)."
+    },
+    {
+      "id": 478,
+      "explanation": "Server Message Block (SMB) uses port 445 (source: Network+)."
+    },
+    {
+      "id": 479,
+      "explanation": "Simple Mail Transfer Protocol (SMTP) uses port 25 (source: A+ Core 2)."
+    },
+    {
+      "id": 480,
+      "explanation": "Remote Desktop Protocol (RDP) uses port 3389 (source: A+ Core 2)."
+    },
+    {
+      "id": 481,
+      "explanation": "\"Port roles • Address pool exhaustion\" is a Network+ concept related to Port roles • Address pool exhaustion."
+    },
+    {
+      "id": 482,
+      "explanation": "\"System requirements (CPU) requirements • Impact considerations\" is a A+ Core 2 concept related to System requirements (CPU) requirements • Impact considerations."
+    },
+    {
+      "id": 483,
+      "explanation": "\"Inability to access files\" is a A+ Core 2 concept related to Inability to access files."
+    },
+    {
+      "id": 484,
+      "explanation": "\"Port states • Incorrect default gateway\" is a Network+ concept related to Port states • Incorrect default gateway."
+    },
+    {
+      "id": 485,
+      "explanation": "\"Assignment/accounting − Sanitization\" is a Security+ concept related to Assignment/accounting − Sanitization."
+    },
+    {
+      "id": 486,
+      "explanation": "\"Global\" is a Security+ concept related to Global."
+    },
+    {
+      "id": 487,
+      "explanation": "\"Malware • Adware − Antivirus\" is a A+ Core 2 concept related to Malware • Adware − Antivirus."
+    },
+    {
+      "id": 488,
+      "explanation": "\"Windows 10 editions • N versions • Upgrade paths\" is a A+ Core 2 concept related to Windows 10 editions • N versions • Upgrade paths."
+    },
+    {
+      "id": 489,
+      "explanation": "\"Anomaly alerting/notification\" is a Network+ concept related to Anomaly alerting/notification."
+    },
+    {
+      "id": 490,
+      "explanation": "\"Voice over Internet Protocol (VoIP) Interface (HDMI)\" is a A+ Core 2 concept related to Voice over Internet Protocol (VoIP) Interface (HDMI)."
+    },
+    {
+      "id": 491,
+      "explanation": "\"Output 3.3V vs. 5V vs. 12V • Energy efficiency\" is a A+ Core 1 concept related to Output 3.3V vs. 5V vs. 12V • Energy efficiency."
+    },
+    {
+      "id": 492,
+      "explanation": "\"Temperature, humidity-level awareness,\" is a A+ Core 2 concept related to Temperature, humidity-level awareness,."
+    },
+    {
+      "id": 493,
+      "explanation": "\"Physical access security − Zero Trust model management (PAM)\" is a A+ Core 2 concept related to Physical access security − Zero Trust model management (PAM)."
+    },
+    {
+      "id": 494,
+      "explanation": "\"Wireless access point • Packet capture software\" is a Security+ concept related to Wireless access point • Packet capture software."
+    },
+    {
+      "id": 495,
+      "explanation": "\"Incident response • Non-disclosure agreement (NDA)/mutual\" is a A+ Core 2 concept related to Incident response • Non-disclosure agreement (NDA)/mutual."
+    },
+    {
+      "id": 496,
+      "explanation": "\"Anomalous behavior recognition − Social engineering\" is a Security+ concept related to Anomalous behavior recognition − Social engineering."
+    },
+    {
+      "id": 497,
+      "explanation": "\"Bluetooth/wireless adapters OTHER\" is a Network+ concept related to Bluetooth/wireless adapters OTHER."
+    },
+    {
+      "id": 498,
+      "explanation": "\"Public key infrastructure (PKI) • Tools − Online Certificate Status\" is a Security+ concept related to Public key infrastructure (PKI) • Tools − Online Certificate Status."
+    },
+    {
+      "id": 499,
+      "explanation": "\"Cable issues • Interface issues • Hardware issues\" is a Network+ concept related to Cable issues • Interface issues • Hardware issues."
+    },
+    {
+      "id": 500,
+      "explanation": "\"Authentication Header (AH)\" is a Network+ concept related to Authentication Header (AH)."
+    },
+    {
+      "id": 501,
+      "explanation": "\"Public addresses\" is a A+ Core 1 concept related to Public addresses."
+    },
+    {
+      "id": 502,
+      "explanation": "\"Laser/inkjet • Adapters connectors\" is a A+ Core 1 concept related to Laser/inkjet • Adapters connectors."
+    },
+    {
+      "id": 503,
+      "explanation": "\"Capacity planning − Replication\" is a Security+ concept related to Capacity planning − Replication."
+    },
+    {
+      "id": 504,
+      "explanation": "\"Cable stripper • Cable tester\" is a A+ Core 1 concept related to Cable stripper • Cable tester."
+    },
+    {
+      "id": 505,
+      "explanation": "\"Punchdown block • Cases\" is a A+ Core 1 concept related to Punchdown block • Cases."
+    },
+    {
+      "id": 506,
+      "explanation": "\".dmg − Printers • Force Quit\" is a A+ Core 2 concept related to .dmg − Printers • Force Quit."
+    },
+    {
+      "id": 507,
+      "explanation": "\"IoT devices • Sample code\" is a Security+ concept related to IoT devices • Sample code."
+    },
+    {
+      "id": 508,
+      "explanation": "\"Understand networking basics and apply basic cybersecurity methods to mitigate threats.\" is a A+ Core 2 concept related to Understand networking basics and apply basic cybersecurity methods to mitigate threats.."
+    },
+    {
+      "id": 509,
+      "explanation": "\"Third-party vendors − Virtualization − Scalability\" is a Security+ concept related to Third-party vendors − Virtualization − Scalability."
+    },
+    {
+      "id": 510,
+      "explanation": "\"Identify the problem.\" is a A+ Core 1 concept related to Identify the problem.."
+    },
+    {
+      "id": 511,
+      "explanation": "\"Material safety data sheet (MSDS) • Power surges, brownouts, and blackouts\" is a A+ Core 2 concept related to Material safety data sheet (MSDS) • Power surges, brownouts, and blackouts."
+    },
+    {
+      "id": 512,
+      "explanation": "\"Dynamic analysis − Prioritize − Segmentation\" is a Security+ concept related to Dynamic analysis − Prioritize − Segmentation."
+    },
+    {
+      "id": 513,
+      "explanation": "\"Categories\" is a Security+ concept related to Categories."
+    },
+    {
+      "id": 514,
+      "explanation": "\"Common symptoms − Liquid damage − Unable to install new applications\" is a A+ Core 1 concept related to Common symptoms − Liquid damage − Unable to install new applications."
+    },
+    {
+      "id": 515,
+      "explanation": "\"Application fails to install − Wi-Fi\" is a A+ Core 2 concept related to Application fails to install − Wi-Fi."
+    },
+    {
+      "id": 516,
+      "explanation": "\"Frequency options • Encryption\" is a Network+ concept related to Frequency options • Encryption."
+    },
+    {
+      "id": 517,
+      "explanation": "\"Authentication\" is a Network+ concept related to Authentication."
+    },
+    {
+      "id": 518,
+      "explanation": "\"Documented business processes − Scope of the change − Risk analysis\" is a A+ Core 2 concept related to Documented business processes − Scope of the change − Risk analysis."
+    },
+    {
+      "id": 519,
+      "explanation": "\"Site considerations − Simulation\" is a Security+ concept related to Site considerations − Simulation."
+    },
+    {
+      "id": 520,
+      "explanation": "\"Establish a plan of action to resolve the problem and implement the solution.\" is a A+ Core 1 concept related to Establish a plan of action to resolve the problem and implement the solution.."
+    },
+    {
+      "id": 521,
+      "explanation": "\"Paper jams • Grinding noise • Connectivity issues\" is a A+ Core 1 concept related to Paper jams • Grinding noise • Connectivity issues."
+    },
+    {
+      "id": 522,
+      "explanation": "\".app − Privacy\" is a A+ Core 2 concept related to .app − Privacy."
+    },
+    {
+      "id": 523,
+      "explanation": "\"Traps գ Ad hoc\" is a Network+ concept related to Traps գ Ad hoc."
+    },
+    {
+      "id": 524,
+      "explanation": "\"Site-to-site VPN − API\" is a Network+ concept related to Site-to-site VPN − API."
+    },
+    {
+      "id": 525,
+      "explanation": "\"Basic laptops that support virtualization SOFTWARE\" is a Network+ concept related to Basic laptops that support virtualization SOFTWARE."
+    },
+    {
+      "id": 526,
+      "explanation": "\"Network • OS management\" is a A+ Core 2 concept related to Network • OS management."
+    },
+    {
+      "id": 527,
+      "explanation": "\"Formal − Texting/social media sites • Set and meet expectations/\" is a A+ Core 2 concept related to Formal − Texting/social media sites • Set and meet expectations/."
+    },
+    {
+      "id": 528,
+      "explanation": "\"Jump server ◦ Transport Layer Security (TLS)\" is a Security+ concept related to Jump server ◦ Transport Layer Security (TLS)."
+    },
+    {
+      "id": 529,
+      "explanation": "\"Purpose of virtual machines • Desktop virtualization\" is a A+ Core 1 concept related to Purpose of virtual machines • Desktop virtualization."
+    },
+    {
+      "id": 530,
+      "explanation": "\"Motherboard connector types − Secure Boot − Fans\" is a A+ Core 1 concept related to Motherboard connector types − Secure Boot − Fans."
+    },
+    {
+      "id": 531,
+      "explanation": "\"Application fails to close/crashes • Connectivity issues\" is a A+ Core 2 concept related to Application fails to close/crashes • Connectivity issues."
+    },
+    {
+      "id": 532,
+      "explanation": "\"Form factors • Double Data Rate (DDR) iterations\" is a A+ Core 1 concept related to Form factors • Double Data Rate (DDR) iterations."
+    },
+    {
+      "id": 533,
+      "explanation": "\"Documentation • Life-cycle management\" is a Network+ concept related to Documentation • Life-cycle management."
+    },
+    {
+      "id": 534,
+      "explanation": "\"Flow data analyzer\" is a Network+ concept related to Flow data analyzer."
+    },
+    {
+      "id": 535,
+      "explanation": "\"Local OS firewall settings • Proxy settings\" is a A+ Core 2 concept related to Local OS firewall settings • Proxy settings."
+    },
+    {
+      "id": 536,
+      "explanation": "\"3-D printer • Network cables SOFTWARE\" is a A+ Core 1 concept related to 3-D printer • Network cables SOFTWARE."
+    },
+    {
+      "id": 537,
+      "explanation": "\"Android tablet/smartphone • RAM • Multimeter\" is a A+ Core 1 concept related to Android tablet/smartphone • RAM • Multimeter."
+    },
+    {
+      "id": 538,
+      "explanation": "\"Internal − Physical\" is a Security+ concept related to Internal − Physical."
+    },
+    {
+      "id": 539,
+      "explanation": "\"Load balancer\" is a Security+ concept related to Load balancer."
+    },
+    {
+      "id": 540,
+      "explanation": "\"Microsoft Management • Additional tools\" is a A+ Core 2 concept related to Microsoft Management • Additional tools."
+    }
+  ],
+  "tier3": [
+    {
+      "id": 541,
+      "explanation": "\"PSU\" stands for \"Power Supply Unit\" (A+ Core 2)."
+    },
+    {
+      "id": 542,
+      "explanation": "\"MFA\" stands for \"Multifactor Authentication\" (A+ Core 2)."
+    },
+    {
+      "id": 543,
+      "explanation": "\"GFS\" stands for \"Grandfather-Father-Son\" (A+ Core 2)."
+    },
+    {
+      "id": 544,
+      "explanation": "\"ACL\" stands for \"Access Control List\" (Security+)."
+    },
+    {
+      "id": 545,
+      "explanation": "\"FRR\" stands for \"False Rejection Rate\" (Security+)."
+    },
+    {
+      "id": 546,
+      "explanation": "\"RADIUS\" stands for \"Remote Authentication Dial-in User Server\" (A+ Core 2)."
+    },
+    {
+      "id": 547,
+      "explanation": "\"PIV\" stands for \"Personal Identity Verification\" (A+ Core 1)."
+    },
+    {
+      "id": 548,
+      "explanation": "\"CIRT\" stands for \"Computer Incident Response Team\" (Security+)."
+    },
+    {
+      "id": 549,
+      "explanation": "\"LC\" stands for \"Lucent Connector\" (A+ Core 2)."
+    },
+    {
+      "id": 550,
+      "explanation": "\"SSO\" stands for \"Single Sign-on\" (Network+)."
+    },
+    {
+      "id": 551,
+      "explanation": "\"DB-9\" stands for \"Serial Communications D-Shell Connector, 9 pins\" (A+ Core 2)."
+    },
+    {
+      "id": 552,
+      "explanation": "\"CAR\" stands for \"Corrective Action Report\" (Security+)."
+    },
+    {
+      "id": 553,
+      "explanation": "\"HDMI\" stands for \"High-definition Media Interface\" (A+ Core 2)."
+    },
+    {
+      "id": 554,
+      "explanation": "\"IKE\" stands for \"Internet Key Exchange\" (Network+)."
+    },
+    {
+      "id": 555,
+      "explanation": "\"HDD\" stands for \"Hard Disk Drive\" (A+ Core 2)."
+    },
+    {
+      "id": 556,
+      "explanation": "\"MAC\" stands for \"Mandatory Access Control\" (Security+)."
+    },
+    {
+      "id": 557,
+      "explanation": "\"IP\" stands for \"Internet Protocol\" (Security+)."
+    },
+    {
+      "id": 558,
+      "explanation": "\"L2TP\" stands for \"Layer 2 Tunneling Protocol\" (Security+)."
+    },
+    {
+      "id": 559,
+      "explanation": "\"SMS\" stands for \"Short Message Service\" (A+ Core 2)."
+    },
+    {
+      "id": 560,
+      "explanation": "\"FTP\" stands for \"File Transfer Protocol\" (A+ Core 2)."
+    },
+    {
+      "id": 561,
+      "explanation": "\"MTTR\" stands for \"Mean Time to Recover\" (Security+)."
+    },
+    {
+      "id": 562,
+      "explanation": "\"MAC\" stands for \"Media Access Control\" (Network+)."
+    },
+    {
+      "id": 563,
+      "explanation": "\"API\" stands for \"Application Programming Interface\" (Network+)."
+    },
+    {
+      "id": 564,
+      "explanation": "\"VPC\" stands for \"Virtual Private Cloud\" (Network+)."
+    },
+    {
+      "id": 565,
+      "explanation": "\"ARO\" stands for \"Annualized Rate of Occurrence\" (Security+)."
+    },
+    {
+      "id": 566,
+      "explanation": "\"QSFP\" stands for \"Quad Small Form-factor Pluggable\" (Network+)."
+    },
+    {
+      "id": 567,
+      "explanation": "\"NAC\" stands for \"Network Access Control\" (A+ Core 1)."
+    },
+    {
+      "id": 568,
+      "explanation": "\"UAC\" stands for \"User Account Control\" (A+ Core 1)."
+    },
+    {
+      "id": 569,
+      "explanation": "\"ONT\" stands for \"Optical Network Terminal\" (A+ Core 2)."
+    },
+    {
+      "id": 570,
+      "explanation": "\"GPT\" stands for \"GUID [Globally Unique Identifier] Partition Table\" (A+ Core 1)."
+    },
+    {
+      "id": 571,
+      "explanation": "\"FQDN\" stands for \"Fully Qualified Domain Name\" (Network+)."
+    },
+    {
+      "id": 572,
+      "explanation": "\"WLAN\" stands for \"Wireless LAN [Local Area Network]\" (A+ Core 1)."
+    },
+    {
+      "id": 573,
+      "explanation": "\"IPAM\" stands for \"Internet Protocol Address Management\" (Network+)."
+    },
+    {
+      "id": 574,
+      "explanation": "\"SOA\" stands for \"Start of Authority\" (Network+)."
+    },
+    {
+      "id": 575,
+      "explanation": "\"STIX\" stands for \"Structured Threat Information eXchange\" (Security+)."
+    },
+    {
+      "id": 576,
+      "explanation": "\"APU\" stands for \"Audio Processing Unit\" (Network+)."
+    },
+    {
+      "id": 577,
+      "explanation": "\"PAC\" stands for \"Proxy Auto Configuration\" (Security+)."
+    },
+    {
+      "id": 578,
+      "explanation": "\"MSA\" stands for \"Master Service Agreement\" (Security+)."
+    },
+    {
+      "id": 579,
+      "explanation": "\"GUID\" stands for \"Globally Unique Identifier\" (A+ Core 1)."
+    },
+    {
+      "id": 580,
+      "explanation": "\"PCL\" stands for \"Printer Command Language\" (A+ Core 1)."
+    },
+    {
+      "id": 581,
+      "explanation": "\"HMAC\" stands for \"Hashed Message Authentication Code\" (Security+)."
+    },
+    {
+      "id": 582,
+      "explanation": "\"MAC\" stands for \"Media Access Control\" (Security+)."
+    },
+    {
+      "id": 583,
+      "explanation": "\"HIPS\" stands for \"Host-based Intrusion Prevention System\" (Security+)."
+    },
+    {
+      "id": 584,
+      "explanation": "\"ATX\" stands for \"Advanced Technology Extended\" (A+ Core 2)."
+    },
+    {
+      "id": 585,
+      "explanation": "\"IDEA\" stands for \"International Data Encryption Algorithm\" (Security+)."
+    },
+    {
+      "id": 586,
+      "explanation": "\"OVAL\" stands for \"Open Vulnerability Assessment Language\" (Security+)."
+    },
+    {
+      "id": 587,
+      "explanation": "\"PBX\" stands for \"Private Branch Exchange\" (Security+)."
+    },
+    {
+      "id": 588,
+      "explanation": "\"NFC\" stands for \"Near Field Communication\" (Security+)."
+    },
+    {
+      "id": 589,
+      "explanation": "\"PEAP\" stands for \"Protected Extensible Authentication Protocol\" (Security+)."
+    },
+    {
+      "id": 590,
+      "explanation": "\"IKE\" stands for \"Internet Key Exchange\" (Security+)."
+    },
+    {
+      "id": 591,
+      "explanation": "\"DLP\" stands for \"Data Loss Prevention\" (A+ Core 2)."
+    },
+    {
+      "id": 592,
+      "explanation": "\"EIGRP\" stands for \"Enhanced Interior Gateway Routing Protocol\" (Network+)."
+    },
+    {
+      "id": 593,
+      "explanation": "\"UTM\" stands for \"Unified Threat Management\" (A+ Core 2)."
+    },
+    {
+      "id": 594,
+      "explanation": "\"VA\" stands for \"Vertical Alignment\" (A+ Core 2)."
+    },
+    {
+      "id": 595,
+      "explanation": "\"WISP\" stands for \"Written Internet Service Provider\" (A+ Core 1)."
+    },
+    {
+      "id": 596,
+      "explanation": "\"EAP\" stands for \"Extensible Authentication Protocol\" (Network+)."
+    },
+    {
+      "id": 597,
+      "explanation": "\"CIO\" stands for \"Chief Information Officer\" (Security+)."
+    },
+    {
+      "id": 598,
+      "explanation": "\"CCTV\" stands for \"Closed-circuit Television\" (Security+)."
+    },
+    {
+      "id": 599,
+      "explanation": "\"TPM\" stands for \"Trusted Platform Module\" (Security+)."
+    },
+    {
+      "id": 600,
+      "explanation": "\"LEAP\" stands for \"Lightweight Extensible Authentication Protocol\" (Security+)."
+    },
+    {
+      "id": 601,
+      "explanation": "\"MTU\" stands for \"Maximum Transmission Unit\" (Network+)."
+    },
+    {
+      "id": 602,
+      "explanation": "\"SMS\" stands for \"Short Message Service\" (A+ Core 1)."
+    },
+    {
+      "id": 603,
+      "explanation": "\"RPM\" stands for \"Revolutions Per Minute\" (A+ Core 2)."
+    },
+    {
+      "id": 604,
+      "explanation": "\"MTTR\" stands for \"Mean Time To Repair\" (Network+)."
+    },
+    {
+      "id": 605,
+      "explanation": "\"NIC\" stands for \"Network Interface Card\" (A+ Core 1)."
+    },
+    {
+      "id": 606,
+      "explanation": "\"RFID\" stands for \"Radio-frequency Identification\" (A+ Core 2)."
+    },
+    {
+      "id": 607,
+      "explanation": "\"UTP\" stands for \"Unshielded Twisted Pair\" (Network+)."
+    },
+    {
+      "id": 608,
+      "explanation": "\"UPS\" stands for \"Uninterruptible Power Supply\" (Security+)."
+    },
+    {
+      "id": 609,
+      "explanation": "\"WPA\" stands for \"Wi-Fi Protected Access\" (A+ Core 1)."
+    },
+    {
+      "id": 610,
+      "explanation": "\"WTLS\" stands for \"Wireless TLS\" (Security+)."
+    },
+    {
+      "id": 611,
+      "explanation": "\"RFID\" stands for \"Radio Frequency Identification\" (Network+)."
+    },
+    {
+      "id": 612,
+      "explanation": "\"DPO\" stands for \"Data Privacy Officer\" (Security+)."
+    },
+    {
+      "id": 613,
+      "explanation": "\"DES\" stands for \"Digital Encryption Standard\" (Security+)."
+    },
+    {
+      "id": 614,
+      "explanation": "\"KDC\" stands for \"Key Distribution Center\" (Security+)."
+    },
+    {
+      "id": 615,
+      "explanation": "\"DHE\" stands for \"Diffie-Hellman Ephemeral\" (Security+)."
+    },
+    {
+      "id": 616,
+      "explanation": "\"IR\" stands for \"Infrared\" (A+ Core 1)."
+    },
+    {
+      "id": 617,
+      "explanation": "\"XML\" stands for \"Extensible Markup Language\" (Security+)."
+    },
+    {
+      "id": 618,
+      "explanation": "\"BCP\" stands for \"Business Continuity Planning\" (Security+)."
+    },
+    {
+      "id": 619,
+      "explanation": "\"MBR\" stands for \"Master Boot Record\" (Security+)."
+    },
+    {
+      "id": 620,
+      "explanation": "\"RGB\" stands for \"Red-Green-Blue\" (A+ Core 1)."
+    },
+    {
+      "id": 621,
+      "explanation": "\"APIPA\" stands for \"Automatic Private Internet Protocol Addressing\" (Network+)."
+    },
+    {
+      "id": 622,
+      "explanation": "\"SDS\" stands for \"Safety Data Sheet\" (A+ Core 1)."
+    },
+    {
+      "id": 623,
+      "explanation": "\"VLAN\" stands for \"Virtual LAN [Local Area Network]\" (A+ Core 2)."
+    },
+    {
+      "id": 624,
+      "explanation": "\"NAS\" stands for \"Network Access Server\" (A+ Core 2)."
+    },
+    {
+      "id": 625,
+      "explanation": "\"DLP\" stands for \"Data Loss Prevention\" (A+ Core 1)."
+    },
+    {
+      "id": 626,
+      "explanation": "\"WAP\" stands for \"Wireless Access Protocol\" (Network+)."
+    },
+    {
+      "id": 627,
+      "explanation": "\"CFB\" stands for \"Cipher Feedback\" (Security+)."
+    },
+    {
+      "id": 628,
+      "explanation": "\"HDD\" stands for \"Hard Disk Drive\" (Security+)."
+    },
+    {
+      "id": 629,
+      "explanation": "\"CPU\" stands for \"Central Processing Unit\" (A+ Core 2)."
+    },
+    {
+      "id": 630,
+      "explanation": "\"XFS\" stands for \"Extended File System\" (A+ Core 1)."
+    },
+    {
+      "id": 631,
+      "explanation": "\"BCP\" stands for \"Business Continuity Planning\" (Network+)."
+    },
+    {
+      "id": 632,
+      "explanation": "\"TACACS\" stands for \"Terminal Access Controller Access-control System\" (A+ Core 2)."
+    },
+    {
+      "id": 633,
+      "explanation": "\"ISSO\" stands for \"Information Systems Security Officer\" (Security+)."
+    },
+    {
+      "id": 634,
+      "explanation": "\"IEEE\" stands for \"Institute of Electrical and Electronics Engineers\" (Security+)."
+    },
+    {
+      "id": 635,
+      "explanation": "\"HD\" stands for \"High Definition\" (A+ Core 1)."
+    },
+    {
+      "id": 636,
+      "explanation": "\"EULA\" stands for \"End-user License Agreement\" (A+ Core 2)."
+    },
+    {
+      "id": 637,
+      "explanation": "\"XML\" stands for \"Extensible Markup Language\" (Network+)."
+    },
+    {
+      "id": 638,
+      "explanation": "\"MMC\" stands for \"Microsoft Management Console\" (A+ Core 1)."
+    },
+    {
+      "id": 639,
+      "explanation": "\"HTTP\" stands for \"Hypertext Transfer Protocol\" (Network+)."
+    },
+    {
+      "id": 640,
+      "explanation": "\"DLL\" stands for \"Dynamic Link Library\" (Security+)."
+    },
+    {
+      "id": 641,
+      "explanation": "\"TKIP\" stands for \"Temporal Key Integrity Protocol\" (Network+)."
+    },
+    {
+      "id": 642,
+      "explanation": "\"HTTPS\" stands for \"Hypertext Transfer Protocol Secure\" (Security+)."
+    },
+    {
+      "id": 643,
+      "explanation": "\"OT\" stands for \"Operational Technology\" (Security+)."
+    },
+    {
+      "id": 644,
+      "explanation": "\"CRC\" stands for \"Cyclical Redundancy Check\" (Security+)."
+    },
+    {
+      "id": 645,
+      "explanation": "\"RSR\" stands for \"Rapid Security Response\" (A+ Core 1)."
+    },
+    {
+      "id": 646,
+      "explanation": "\"MNDA\" stands for \"Mutual Non-disclosure Agreement\" (A+ Core 1)."
+    },
+    {
+      "id": 647,
+      "explanation": "\"DVI\" stands for \"Digital Visual Interface\" (A+ Core 2)."
+    },
+    {
+      "id": 648,
+      "explanation": "\"SCADA\" stands for \"Supervisory Control and Data Acquisition\" (Security+)."
+    },
+    {
+      "id": 649,
+      "explanation": "\"WWAN\" stands for \"Wireless Wide Area Network\" (A+ Core 1)."
+    },
+    {
+      "id": 650,
+      "explanation": "\"SAML\" stands for \"Security Assertions Markup Language\" (Security+)."
+    },
+    {
+      "id": 651,
+      "explanation": "\"UDP\" stands for \"User Datagram Protocol\" (Network+)."
+    },
+    {
+      "id": 652,
+      "explanation": "\"API\" stands for \"Application Programming Interface\" (Security+)."
+    },
+    {
+      "id": 653,
+      "explanation": "\"DAS\" stands for \"Direct-attached Storage\" (Network+)."
+    },
+    {
+      "id": 654,
+      "explanation": "\"SSL\" stands for \"Secure Sockets Layer\" (Network+)."
+    },
+    {
+      "id": 655,
+      "explanation": "\"LC\" stands for \"Lucent Connector\" (A+ Core 1)."
+    },
+    {
+      "id": 656,
+      "explanation": "\"IM\" stands for \"Instant Messaging\" (Security+)."
+    },
+    {
+      "id": 657,
+      "explanation": "\"CSO\" stands for \"Chief Security Officer\" (Security+)."
+    },
+    {
+      "id": 658,
+      "explanation": "\"XDR\" stands for \"Extended Detection and Response\" (A+ Core 2)."
+    },
+    {
+      "id": 659,
+      "explanation": "\"MDM\" stands for \"Mobile Device Management\" (Security+)."
+    },
+    {
+      "id": 660,
+      "explanation": "\"SLA\" stands for \"Service-level Agreement\" (Security+)."
+    },
+    {
+      "id": 661,
+      "explanation": "\"IPS\" stands for \"Intrusion Prevention System\" (Security+)."
+    },
+    {
+      "id": 662,
+      "explanation": "\"SSH\" stands for \"Secure Shell\" (A+ Core 1)."
+    },
+    {
+      "id": 663,
+      "explanation": "\"VBA\" stands for \"Visual Basic\" (Security+)."
+    },
+    {
+      "id": 664,
+      "explanation": "\"VPN\" stands for \"Virtual Private Network\" (A+ Core 2)."
+    },
+    {
+      "id": 665,
+      "explanation": "\"DHCP\" stands for \"Dynamic Host Configuration Protocol\" (Network+)."
+    },
+    {
+      "id": 666,
+      "explanation": "\"RA\" stands for \"Recovery Agent\" (Security+)."
+    },
+    {
+      "id": 667,
+      "explanation": "\"NIC\" stands for \"Network Interface Card\" (A+ Core 2)."
+    },
+    {
+      "id": 668,
+      "explanation": "\"SDLC\" stands for \"Software Development Lifecycle\" (Security+)."
+    },
+    {
+      "id": 669,
+      "explanation": "\"SSO\" stands for \"Single Sign-on\" (Security+)."
+    },
+    {
+      "id": 670,
+      "explanation": "\"RTP\" stands for \"Real-time Transport Protocol\" (Security+)."
+    },
+    {
+      "id": 671,
+      "explanation": "\"AUP\" stands for \"Acceptable Use Policy\" (A+ Core 2)."
+    },
+    {
+      "id": 672,
+      "explanation": "\"DHCP\" stands for \"Dynamic Host Configuration Protocol\" (A+ Core 1)."
+    },
+    {
+      "id": 673,
+      "explanation": "\"MOU\" stands for \"Memorandum of Understanding\" (Network+)."
+    },
+    {
+      "id": 674,
+      "explanation": "\"BSSID\" stands for \"Basic Service Set Identifier\" (Network+)."
+    },
+    {
+      "id": 675,
+      "explanation": "\"SMTP\" stands for \"Simple Mail Transfer Protocol\" (Network+)."
+    },
+    {
+      "id": 676,
+      "explanation": "\"SLE\" stands for \"Single Loss Expectancy\" (Security+)."
+    },
+    {
+      "id": 677,
+      "explanation": "\"ML\" stands for \"Machine Learning\" (Security+)."
+    },
+    {
+      "id": 678,
+      "explanation": "\"SSID\" stands for \"Service Set Identifier\" (Network+)."
+    },
+    {
+      "id": 679,
+      "explanation": "\"SMB\" stands for \"Server Message Block\" (A+ Core 2)."
+    },
+    {
+      "id": 680,
+      "explanation": "\"WO\" stands for \"Work Order\" (Security+)."
+    },
+    {
+      "id": 681,
+      "explanation": "\"RDP\" stands for \"Remote Desktop Protocol\" (Security+)."
+    },
+    {
+      "id": 682,
+      "explanation": "\"OLED\" stands for \"Organic Light-emitting Diode\" (A+ Core 1)."
+    },
+    {
+      "id": 683,
+      "explanation": "\"MDF\" stands for \"Main Distribution Frame\" (Network+)."
+    },
+    {
+      "id": 684,
+      "explanation": "\"ERP\" stands for \"Enterprise Resource Planning\" (Security+)."
+    },
+    {
+      "id": 685,
+      "explanation": "\"ECB\" stands for \"Electronic Code Book\" (Security+)."
+    },
+    {
+      "id": 686,
+      "explanation": "\"CERT\" stands for \"Computer Emergency Response Team\" (Security+)."
+    },
+    {
+      "id": 687,
+      "explanation": "\"ISP\" stands for \"Internet Service Provider\" (Network+)."
+    },
+    {
+      "id": 688,
+      "explanation": "\"SDN\" stands for \"Software-defined Networking\" (Security+)."
+    },
+    {
+      "id": 689,
+      "explanation": "\"RAID\" stands for \"Redundant Array of Independent Disks\" (A+ Core 1)."
+    },
+    {
+      "id": 690,
+      "explanation": "\"HTTPS\" stands for \"Hypertext Transfer Protocol Secure\" (A+ Core 2)."
+    },
+    {
+      "id": 691,
+      "explanation": "\"SPF\" stands for \"Sender Policy Framework\" (A+ Core 1)."
+    },
+    {
+      "id": 692,
+      "explanation": "\"XSS\" stands for \"Cross-site Scripting\" (A+ Core 2)."
+    },
+    {
+      "id": 693,
+      "explanation": "\"WAN\" stands for \"Wide Area Network\" (A+ Core 1)."
+    },
+    {
+      "id": 694,
+      "explanation": "\"FACL\" stands for \"File System Access Control List\" (Security+)."
+    },
+    {
+      "id": 695,
+      "explanation": "\"TKIP\" stands for \"Temporal Key Integrity Protocol\" (A+ Core 2)."
+    },
+    {
+      "id": 696,
+      "explanation": "\"IR\" stands for \"Infrared\" (A+ Core 2)."
+    },
+    {
+      "id": 697,
+      "explanation": "\"GPT\" stands for \"GUID [Globally Unique Identifier] Partition Table\" (A+ Core 2)."
+    },
+    {
+      "id": 698,
+      "explanation": "\"NFC\" stands for \"Near-field Communication\" (A+ Core 2)."
+    },
+    {
+      "id": 699,
+      "explanation": "\"WAN\" stands for \"Wide Area Network\" (Network+)."
+    },
+    {
+      "id": 700,
+      "explanation": "\"S/MIME\" stands for \"Secure/Multipurpose Internet Mail Extensions\" (Security+)."
+    },
+    {
+      "id": 701,
+      "explanation": "\"RTO\" stands for \"Recovery Time Objective\" (Security+)."
+    },
+    {
+      "id": 702,
+      "explanation": "\"SOP\" stands for \"Standard Operating Procedure\" (A+ Core 1)."
+    },
+    {
+      "id": 703,
+      "explanation": "Secure Shell (SSH) uses port 22 (source: A+ Core 1)."
+    },
+    {
+      "id": 704,
+      "explanation": "Telnet uses port 23 (source: A+ Core 1)."
+    },
+    {
+      "id": 705,
+      "explanation": "Telnet uses port 23 (source: Security+)."
+    },
+    {
+      "id": 706,
+      "explanation": "Syslog uses port 514 (source: Network+)."
+    },
+    {
+      "id": 707,
+      "explanation": "Dynamic Host Configuration Protocol (DHCP) uses port 67/68 (source: A+ Core 1)."
+    },
+    {
+      "id": 708,
+      "explanation": "Remote Desktop Protocol (RDP) uses port 3389 (source: A+ Core 2)."
+    },
+    {
+      "id": 709,
+      "explanation": "Hypertext Transfer Protocol Secure (HTTPS) uses port 443 (source: A+ Core 2)."
+    },
+    {
+      "id": 710,
+      "explanation": "Simple Mail Transfer Protocol (SMTP) uses port 25 (source: A+ Core 2)."
+    },
+    {
+      "id": 711,
+      "explanation": "Secure Shell (SSH) uses port 22 (source: A+ Core 2)."
+    },
+    {
+      "id": 712,
+      "explanation": "Structured Query Language (SQL) Server uses port 1433 (source: Network+)."
+    },
+    {
+      "id": 713,
+      "explanation": "Network Basic Input/Output System (NetBIOS)/NetBIOS over TCP/IP (NetBT) uses port 137-139 (source: Security+)."
+    },
+    {
+      "id": 714,
+      "explanation": "Hypertext Transfer Protocol (HTTP) uses port 80 (source: Security+)."
+    },
+    {
+      "id": 715,
+      "explanation": "Dynamic Host Configuration Protocol (DHCP) uses port 67/68 (source: A+ Core 2)."
+    },
+    {
+      "id": 716,
+      "explanation": "Server Message Block (SMB)/Common Internet File System (CIFS) uses port 445 (source: A+ Core 2)."
+    },
+    {
+      "id": 717,
+      "explanation": "File Transfer Protocol (FTP) uses port 20-21 (source: Security+)."
+    },
+    {
+      "id": 718,
+      "explanation": "Hypertext Transfer Protocol Secure (HTTPS) uses port 443 (source: Security+)."
+    },
+    {
+      "id": 719,
+      "explanation": "Secure Shell (SSH) uses port 22 (source: Network+)."
+    },
+    {
+      "id": 720,
+      "explanation": "Secure Shell (SSH) uses port 22 (source: Security+)."
+    },
+    {
+      "id": 721,
+      "explanation": "Hypertext Transfer Protocol (HTTP) uses port 80 (source: A+ Core 1)."
+    },
+    {
+      "id": 722,
+      "explanation": "Network Basic Input/Output System (NetBIOS)/NetBIOS over TCP/IP (NetBT) uses port 137-139 (source: A+ Core 2)."
+    },
+    {
+      "id": 723,
+      "explanation": "Post Office Protocol 3 (POP3) uses port 110 (source: A+ Core 2)."
+    },
+    {
+      "id": 724,
+      "explanation": "Simple Mail Transfer Protocol (SMTP) uses port 25 (source: A+ Core 1)."
+    },
+    {
+      "id": 725,
+      "explanation": "Server Message Block (SMB) uses port 445 (source: Network+)."
+    },
+    {
+      "id": 726,
+      "explanation": "Domain Name System (DNS) uses port 53 (source: A+ Core 1)."
+    },
+    {
+      "id": 727,
+      "explanation": "Domain Name System (DNS) uses port 53 (source: Security+)."
+    },
+    {
+      "id": 728,
+      "explanation": "Network Basic Input/Output System (NetBIOS)/NetBIOS over TCP/IP (NetBT) uses port 137-139 (source: A+ Core 1)."
+    },
+    {
+      "id": 729,
+      "explanation": "Domain Name System (DNS) uses port 53 (source: A+ Core 2)."
+    },
+    {
+      "id": 730,
+      "explanation": "Remote Desktop Protocol (RDP) uses port 3389 (source: Security+)."
+    },
+    {
+      "id": 731,
+      "explanation": "File Transfer Protocol (FTP) uses port 20-21 (source: A+ Core 1)."
+    },
+    {
+      "id": 732,
+      "explanation": "File Transfer Protocol (FTP) uses port 20-21 (source: A+ Core 2)."
+    },
+    {
+      "id": 733,
+      "explanation": "Remote Desktop Protocol (RDP) uses port 3389 (source: A+ Core 1)."
+    },
+    {
+      "id": 734,
+      "explanation": "Internet Mail Access Protocol (IMAP) uses port 143 (source: A+ Core 2)."
+    },
+    {
+      "id": 735,
+      "explanation": "Domain Name System (DNS) uses port 53 (source: Network+)."
+    },
+    {
+      "id": 736,
+      "explanation": "Post Office Protocol 3 (POP3) uses port 110 (source: A+ Core 1)."
+    },
+    {
+      "id": 737,
+      "explanation": "Telnet uses port 23 (source: A+ Core 2)."
+    },
+    {
+      "id": 738,
+      "explanation": "Server Message Block (SMB)/Common Internet File System (CIFS) uses port 445 (source: Security+)."
+    },
+    {
+      "id": 739,
+      "explanation": "Lightweight Directory Access Protocol (LDAP) uses port 389 (source: A+ Core 2)."
+    },
+    {
+      "id": 740,
+      "explanation": "Lightweight Directory Access Protocol (LDAP) uses port 389 (source: A+ Core 1)."
+    },
+    {
+      "id": 741,
+      "explanation": "Telnet uses port 23 (source: Network+)."
+    },
+    {
+      "id": 742,
+      "explanation": "Hypertext Transfer Protocol (HTTP) uses port 80 (source: A+ Core 2)."
+    },
+    {
+      "id": 743,
+      "explanation": "Post Office Protocol 3 (POP3) uses port 110 (source: Security+)."
+    },
+    {
+      "id": 744,
+      "explanation": "Server Message Block (SMB)/Common Internet File System (CIFS) uses port 445 (source: A+ Core 1)."
+    },
+    {
+      "id": 745,
+      "explanation": "Dynamic Host Configuration Protocol (DHCP) uses port 67/68 (source: Security+)."
+    },
+    {
+      "id": 746,
+      "explanation": "Lightweight Directory Access Protocol (LDAP) uses port 389 (source: Security+)."
+    },
+    {
+      "id": 747,
+      "explanation": "Simple Mail Transfer Protocol (SMTP) uses port 25 (source: Security+)."
+    },
+    {
+      "id": 748,
+      "explanation": "Internet Mail Access Protocol (IMAP) uses port 143 (source: A+ Core 1)."
+    },
+    {
+      "id": 749,
+      "explanation": "Hypertext Transfer Protocol Secure (HTTPS) uses port 443 (source: A+ Core 1)."
+    },
+    {
+      "id": 750,
+      "explanation": "Internet Mail Access Protocol (IMAP) uses port 143 (source: Security+)."
+    },
+    {
+      "id": 751,
+      "explanation": "\"Hard disk drive (HDD)/solid-state drive (SSD)\" is a A+ Core 1 concept related to Hard disk drive (HDD)/solid-state drive (SSD)."
+    },
+    {
+      "id": 752,
+      "explanation": "\"Wireless • Transceivers\" is a Network+ concept related to Wireless • Transceivers."
+    },
+    {
+      "id": 753,
+      "explanation": "\"Slow to respond − Near-field communication (NFC)\" is a A+ Core 2 concept related to Slow to respond − Near-field communication (NFC)."
+    },
+    {
+      "id": 754,
+      "explanation": "\"File − Data masking\" is a Security+ concept related to File − Data masking."
+    },
+    {
+      "id": 755,
+      "explanation": "\"Voice call • Human vectors/social engineering\" is a Security+ concept related to Voice call • Human vectors/social engineering."
+    },
+    {
+      "id": 756,
+      "explanation": "\"Toner probe • Network tap\" is a A+ Core 1 concept related to Toner probe • Network tap."
+    },
+    {
+      "id": 757,
+      "explanation": "\"Traffic types\" is a Network+ concept related to Traffic types."
+    },
+    {
+      "id": 758,
+      "explanation": "\"Conflict identification\" is a Network+ concept related to Conflict identification."
+    },
+    {
+      "id": 759,
+      "explanation": "\"Laser/inkjet • Adapters connectors\" is a A+ Core 1 concept related to Laser/inkjet • Adapters connectors."
+    },
+    {
+      "id": 760,
+      "explanation": "\"Software-defined network (SDN) and software- • Infrastructure as code (IaC)\" is a Network+ concept related to Software-defined network (SDN) and software- • Infrastructure as code (IaC)."
+    },
+    {
+      "id": 761,
+      "explanation": "\"Bottlenecking − Interference\" is a Network+ concept related to Bottlenecking − Interference."
+    },
+    {
+      "id": 762,
+      "explanation": "\"Optical and copper patch panels • Optical power meter\" is a Network+ concept related to Optical and copper patch panels • Optical power meter."
+    },
+    {
+      "id": 763,
+      "explanation": "\"Common security terminology − Guest\" is a Network+ concept related to Common security terminology − Guest."
+    },
+    {
+      "id": 764,
+      "explanation": "\"Motivations\" is a Security+ concept related to Motivations."
+    },
+    {
+      "id": 765,
+      "explanation": "\"SOHO router/switch - HDMI • Cable toner\" is a A+ Core 1 concept related to SOHO router/switch - HDMI • Cable toner."
+    },
+    {
+      "id": 766,
+      "explanation": "\"corporate environments.\" is a A+ Core 1 concept related to corporate environments.."
+    },
+    {
+      "id": 767,
+      "explanation": "\"Multitenancy\" is a Network+ concept related to Multitenancy."
+    },
+    {
+      "id": 768,
+      "explanation": "\"Secure Access Secure Edge (SASE)/Security Service գ Tunneling\" is a Network+ concept related to Secure Access Secure Edge (SASE)/Security Service գ Tunneling."
+    },
+    {
+      "id": 769,
+      "explanation": "\"Apply troubleshooting skills and provide customer support using appropriate communication skills.\" is a A+ Core 1 concept related to Apply troubleshooting skills and provide customer support using appropriate communication skills.."
+    },
+    {
+      "id": 770,
+      "explanation": "\"Device connectivity − Quality • Automatic document feeder\" is a A+ Core 1 concept related to Device connectivity − Quality • Automatic document feeder."
+    },
+    {
+      "id": 771,
+      "explanation": "\"Network access control (NAC) (URL) filtering\" is a Network+ concept related to Network access control (NAC) (URL) filtering."
+    },
+    {
+      "id": 772,
+      "explanation": "\"Hardening techniques • Patch management • Locator applications\" is a A+ Core 2 concept related to Hardening techniques • Patch management • Locator applications."
+    },
+    {
+      "id": 773,
+      "explanation": "\"Smart devices (IoT devices) • Optical drives\" is a A+ Core 1 concept related to Smart devices (IoT devices) • Optical drives."
+    },
+    {
+      "id": 774,
+      "explanation": "\"Internet connection types • Network types\" is a A+ Core 1 concept related to Internet connection types • Network types."
+    },
+    {
+      "id": 775,
+      "explanation": "\"dig • Basic networking device commands\" is a Network+ concept related to dig • Basic networking device commands."
+    },
+    {
+      "id": 776,
+      "explanation": "\"Vendor selection of work (SOW)\" is a Security+ concept related to Vendor selection of work (SOW)."
+    },
+    {
+      "id": 777,
+      "explanation": "\"Security information and\" is a Network+ concept related to Security information and."
+    },
+    {
+      "id": 778,
+      "explanation": "\"High availability • Testing\" is a Security+ concept related to High availability • Testing."
+    },
+    {
+      "id": 779,
+      "explanation": "\"Exclusions ը Canonical name (CNAME) − Hosts file\" is a Network+ concept related to Exclusions ը Canonical name (CNAME) − Hosts file."
+    },
+    {
+      "id": 780,
+      "explanation": "\"Punchdown block • Cases\" is a A+ Core 1 concept related to Punchdown block • Cases."
+    },
+    {
+      "id": 781,
+      "explanation": "\"Use appropriate drivers for − Print server\" is a A+ Core 1 concept related to Use appropriate drivers for − Print server."
+    },
+    {
+      "id": 782,
+      "explanation": "\"Establish a plan of action to resolve the problem and implement the solution.\" is a A+ Core 1 concept related to Establish a plan of action to resolve the problem and implement the solution.."
+    },
+    {
+      "id": 783,
+      "explanation": "\"Provisioning/de-provisioning − Discretionary • Password concepts\" is a Security+ concept related to Provisioning/de-provisioning − Discretionary • Password concepts."
+    },
+    {
+      "id": 784,
+      "explanation": "\"Point to point\" is a Network+ concept related to Point to point."
+    },
+    {
+      "id": 785,
+      "explanation": "\"Non-volatile Memory Attachment (mSATA) • Optical drives\" is a A+ Core 1 concept related to Non-volatile Memory Attachment (mSATA) • Optical drives."
+    },
+    {
+      "id": 786,
+      "explanation": "\"Data-at-rest encryption • End-user best practices − Restrict log-in times\" is a A+ Core 2 concept related to Data-at-rest encryption • End-user best practices − Restrict log-in times."
+    },
+    {
+      "id": 787,
+      "explanation": "\"Multiple prints pending in queue\" is a A+ Core 1 concept related to Multiple prints pending in queue."
+    },
+    {
+      "id": 788,
+      "explanation": "\"Consequences of non-compliance − Automation − Right to be forgotten\" is a Security+ concept related to Consequences of non-compliance − Automation − Right to be forgotten."
+    },
+    {
+      "id": 789,
+      "explanation": "\"Relay/IP helper ը AAAA գ Recursive\" is a Network+ concept related to Relay/IP helper ը AAAA գ Recursive."
+    },
+    {
+      "id": 790,
+      "explanation": "\"Syslog collector\" is a Network+ concept related to Syslog collector."
+    },
+    {
+      "id": 791,
+      "explanation": "\"Surge suppressor cable/connectors - Linux\" is a A+ Core 1 concept related to Surge suppressor cable/connectors - Linux."
+    },
+    {
+      "id": 792,
+      "explanation": "\"User and groups − File and folder attributes − Applying Group Policy\" is a A+ Core 2 concept related to User and groups − File and folder attributes − Applying Group Policy."
+    },
+    {
+      "id": 793,
+      "explanation": "\"Operate with an awareness of applicable regulations and policies, including principles of\" is a Security+ concept related to Operate with an awareness of applicable regulations and policies, including principles of."
+    },
+    {
+      "id": 794,
+      "explanation": "\"Navigation • Disk management − winver\" is a A+ Core 2 concept related to Navigation • Disk management − winver."
+    },
+    {
+      "id": 795,
+      "explanation": "\"Media Access Control − DHCP − Shoulder surfing\" is a Network+ concept related to Media Access Control − DHCP − Shoulder surfing."
+    },
+    {
+      "id": 796,
+      "explanation": "\"Static analysis ◦ False negative − Insurance\" is a Security+ concept related to Static analysis ◦ False negative − Insurance."
+    },
+    {
+      "id": 797,
+      "explanation": "\"Network cables − Thunderbolt − RJ45\" is a A+ Core 1 concept related to Network cables − Thunderbolt − RJ45."
+    },
+    {
+      "id": 798,
+      "explanation": "\"Unsecure networks − Pretexting\" is a Security+ concept related to Unsecure networks − Pretexting."
+    },
+    {
+      "id": 799,
+      "explanation": "\"Domain joined vs. workgroup • Establish network connections\" is a A+ Core 2 concept related to Domain joined vs. workgroup • Establish network connections."
+    },
+    {
+      "id": 800,
+      "explanation": "\"Speakers • Keyboard-Video-Mouse (KVM)\" is a A+ Core 1 concept related to Speakers • Keyboard-Video-Mouse (KVM)."
+    },
+    {
+      "id": 801,
+      "explanation": "\"OS components\" is a A+ Core 2 concept related to OS components."
+    },
+    {
+      "id": 802,
+      "explanation": "\"Additional NIC/USB NIC • Sample logs\" is a Network+ concept related to Additional NIC/USB NIC • Sample logs."
+    },
+    {
+      "id": 803,
+      "explanation": "\"Mesh • Collapsed core\" is a Network+ concept related to Mesh • Collapsed core."
+    },
+    {
+      "id": 804,
+      "explanation": "\"Boot methods − Image deployment • Drive format\" is a A+ Core 2 concept related to Boot methods − Image deployment • Drive format."
+    },
+    {
+      "id": 805,
+      "explanation": "\"20+4 pin motherboard connector\" is a A+ Core 1 concept related to 20+4 pin motherboard connector."
+    },
+    {
+      "id": 806,
+      "explanation": "\"Route selection • Subinterfaces\" is a Network+ concept related to Route selection • Subinterfaces."
+    },
+    {
+      "id": 807,
+      "explanation": "\"Attenuation գ Suspended\" is a Network+ concept related to Attenuation գ Suspended."
+    },
+    {
+      "id": 808,
+      "explanation": "\"Manage, configure, and troubleshoot network infrastructure.\" is a Network+ concept related to Manage, configure, and troubleshoot network infrastructure.."
+    },
+    {
+      "id": 809,
+      "explanation": "\"Smishing − Evil twin\" is a A+ Core 2 concept related to Smishing − Evil twin."
+    },
+    {
+      "id": 810,
+      "explanation": "\"Layer 3 - Network • Layer 7 - Application\" is a Network+ concept related to Layer 3 - Network • Layer 7 - Application."
+    }
+  ],
+  "bonus": [
+    {
+      "id": "B1",
+      "explanation": "\"BIA\" stands for \"Business Impact Analysis\" (Security+)."
+    },
+    {
+      "id": "B2",
+      "explanation": "\"HSM\" stands for \"Hardware Security Module\" (Security+)."
+    },
+    {
+      "id": "B3",
+      "explanation": "\"MTTR\" stands for \"Mean Time To Repair\" (Network+)."
+    },
+    {
+      "id": "B4",
+      "explanation": "\"MPLS\" stands for \"Multi-protocol Label Switching\" (Security+)."
+    },
+    {
+      "id": "B5",
+      "explanation": "\"DLP\" stands for \"Data Loss Prevention\" (A+ Core 1)."
+    },
+    {
+      "id": "B6",
+      "explanation": "\"CNAME\" stands for \"Canonical Name\" (A+ Core 1)."
+    },
+    {
+      "id": "B7",
+      "explanation": "\"PC\" stands for \"Personal Computer\" (A+ Core 1)."
+    },
+    {
+      "id": "B8",
+      "explanation": "\"FTP\" stands for \"File Transfer Protocol\" (Network+)."
+    },
+    {
+      "id": "B9",
+      "explanation": "\"RTP\" stands for \"Real-time Transport Protocol\" (Network+)."
+    },
+    {
+      "id": "B10",
+      "explanation": "\"CTO\" stands for \"Chief Technology Officer\" (Security+)."
+    }
+  ]
+}

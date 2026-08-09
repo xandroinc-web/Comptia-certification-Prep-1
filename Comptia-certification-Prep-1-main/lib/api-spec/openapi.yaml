@@ -1,0 +1,245 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: quiz_results
+    description: Quiz result tracking
+  - name: stripe
+    description: Payment and subscription
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /quiz-results:
+    get:
+      operationId: getQuizResults
+      tags: [quiz_results]
+      summary: Get user's quiz results
+      responses:
+        "200":
+          description: List of quiz results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/QuizResult"
+    post:
+      operationId: createQuizResult
+      tags: [quiz_results]
+      summary: Save a quiz result
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateQuizResult"
+      responses:
+        "201":
+          description: Quiz result created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuizResult"
+  /products-with-prices:
+    get:
+      operationId: getProductsWithPrices
+      tags: [stripe]
+      summary: List products with prices
+      responses:
+        "200":
+          description: Products list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductsResponse"
+  /checkout:
+    post:
+      operationId: createCheckout
+      tags: [stripe]
+      summary: Create checkout session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CheckoutRequest"
+      responses:
+        "200":
+          description: Checkout URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckoutResponse"
+  /subscription:
+    get:
+      operationId: getSubscription
+      tags: [stripe]
+      summary: Get user subscription
+      responses:
+        "200":
+          description: Subscription info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionResponse"
+  /customer-portal:
+    post:
+      operationId: createCustomerPortal
+      tags: [stripe]
+      summary: Create billing portal
+      responses:
+        "200":
+          description: Portal URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PortalResponse"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    QuizResult:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: string
+        category:
+          type: string
+        mode:
+          type: string
+        score:
+          type: integer
+        totalQuestions:
+          type: integer
+        correctCount:
+          type: integer
+        scaledScore:
+          type: integer
+        weakAreaIds:
+          type: array
+          items:
+            type: integer
+        completedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - userId
+        - category
+        - mode
+        - score
+        - totalQuestions
+        - correctCount
+        - scaledScore
+        - weakAreaIds
+        - completedAt
+    CreateQuizResult:
+      type: object
+      properties:
+        category:
+          type: string
+        mode:
+          type: string
+        score:
+          type: integer
+        totalQuestions:
+          type: integer
+        correctCount:
+          type: integer
+        scaledScore:
+          type: integer
+        weakAreaIds:
+          type: array
+          items:
+            type: integer
+      required:
+        - category
+        - mode
+        - score
+        - totalQuestions
+        - correctCount
+        - scaledScore
+        - weakAreaIds
+    CheckoutRequest:
+      type: object
+      properties:
+        priceId:
+          type: string
+      required:
+        - priceId
+    CheckoutResponse:
+      type: object
+      properties:
+        url:
+          type: string
+      required:
+        - url
+    SubscriptionResponse:
+      type: object
+      properties:
+        subscription:
+          type: object
+          nullable: true
+          properties:
+            status:
+              type: string
+            current_period_end:
+              type: string
+            cancel_at_period_end:
+              type: boolean
+    PortalResponse:
+      type: object
+      properties:
+        url:
+          type: string
+      required:
+        - url
+    ProductsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              description:
+                type: string
+              active:
+                type: boolean
+              prices:
+                type: array
+                items:
+                  type: object
+      required:
+        - data
+

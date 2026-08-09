@@ -1,0 +1,31 @@
+kind = "video"
+previewPath = "/comptia-promo-video/"
+title = "CompTIA Quiz Promo Video"
+version = "1.0.0"
+id = "artifacts/comptia-promo-video"
+router = "path"
+
+[[integratedSkills]]
+name = "video-js"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/comptia-promo-video/" ]
+localPort = 21878
+
+[services.development]
+run = "pnpm --filter @workspace/comptia-promo-video run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/comptia-promo-video", "run", "build" ]
+publicDir = "artifacts/comptia-promo-video/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21878"
+BASE_PATH = "/comptia-promo-video/"

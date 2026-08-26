@@ -41,16 +41,28 @@ export default function QuizPage({ questions, mode, difficulty, isWeakMode, isEx
   // Per-question timing
   const questionStartTime = useRef(Date.now());
   const [questionTimes, setQuestionTimes] = useState<number[]>(Array(questions.length).fill(0));
+  const answersRef = useRef<(number | null)[]>(Array(questions.length).fill(null));
+  const questionTimesRef = useRef<number[]>(Array(questions.length).fill(0));
+  const feedbackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     setCurrentIndex(0);
     setAnswers(Array(questions.length).fill(null));
+    answersRef.current = Array(questions.length).fill(null);
     setShowWarning(false);
     setSecondsLeft(timeLimitSeconds);
     setIsExpired(false);
     setQuestionTimes(Array(questions.length).fill(0));
+    questionTimesRef.current = Array(questions.length).fill(0);
     questionStartTime.current = Date.now();
+    if (feedbackTimer.current) clearTimeout(feedbackTimer.current);
   }, [questions, timeLimitSeconds]);
+
+  useEffect(() => {
+    return () => {
+      if (feedbackTimer.current) clearTimeout(feedbackTimer.current);
+    };
+  }, []);
 
   // Countdown tick
   useEffect(() => {
@@ -74,13 +86,12 @@ export default function QuizPage({ questions, mode, difficulty, isWeakMode, isEx
     // Record time for current question before finishing
     const now = Date.now();
     const elapsed = Math.round((now - questionStartTime.current) / 1000);
-    setQuestionTimes((prev) => {
-      const updated = [...prev];
-      updated[currentIndex] = (updated[currentIndex] || 0) + elapsed;
-      return updated;
-    });
+    const updatedTimes = [...questionTimesRef.current];
+    updatedTimes[currentIndex] = (updatedTimes[currentIndex] || 0) + elapsed;
+    questionTimesRef.current = updatedTimes;
+    setQuestionTimes(updatedTimes);
     // Small delay so user sees the "Time's Up" state
-    const t = setTimeout(() => onFinish(answers, questionTimes), 800);
+    const t = setTimeout(() => onFinish(answersRef.current, questionTimesRef.current), 800);
     return () => clearTimeout(t);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isExpired]);
@@ -106,18 +117,21 @@ export default function QuizPage({ questions, mode, difficulty, isWeakMode, isEx
   function recordQuestionTime(idx: number) {
     const now = Date.now();
     const elapsed = Math.round((now - questionStartTime.current) / 1000);
-    setQuestionTimes((prev) => {
-      const updated = [...prev];
-      updated[idx] = (updated[idx] || 0) + elapsed;
-      return updated;
-    });
+    const updatedTimes = [...questionTimesRef.current];
+    updatedTimes[idx] = (updatedTimes[idx] || 0) + elapsed;
+    questionTimesRef.current = updatedTimes;
+    setQuestionTimes(updatedTimes);
     questionStartTime.current = now;
   }
 
   function advance() {
+    if (feedbackTimer.current) {
+      clearTimeout(feedbackTimer.current);
+      feedbackTimer.current = null;
+    }
     recordQuestionTime(currentIndex);
     if (isLast) {
-      onFinish(answers, questionTimes);
+      onFinish(answersRef.current, questionTimesRef.current);
     } else {
       setSlideDir("right");
       setCurrentIndex((i) => i + 1);
@@ -130,6 +144,7 @@ export default function QuizPage({ questions, mode, difficulty, isWeakMode, isEx
     if (hasAnswered) return; // lock after first click
     const updated = [...answers];
     updated[currentIndex] = index;
+    answersRef.current = updated;
     setAnswers(updated);
     setShowWarning(false);
     // Gamification SFX
@@ -139,7 +154,11 @@ export default function QuizPage({ questions, mode, difficulty, isWeakMode, isEx
       playHeartbreakSound();
     }
     // Auto-advance after delay so user sees feedback
-    setTimeout(() => advance(), 2200);
+    const feedbackDelay = difficulty === "hard" ? 2800 : 2200;
+    feedbackTimer.current = setTimeout(() => {
+      feedbackTimer.current = null;
+      advance();
+    }, feedbackDelay);
   }
 
   function handleDotClick(i: number) {
@@ -203,6 +222,16 @@ export default function QuizPage({ questions, mode, difficulty, isWeakMode, isEx
                 </svg>
                 Study Mode — Focused on weak areas
               </span>
+            </div>
+          )}
+
+          {isExamMode && difficulty === "hard" && (
+            <div className="mb-4 flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 bg-red-500/10 border border-red-500/40 rounded-full px-3 py-1 text-red-300 text-xs font-black uppercase tracking-wider shadow-[0_0_18px_rgba(239,68,68,0.12)]">
+                <span aria-hidden="true">☠</span>
+                HellMode — no free points
+              </span>
+              <span className="text-red-300/60 text-xs">45 seconds per question</span>
             </div>
           )}
 

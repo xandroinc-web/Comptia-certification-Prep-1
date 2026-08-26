@@ -12,6 +12,27 @@ function shuffleArray<T>(arr: T[]): T[] {
   return a;
 }
 
+function categoryFromQuestion(text: string): "A+" | "Network+" | "Security+" | null {
+  if (/security\+/i.test(text)) return "Security+";
+  if (/network\+/i.test(text)) return "Network+";
+  if (/a\+/i.test(text)) return "A+";
+  // Some generated networking scenarios omit the exam name.
+  if (/packet analyzer|traffic on port|which port|network traffic/i.test(text)) {
+    return "Network+";
+  }
+  return null;
+}
+
+function extractQuotedTerm(text: string): string | null {
+  const match = text.match(/["“]([^"”]+)["”]/);
+  const term = match?.[1]?.trim();
+  // Only treat compact technical abbreviations as reversible acronym prompts.
+  if (!term || term.length > 24 || !/^[A-Z0-9][A-Z0-9+.#/_-]{1,23}$/.test(term)) {
+    return null;
+  }
+  return term;
+}
+
 export type ExamTier = 1 | 2 | 3;
 
 export interface ExamQuestion {
@@ -52,10 +73,31 @@ const metaMap: Record<ExamTier, { id: number | string; explanation: string }[]> 
 };
 
 // Global distractor pool drawn from all correct answers in the exam bank.
-// Used to replace weak definition-question distractors with plausible peer terms.
 const allCorrectAnswers = Array.from(
   new Set([...bank.tier1, ...bank.tier2, ...bank.tier3, ...bank.bonus].map((eq) => eq.ans)),
 ).filter(Boolean);
+
+const acronymPools: Record<"A+" | "Network+" | "Security+", string[]> = {
+  "A+": [],
+  "Network+": [],
+  "Security+": [],
+};
+
+const optionPools: Record<"A+" | "Network+" | "Security+", string[]> = {
+  "A+": [],
+  "Network+": [],
+  "Security+": [],
+};
+
+for (const eq of [...bank.tier1, ...bank.tier2, ...bank.tier3, ...bank.bonus]) {
+  const category = categoryFromQuestion(eq.q);
+  if (!category) continue;
+  const acronym = extractQuotedTerm(eq.q);
+  if (acronym && !acronymPools[category].includes(acronym)) {
+    acronymPools[category].push(acronym);
+  }
+  optionPools[category].push(...eq.opts);
+}
 
 function isDefinitionQuestion(q: Question): boolean {
   const questionText = q.question.toLowerCase();
@@ -67,7 +109,7 @@ function isDefinitionQuestion(q: Question): boolean {
     if (matches / words.length >= 0.6) return true;
   }
   if (
-    /what does .* stand for|what is the meaning of|what does .* mean|what does .* refer to|what is .* an acronym for/i.test(
+    /what does .* stand for|what is the meaning of|what does .* mean|what does .* refer to|what is .* an acronym for|full meaning|full form|abbreviation|acronym/i.test(
       q.question,
     )
   ) {
@@ -76,15 +118,78 @@ function isDefinitionQuestion(q: Question): boolean {
   return false;
 }
 
+function replaceDuplicateOptions(q: Question): Question {
+  const category = categoryFromQuestion(q.question);
+  const seen = new Map<string, number>();
+  const duplicateIndexes: number[] = [];
+  q.options.forEach((option, index) => {
+    const previousIndex = seen.get(option);
+    if (previousIndex !== undefined) {
+      // Preserve the actual correct slot if the source bank duplicated it.
+      duplicateIndexes.push(index === q.correctIndex ? previousIndex : index);
+    } else {
+      seen.set(option, index);
+    }
+  });
+  if (duplicateIndexes.length === 0 || !category) return q;
+
+  const replacements = shuffleArray(
+    Array.from(new Set(optionPools[category])).filter((option) => !seen.has(option)),
+  );
+  const options = [...q.options];
+  duplicateIndexes.forEach((index, replacementIndex) => {
+    if (replacements[replacementIndex]) options[index] = replacements[replacementIndex];
+  });
+  return { ...q, options };
+}
+
 function enhanceDistractors(q: Question): Question {
-  if (!isDefinitionQuestion(q)) return q;
+  if (!isDefinitionQuestion(q)) return replaceDuplicateOptions(q);
   const correct = q.options[q.correctIndex];
-  const pool = shuffleArray(allCorrectAnswers.filter((a) => a !== correct));
+  const category = categoryFromQuestion(q.question);
+  const sourcePool = category ? optionPools[category] : allCorrectAnswers;
+  const pool = shuffleArray(sourcePool.filter((a) => a !== correct));
   if (pool.length < 3) return q;
   const distractors = pool.slice(0, 3);
   const newOptions = shuffleArray([correct, ...distractors]);
   const newCorrectIndex = newOptions.indexOf(correct);
-  return { ...q, options: newOptions, correctIndex: newCorrectIndex };
+  return replaceDuplicateOptions({
+    ...q,
+    options: newOptions,
+    correctIndex: newCorrectIndex,
+  });
+}
+
+function hardenHellModeQuestion(q: Question): Question {
+  const acronym = extractQuotedTerm(q.question);
+  const category = categoryFromQuestion(q.question);
+  const correctExpansion = q.options[q.correctIndex];
+
+  // Reverse direct acronym-definition prompts into applied recognition prompts.
+  if (acronym && category && acronymPools[category].length >= 4) {
+    const context =
+      category === "Security+"
+        ? "a security control review"
+        : category === "Network+"
+          ? "a network change review"
+          : "a production support escalation";
+    const acronymOptions = shuffleArray(
+      acronymPools[category].filter((term) => term !== acronym),
+    ).slice(0, 3);
+    const options = shuffleArray([acronym, ...acronymOptions]);
+    return {
+      ...q,
+      question: `During ${context}, the team must implement or identify "${correctExpansion}". Which acronym should be documented for this requirement?`,
+      options,
+      correctIndex: options.indexOf(acronym),
+      difficulty: "hard",
+    };
+  }
+
+  return {
+    ...replaceDuplicateOptions(q),
+    difficulty: "hard",
+  };
 }
 
 export function getExamBank(): ExamBank {
@@ -119,11 +224,15 @@ export function toQuestions(eqs: ExamQuestion[]): Question[] {
 }
 
 export function getTierAsQuestions(tier: ExamTier): Question[] {
-  return scrambleOptions(toQuestions(getTierQuestions(tier))).map(enhanceDistractors);
+  const questions = toQuestions(getTierQuestions(tier));
+  if (tier === 3) {
+    return scrambleOptions(questions.map(hardenHellModeQuestion));
+  }
+  return scrambleOptions(questions.map(enhanceDistractors));
 }
 
 export function getBonusAsQuestions(): Question[] {
-  return scrambleOptions(toQuestions(getBonusQuestions())).map(enhanceDistractors);
+  return scrambleOptions(toQuestions(getBonusQuestions()).map(enhanceDistractors));
 }
 
 export function getExplanationForQuestion(tier: ExamTier, id: number | string): string {
@@ -138,8 +247,8 @@ export function getBonusExplanation(id: number | string): string {
 
 export function getTierTimeLimitSeconds(tier: ExamTier): number {
   const count = getTierQuestions(tier).length;
-  // Real CompTIA exams are ~90 minutes for 90 questions => 1 min/q
-  return count * 60;
+  const secondsPerQuestion = tier === 1 ? 75 : tier === 2 ? 60 : 45;
+  return count * secondsPerQuestion;
 }
 
 export function allTiersQuestionCount(): number {

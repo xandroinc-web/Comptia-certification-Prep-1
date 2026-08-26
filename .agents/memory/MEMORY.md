@@ -1,0 +1,1 @@
+- [HellMode quality](hellmode-quality.md) — keep the hardest tier explicitly hard-scored, time-boxed, and validated for meaningful distractors.

@@ -300,7 +300,7 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
             </span>
           </div>
           <p className="text-gray-500 text-sm mb-4">
-            Locked progression: 270 questions per tier (Mild → Medium → HellMode). Pass each tier to unlock the next. Score 90%+ for a Winner's Circle badge and 95%+ to unlock 10 bonus questions.
+            Locked progression: 270 questions per tier (Mild → Medium → HellMode). Pass each tier to unlock the next. HellMode uses hard-weighted scoring, reverse-recall prompts, and a 45-second clock. Score 90%+ for a Winner's Circle badge and 95%+ to unlock 10 bonus questions.
           </p>
           <div className="grid grid-cols-3 gap-2">
             {([1, 2, 3] as ExamTier[]).map((tier) => {
@@ -327,7 +327,9 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
                     {tier === 2 && " (Medium)"}
                     {tier === 3 && " (HellMode)"}
                   </p>
-                  <p className="text-gray-500 text-xs mb-2">270 questions</p>
+                  <p className={`text-xs mb-2 ${tier === 3 ? "text-red-400/80 font-semibold" : "text-gray-500"}`}>
+                    {tier === 3 ? "270 questions · 45s each · hard-scored" : "270 questions"}
+                  </p>
                   {completed ? (
                     <p className={`text-xs font-bold ${passed ? "text-emerald-400" : "text-red-400"}`}>
                       {passed ? "✓ Passed" : "✗ Retry"} — {score}%

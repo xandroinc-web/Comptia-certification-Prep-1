@@ -308,8 +308,9 @@ function AppContent() {
     if (!checkTrial()) return;
     const qs = getTierAsQuestions(tier);
     const limit = getTierTimeLimitSeconds(tier);
+    const tierDifficulty: Difficulty = tier === 1 ? "easy" : tier === 2 ? "medium" : "hard";
     setMode(`Exam Tier ${tier}`);
-    setDifficulty("medium");
+    setDifficulty(tierDifficulty);
     setIsExamMode(true);
     setIsWeakMode(false);
     setIsBonusMode(false);

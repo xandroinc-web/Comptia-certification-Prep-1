@@ -67,3 +67,170 @@ export type ProductsResponseDataItem = {
 export interface ProductsResponse {
   data: ProductsResponseDataItem[];
 }
+
+export type AdminSettingValue = { [key: string]: unknown };
+
+export interface AdminSetting {
+  key: string;
+  value: AdminSettingValue;
+  updatedAt: string;
+  updatedBy: string;
+}
+
+export interface AdminSettingsInput {
+  [key: string]: unknown;
+}
+
+export interface AdminMedia {
+  id: number;
+  kind: string;
+  title: string;
+  url: string;
+  /** @nullable */
+  description: string | null;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+}
+
+export type AdminMediaInputKind =
+  (typeof AdminMediaInputKind)[keyof typeof AdminMediaInputKind];
+
+export const AdminMediaInputKind = {
+  video: "video",
+  link: "link",
+} as const;
+
+export interface AdminMediaInput {
+  kind?: AdminMediaInputKind;
+  title: string;
+  url: string;
+  description?: string;
+  active?: boolean;
+}
+
+export type AdminMediaUpdateKind =
+  (typeof AdminMediaUpdateKind)[keyof typeof AdminMediaUpdateKind];
+
+export const AdminMediaUpdateKind = {
+  video: "video",
+  link: "link",
+} as const;
+
+export interface AdminMediaUpdate {
+  kind?: AdminMediaUpdateKind;
+  title?: string;
+  url?: string;
+  /** @nullable */
+  description?: string | null;
+  active?: boolean;
+}
+
+export type AdminAuditLogMetadata = { [key: string]: unknown };
+
+export interface AdminAuditLog {
+  id: number;
+  actorUserId: string;
+  action: string;
+  targetType: string;
+  /** @nullable */
+  targetId: string | null;
+  metadata: AdminAuditLogMetadata;
+  createdAt: string;
+}
+
+export interface AdminStats {
+  users: number;
+  quizResults: number;
+  activeSubscriptions: number;
+  activeMedia: number;
+}
+
+export type AdminOverviewProductsItem = { [key: string]: unknown };
+
+export interface AdminOverview {
+  stats: AdminStats;
+  settings: AdminSetting[];
+  media: AdminMedia[];
+  auditLogs: AdminAuditLog[];
+  products: AdminOverviewProductsItem[];
+}
+
+export interface AdminUser {
+  id: string;
+  /** @nullable */
+  email: string | null;
+  /** @nullable */
+  firstName: string | null;
+  /** @nullable */
+  lastName: string | null;
+  /** @nullable */
+  imageUrl: string | null;
+  banned: boolean;
+  locked: boolean;
+  createdAt: string;
+  /** @nullable */
+  lastSignInAt: string | null;
+}
+
+export interface AdminUsersResponse {
+  data: AdminUser[];
+  totalCount: number;
+}
+
+export interface AdminUserInput {
+  email: string;
+  firstName?: string;
+  lastName?: string;
+}
+
+export type AdminUserActionAction =
+  (typeof AdminUserActionAction)[keyof typeof AdminUserActionAction];
+
+export const AdminUserActionAction = {
+  ban: "ban",
+  unban: "unban",
+  delete: "delete",
+  cancel_subscription: "cancel_subscription",
+} as const;
+
+export interface AdminUserAction {
+  action: AdminUserActionAction;
+}
+
+export interface AdminActionResponse {
+  success: boolean;
+  action: string;
+  userId: string;
+}
+
+export interface AdminAuditResponse {
+  data: AdminAuditLog[];
+}
+
+export interface SuccessResponse {
+  success: boolean;
+}
+
+export interface AppSettings {
+  announcement: string;
+  maintenanceMode: boolean;
+}
+
+export type GetAdminUsersParams = {
+  query?: string;
+  /**
+   * @minimum 1
+   * @maximum 100
+   */
+  limit?: number;
+};
+
+export type GetAdminAuditParams = {
+  /**
+   * @minimum 1
+   * @maximum 200
+   */
+  limit?: number;
+};

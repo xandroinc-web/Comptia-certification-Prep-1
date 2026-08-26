@@ -113,7 +113,194 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PortalResponse"
+  /admin/overview:
+    get:
+      operationId: getAdminOverview
+      tags: [admin]
+      summary: Load the protected admin overview
+      responses:
+        "200":
+          description: Admin overview
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminOverview"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Not an admin
+  /app-settings:
+    get:
+      operationId: getAppSettings
+      tags: [admin]
+      summary: Load public app settings
+      responses:
+        "200":
+          description: Public app settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppSettings"
+  /admin/settings:
+    patch:
+      operationId: updateAdminSettings
+      tags: [admin]
+      summary: Update app-wide admin settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminSettingsInput"
+      responses:
+        "200":
+          description: Updated settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminSetting"
+  /admin/media:
+    post:
+      operationId: createAdminMedia
+      tags: [admin]
+      summary: Add an admin-managed video or external link
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminMediaInput"
+      responses:
+        "201":
+          description: Media item created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminMedia"
+  /admin/media/{id}:
+    patch:
+      operationId: updateAdminMedia
+      tags: [admin]
+      summary: Update an admin-managed media item
+      parameters:
+        - $ref: "#/components/parameters/AdminMediaId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminMediaUpdate"
+      responses:
+        "200":
+          description: Updated media item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminMedia"
+    delete:
+      operationId: deleteAdminMedia
+      tags: [admin]
+      summary: Delete an admin-managed media item
+      parameters:
+        - $ref: "#/components/parameters/AdminMediaId"
+      responses:
+        "200":
+          description: Media item deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+  /admin/users:
+    get:
+      operationId: getAdminUsers
+      tags: [admin]
+      summary: List users through Clerk
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+      responses:
+        "200":
+          description: User list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminUsersResponse"
+    post:
+      operationId: createAdminUser
+      tags: [admin]
+      summary: Create a user through Clerk
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminUserInput"
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminUser"
+  /admin/users/{userId}/action:
+    post:
+      operationId: applyAdminUserAction
+      tags: [admin]
+      summary: Ban, unban, delete, or cancel a user's subscription
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminUserAction"
+      responses:
+        "200":
+          description: Action applied
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminActionResponse"
+  /admin/audit:
+    get:
+      operationId: getAdminAudit
+      tags: [admin]
+      summary: Load admin audit history
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+      responses:
+        "200":
+          description: Audit history
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminAuditResponse"
 components:
+  parameters:
+    AdminMediaId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
   schemas:
     HealthStatus:
       type: object
@@ -242,4 +429,215 @@ components:
                   type: object
       required:
         - data
+    AdminSetting:
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: object
+          additionalProperties: true
+        updatedAt:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+      required: [key, value, updatedAt, updatedBy]
+    AdminSettingsInput:
+      type: object
+      additionalProperties: true
+    AdminMedia:
+      type: object
+      properties:
+        id:
+          type: integer
+        kind:
+          type: string
+        title:
+          type: string
+        url:
+          type: string
+        description:
+          type: ["string", "null"]
+        active:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+      required: [id, kind, title, url, description, active, createdAt, updatedAt, createdBy]
+    AdminMediaInput:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum: [video, link]
+        title:
+          type: string
+        url:
+          type: string
+          format: uri
+        description:
+          type: string
+        active:
+          type: boolean
+      required: [title, url]
+    AdminMediaUpdate:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum: [video, link]
+        title:
+          type: string
+        url:
+          type: string
+          format: uri
+        description:
+          type: ["string", "null"]
+        active:
+          type: boolean
+    AdminAuditLog:
+      type: object
+      properties:
+        id:
+          type: integer
+        actorUserId:
+          type: string
+        action:
+          type: string
+        targetType:
+          type: string
+        targetId:
+          type: ["string", "null"]
+        metadata:
+          type: object
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, actorUserId, action, targetType, targetId, metadata, createdAt]
+    AdminStats:
+      type: object
+      properties:
+        users:
+          type: integer
+        quizResults:
+          type: integer
+        activeSubscriptions:
+          type: integer
+        activeMedia:
+          type: integer
+      required: [users, quizResults, activeSubscriptions, activeMedia]
+    AdminOverview:
+      type: object
+      properties:
+        stats:
+          $ref: "#/components/schemas/AdminStats"
+        settings:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminSetting"
+        media:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminMedia"
+        auditLogs:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminAuditLog"
+        products:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+      required: [stats, settings, media, auditLogs, products]
+    AdminUser:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: ["string", "null"]
+        firstName:
+          type: ["string", "null"]
+        lastName:
+          type: ["string", "null"]
+        imageUrl:
+          type: ["string", "null"]
+        banned:
+          type: boolean
+        locked:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        lastSignInAt:
+          type: ["string", "null"]
+          format: date-time
+      required: [id, email, firstName, lastName, imageUrl, banned, locked, createdAt, lastSignInAt]
+    AdminUsersResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminUser"
+        totalCount:
+          type: integer
+      required: [data, totalCount]
+    AdminUserInput:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+        lastName:
+          type: string
+      required: [email]
+    AdminUserAction:
+      type: object
+      properties:
+        action:
+          type: string
+          enum: [ban, unban, delete, cancel_subscription]
+      required: [action]
+    AdminActionResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        action:
+          type: string
+        userId:
+          type: string
+      required: [success, action, userId]
+    AdminAuditResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminAuditLog"
+      required: [data]
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+      required: [success]
+    AppSettings:
+      type: object
+      properties:
+        announcement:
+          type: string
+        maintenanceMode:
+          type: boolean
+      required: [announcement, maintenanceMode]
 

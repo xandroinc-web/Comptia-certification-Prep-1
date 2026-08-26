@@ -90,3 +90,193 @@ export const GetSubscriptionResponse = zod.object({
 export const CreateCustomerPortalResponse = zod.object({
   url: zod.string(),
 });
+
+/**
+ * @summary Load the protected admin overview
+ */
+export const GetAdminOverviewResponse = zod.object({
+  stats: zod.object({
+    users: zod.number(),
+    quizResults: zod.number(),
+    activeSubscriptions: zod.number(),
+    activeMedia: zod.number(),
+  }),
+  settings: zod.array(
+    zod.object({
+      key: zod.string(),
+      value: zod.record(zod.string(), zod.unknown()),
+      updatedAt: zod.coerce.date(),
+      updatedBy: zod.string(),
+    }),
+  ),
+  media: zod.array(
+    zod.object({
+      id: zod.number(),
+      kind: zod.string(),
+      title: zod.string(),
+      url: zod.string(),
+      description: zod.string().nullable(),
+      active: zod.boolean(),
+      createdAt: zod.coerce.date(),
+      updatedAt: zod.coerce.date(),
+      createdBy: zod.string(),
+    }),
+  ),
+  auditLogs: zod.array(
+    zod.object({
+      id: zod.number(),
+      actorUserId: zod.string(),
+      action: zod.string(),
+      targetType: zod.string(),
+      targetId: zod.string().nullable(),
+      metadata: zod.record(zod.string(), zod.unknown()),
+      createdAt: zod.coerce.date(),
+    }),
+  ),
+  products: zod.array(zod.record(zod.string(), zod.unknown())),
+});
+
+/**
+ * @summary Load public app settings
+ */
+export const GetAppSettingsResponse = zod.object({
+  announcement: zod.string(),
+  maintenanceMode: zod.boolean(),
+});
+
+/**
+ * @summary Update app-wide admin settings
+ */
+export const UpdateAdminSettingsBody = zod.record(zod.string(), zod.unknown());
+
+export const UpdateAdminSettingsResponse = zod.object({
+  key: zod.string(),
+  value: zod.record(zod.string(), zod.unknown()),
+  updatedAt: zod.coerce.date(),
+  updatedBy: zod.string(),
+});
+
+/**
+ * @summary Add an admin-managed video or external link
+ */
+export const CreateAdminMediaBody = zod.object({
+  kind: zod.enum(["video", "link"]).optional(),
+  title: zod.string(),
+  url: zod.string().url(),
+  description: zod.string().optional(),
+  active: zod.boolean().optional(),
+});
+
+/**
+ * @summary Update an admin-managed media item
+ */
+export const UpdateAdminMediaParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const UpdateAdminMediaBody = zod.object({
+  kind: zod.enum(["video", "link"]).optional(),
+  title: zod.string().optional(),
+  url: zod.string().url().optional(),
+  description: zod.string().nullish(),
+  active: zod.boolean().optional(),
+});
+
+export const UpdateAdminMediaResponse = zod.object({
+  id: zod.number(),
+  kind: zod.string(),
+  title: zod.string(),
+  url: zod.string(),
+  description: zod.string().nullable(),
+  active: zod.boolean(),
+  createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+  createdBy: zod.string(),
+});
+
+/**
+ * @summary Delete an admin-managed media item
+ */
+export const DeleteAdminMediaParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const DeleteAdminMediaResponse = zod.object({
+  success: zod.boolean(),
+});
+
+/**
+ * @summary List users through Clerk
+ */
+export const getAdminUsersQueryLimitMax = 100;
+
+export const GetAdminUsersQueryParams = zod.object({
+  query: zod.coerce.string().optional(),
+  limit: zod.coerce.number().min(1).max(getAdminUsersQueryLimitMax).optional(),
+});
+
+export const GetAdminUsersResponse = zod.object({
+  data: zod.array(
+    zod.object({
+      id: zod.string(),
+      email: zod.string().nullable(),
+      firstName: zod.string().nullable(),
+      lastName: zod.string().nullable(),
+      imageUrl: zod.string().nullable(),
+      banned: zod.boolean(),
+      locked: zod.boolean(),
+      createdAt: zod.coerce.date(),
+      lastSignInAt: zod.coerce.date().nullable(),
+    }),
+  ),
+  totalCount: zod.number(),
+});
+
+/**
+ * @summary Create a user through Clerk
+ */
+export const CreateAdminUserBody = zod.object({
+  email: zod.string().email(),
+  firstName: zod.string().optional(),
+  lastName: zod.string().optional(),
+});
+
+/**
+ * @summary Ban, unban, delete, or cancel a user's subscription
+ */
+export const ApplyAdminUserActionParams = zod.object({
+  userId: zod.coerce.string(),
+});
+
+export const ApplyAdminUserActionBody = zod.object({
+  action: zod.enum(["ban", "unban", "delete", "cancel_subscription"]),
+});
+
+export const ApplyAdminUserActionResponse = zod.object({
+  success: zod.boolean(),
+  action: zod.string(),
+  userId: zod.string(),
+});
+
+/**
+ * @summary Load admin audit history
+ */
+export const getAdminAuditQueryLimitMax = 200;
+
+export const GetAdminAuditQueryParams = zod.object({
+  limit: zod.coerce.number().min(1).max(getAdminAuditQueryLimitMax).optional(),
+});
+
+export const GetAdminAuditResponse = zod.object({
+  data: zod.array(
+    zod.object({
+      id: zod.number(),
+      actorUserId: zod.string(),
+      action: zod.string(),
+      targetType: zod.string(),
+      targetId: zod.string().nullable(),
+      metadata: zod.record(zod.string(), zod.unknown()),
+      createdAt: zod.coerce.date(),
+    }),
+  ),
+});

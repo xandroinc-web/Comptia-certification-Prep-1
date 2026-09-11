@@ -187,7 +187,7 @@ function pickDistractors<T>(items: T[], exclude: T, count: number, getter: (item
   return selected.map(getter);
 }
 
-function generateAcronymQuestion(acronym: Acronym, allAcronyms: Acronym[], id: number, tier: number): Question {
+function generateAcronymQuestion(acronym: Acronym, allAcronyms: Acronym[], id: number | string, tier: number): Question {
   const q = tier === 1
     ? `What does "${acronym.acronym}" stand for?`
     : tier === 2
@@ -301,6 +301,7 @@ function main() {
   const bonus: Question[] = [];
   for (let i = 0; i < 10; i++) {
     const a = bonusPool[i];
+    if (!a) continue;
     bonus.push(generateAcronymQuestion(a, allAcronyms, `B${i + 1}`, 3));
   }
 

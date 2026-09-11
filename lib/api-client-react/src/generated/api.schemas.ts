@@ -216,6 +216,91 @@ export interface SuccessResponse {
 export interface AppSettings {
   announcement: string;
   maintenanceMode: boolean;
+  pricingHeadline: string;
+  monthlyPriceLabel: string;
+  yearlyPriceLabel: string;
+}
+
+export interface AdminAccessResponse {
+  isAdmin: boolean;
+  freeTestSimulation: boolean;
+}
+
+export type AdminQuestionTier =
+  (typeof AdminQuestionTier)[keyof typeof AdminQuestionTier];
+
+export const AdminQuestionTier = {
+  NUMBER_1: 1,
+  NUMBER_2: 2,
+  NUMBER_3: 3,
+} as const;
+
+export type AdminQuestionDifficulty =
+  (typeof AdminQuestionDifficulty)[keyof typeof AdminQuestionDifficulty];
+
+export const AdminQuestionDifficulty = {
+  easy: "easy",
+  medium: "medium",
+  hard: "hard",
+} as const;
+
+export interface AdminQuestion {
+  id: number;
+  /** @nullable */
+  externalId: string | null;
+  category: string;
+  tier: AdminQuestionTier;
+  difficulty: AdminQuestionDifficulty;
+  question: string;
+  /**
+   * @minItems 4
+   * @maxItems 4
+   */
+  options: string[];
+  correctIndex: number;
+  explanation: string;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+}
+
+export type AdminQuestionInputTier =
+  (typeof AdminQuestionInputTier)[keyof typeof AdminQuestionInputTier];
+
+export const AdminQuestionInputTier = {
+  NUMBER_1: 1,
+  NUMBER_2: 2,
+  NUMBER_3: 3,
+} as const;
+
+export type AdminQuestionInputDifficulty =
+  (typeof AdminQuestionInputDifficulty)[keyof typeof AdminQuestionInputDifficulty];
+
+export const AdminQuestionInputDifficulty = {
+  easy: "easy",
+  medium: "medium",
+  hard: "hard",
+} as const;
+
+export interface AdminQuestionInput {
+  externalId?: string;
+  category?: string;
+  tier?: AdminQuestionInputTier;
+  difficulty?: AdminQuestionInputDifficulty;
+  question: string;
+  /**
+   * @minItems 4
+   * @maxItems 4
+   */
+  options: string[];
+  correctIndex: number;
+  explanation?: string;
+  active?: boolean;
+}
+
+export interface AdminQuestionsResponse {
+  data: AdminQuestion[];
 }
 
 export type GetAdminUsersParams = {

@@ -3,6 +3,7 @@ import { useAuth } from "@clerk/react";
 import {
   useGetProductsWithPrices,
   useCreateCheckout,
+  useGetAppSettings,
 } from "@workspace/api-client-react";
 import { Sparkles, Check, Zap, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ export default function PricingPage({ onBack }: PricingPageProps) {
   const { isSignedIn } = useAuth();
   const { data: productsData, isLoading } = useGetProductsWithPrices({});
   const checkout = useCreateCheckout();
+  const { data: appSettings } = useGetAppSettings();
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("yearly");
 
   const products = productsData?.data || [];
@@ -60,7 +62,7 @@ export default function PricingPage({ onBack }: PricingPageProps) {
         </button>
 
         <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold mb-3">Upgrade to Pro</h1>
+           <h1 className="text-4xl font-bold mb-3">{appSettings?.pricingHeadline || "Upgrade to Pro"}</h1>
           <p className="text-gray-400 text-lg">
             Unlock everything. No limits. Full control.
           </p>
@@ -136,7 +138,11 @@ export default function PricingPage({ onBack }: PricingPageProps) {
               <h2 className="text-xl font-semibold">CompTIA Pro</h2>
             </div>
             <div className="text-3xl font-bold mb-1">
-              ${priceAmount}
+               {billingCycle === "monthly" && appSettings?.monthlyPriceLabel
+                 ? appSettings.monthlyPriceLabel
+                 : billingCycle === "yearly" && appSettings?.yearlyPriceLabel
+                   ? appSettings.yearlyPriceLabel
+                   : `$${priceAmount}`}
               <span className="text-lg font-normal text-gray-500">
                 /{billingCycle === "monthly" ? "mo" : "yr"}
               </span>

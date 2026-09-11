@@ -143,14 +143,41 @@ function replaceDuplicateOptions(q: Question): Question {
   return { ...q, options };
 }
 
-function enhanceDistractors(q: Question): Question {
-  if (!isDefinitionQuestion(q)) return replaceDuplicateOptions(q);
+function optionShape(value: string): string {
+  const normalized = value.trim().toLowerCase();
+  const words = normalized.split(/\s+/).filter(Boolean);
+  const kind = /[/:()[\]{}]/.test(normalized)
+    ? "syntax"
+    : /^[a-z0-9+.#_-]+$/i.test(normalized)
+      ? "term"
+      : "phrase";
+  return `${kind}:${Math.min(6, words.length)}:${Math.min(4, Math.round(normalized.length / 12))}`;
+}
+
+function choosePlausibleDistractors(q: Question, pool: string[]): string[] {
   const correct = q.options[q.correctIndex];
+  const targetShape = optionShape(correct);
+  const sameShape = shuffleArray(
+    pool.filter((candidate) => candidate !== correct && optionShape(candidate) === targetShape),
+  );
+  const nearby = shuffleArray(
+    pool.filter((candidate) => candidate !== correct && Math.abs(candidate.length - correct.length) < 18),
+  );
+  return Array.from(new Set([...sameShape, ...nearby])).slice(0, 3);
+}
+
+function enhanceDistractors(q: Question): Question {
   const category = categoryFromQuestion(q.question);
   const sourcePool = category ? optionPools[category] : allCorrectAnswers;
-  const pool = shuffleArray(sourcePool.filter((a) => a !== correct));
-  if (pool.length < 3) return q;
-  const distractors = pool.slice(0, 3);
+  const plausible = choosePlausibleDistractors(q, sourcePool);
+  if (!isDefinitionQuestion(q)) {
+    return replaceDuplicateOptions(q);
+  }
+  const correct = q.options[q.correctIndex];
+  const distractors = plausible.length >= 3
+    ? plausible
+    : shuffleArray(sourcePool.filter((a) => a !== correct)).slice(0, 3);
+  if (distractors.length < 3) return replaceDuplicateOptions(q);
   const newOptions = shuffleArray([correct, ...distractors]);
   const newCorrectIndex = newOptions.indexOf(correct);
   return replaceDuplicateOptions({
@@ -158,6 +185,19 @@ function enhanceDistractors(q: Question): Question {
     options: newOptions,
     correctIndex: newCorrectIndex,
   });
+}
+
+function applyMediumScenario(q: Question): Question {
+  if (q.question.startsWith("Applied constraint:") || q.question.length > 210) {
+    return { ...q, difficulty: "medium" };
+  }
+  return {
+    ...q,
+    difficulty: "medium",
+    question:
+      `Applied constraint: a technician must preserve the stated requirement while changing only the affected layer. ` +
+      `Evidence has been gathered before remediation. Which answer best fits both the observation and the required outcome? ${q.question}`,
+  };
 }
 
 function hardenHellModeQuestion(q: Question): Question {
@@ -186,9 +226,16 @@ function hardenHellModeQuestion(q: Question): Question {
     };
   }
 
-  return {
+  const hardened: Question = {
     ...replaceDuplicateOptions(q),
     difficulty: "hard",
+  };
+  if (hardened.question.startsWith("Forensic case:")) return hardened;
+  return {
+    ...hardened,
+    question:
+      `Forensic case: two symptoms appeared after a controlled change, but only one is causal. ` +
+      `Account for dependencies, evidence order, and the least-disruptive corrective action before answering. ${hardened.question}`,
   };
 }
 
@@ -228,7 +275,10 @@ export function getTierAsQuestions(tier: ExamTier): Question[] {
   if (tier === 3) {
     return scrambleOptions(questions.map(hardenHellModeQuestion));
   }
-  return scrambleOptions(questions.map(enhanceDistractors));
+  if (tier === 2) {
+    return scrambleOptions(questions.map((question) => applyMediumScenario(enhanceDistractors(question))));
+  }
+  return scrambleOptions(questions.map((question) => ({ ...enhanceDistractors(question), difficulty: "easy" })));
 }
 
 export function getBonusAsQuestions(): Question[] {

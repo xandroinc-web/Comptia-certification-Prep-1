@@ -17,12 +17,16 @@ import type {
 } from "@tanstack/react-query";
 
 import type {
+  AdminAccessResponse,
   AdminActionResponse,
   AdminAuditResponse,
   AdminMedia,
   AdminMediaInput,
   AdminMediaUpdate,
   AdminOverview,
+  AdminQuestion,
+  AdminQuestionInput,
+  AdminQuestionsResponse,
   AdminSetting,
   AdminSettingsInput,
   AdminUser,
@@ -755,6 +759,488 @@ export function useGetAppSettings<
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+/**
+ * @summary Load active admin-managed question overrides
+ */
+export const getGetManagedQuestionsUrl = () => {
+  return `/api/managed-questions`;
+};
+
+export const getManagedQuestions = async (
+  options?: RequestInit,
+): Promise<AdminQuestion[]> => {
+  return customFetch<AdminQuestion[]>(getGetManagedQuestionsUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetManagedQuestionsQueryKey = () => {
+  return [`/api/managed-questions`] as const;
+};
+
+export const getGetManagedQuestionsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getManagedQuestions>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getManagedQuestions>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetManagedQuestionsQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getManagedQuestions>>
+  > = ({ signal }) => getManagedQuestions({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getManagedQuestions>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetManagedQuestionsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getManagedQuestions>>
+>;
+export type GetManagedQuestionsQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Load active admin-managed question overrides
+ */
+
+export function useGetManagedQuestions<
+  TData = Awaited<ReturnType<typeof getManagedQuestions>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getManagedQuestions>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetManagedQuestionsQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Check protected admin simulation access
+ */
+export const getGetAdminAccessUrl = () => {
+  return `/api/admin/access`;
+};
+
+export const getAdminAccess = async (
+  options?: RequestInit,
+): Promise<AdminAccessResponse> => {
+  return customFetch<AdminAccessResponse>(getGetAdminAccessUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetAdminAccessQueryKey = () => {
+  return [`/api/admin/access`] as const;
+};
+
+export const getGetAdminAccessQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAdminAccess>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getAdminAccess>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetAdminAccessQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminAccess>>> = ({
+    signal,
+  }) => getAdminAccess({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getAdminAccess>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetAdminAccessQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAdminAccess>>
+>;
+export type GetAdminAccessQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Check protected admin simulation access
+ */
+
+export function useGetAdminAccess<
+  TData = Awaited<ReturnType<typeof getAdminAccess>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getAdminAccess>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetAdminAccessQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary List managed questions
+ */
+export const getGetAdminQuestionsUrl = () => {
+  return `/api/admin/questions`;
+};
+
+export const getAdminQuestions = async (
+  options?: RequestInit,
+): Promise<AdminQuestionsResponse> => {
+  return customFetch<AdminQuestionsResponse>(getGetAdminQuestionsUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetAdminQuestionsQueryKey = () => {
+  return [`/api/admin/questions`] as const;
+};
+
+export const getGetAdminQuestionsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAdminQuestions>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getAdminQuestions>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetAdminQuestionsQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getAdminQuestions>>
+  > = ({ signal }) => getAdminQuestions({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getAdminQuestions>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetAdminQuestionsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAdminQuestions>>
+>;
+export type GetAdminQuestionsQueryError = ErrorType<unknown>;
+
+/**
+ * @summary List managed questions
+ */
+
+export function useGetAdminQuestions<
+  TData = Awaited<ReturnType<typeof getAdminQuestions>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getAdminQuestions>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetAdminQuestionsQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Create a managed question
+ */
+export const getCreateAdminQuestionUrl = () => {
+  return `/api/admin/questions`;
+};
+
+export const createAdminQuestion = async (
+  adminQuestionInput: AdminQuestionInput,
+  options?: RequestInit,
+): Promise<AdminQuestion> => {
+  return customFetch<AdminQuestion>(getCreateAdminQuestionUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(adminQuestionInput),
+  });
+};
+
+export const getCreateAdminQuestionMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createAdminQuestion>>,
+    TError,
+    { data: BodyType<AdminQuestionInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createAdminQuestion>>,
+  TError,
+  { data: BodyType<AdminQuestionInput> },
+  TContext
+> => {
+  const mutationKey = ["createAdminQuestion"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createAdminQuestion>>,
+    { data: BodyType<AdminQuestionInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return createAdminQuestion(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CreateAdminQuestionMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createAdminQuestion>>
+>;
+export type CreateAdminQuestionMutationBody = BodyType<AdminQuestionInput>;
+export type CreateAdminQuestionMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Create a managed question
+ */
+export const useCreateAdminQuestion = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createAdminQuestion>>,
+    TError,
+    { data: BodyType<AdminQuestionInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createAdminQuestion>>,
+  TError,
+  { data: BodyType<AdminQuestionInput> },
+  TContext
+> => {
+  return useMutation(getCreateAdminQuestionMutationOptions(options));
+};
+
+/**
+ * @summary Update, re-tier, or change difficulty for a managed question
+ */
+export const getUpdateAdminQuestionUrl = (id: number) => {
+  return `/api/admin/questions/${id}`;
+};
+
+export const updateAdminQuestion = async (
+  id: number,
+  adminQuestionInput: AdminQuestionInput,
+  options?: RequestInit,
+): Promise<AdminQuestion> => {
+  return customFetch<AdminQuestion>(getUpdateAdminQuestionUrl(id), {
+    ...options,
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(adminQuestionInput),
+  });
+};
+
+export const getUpdateAdminQuestionMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateAdminQuestion>>,
+    TError,
+    { id: number; data: BodyType<AdminQuestionInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updateAdminQuestion>>,
+  TError,
+  { id: number; data: BodyType<AdminQuestionInput> },
+  TContext
+> => {
+  const mutationKey = ["updateAdminQuestion"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updateAdminQuestion>>,
+    { id: number; data: BodyType<AdminQuestionInput> }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return updateAdminQuestion(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UpdateAdminQuestionMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateAdminQuestion>>
+>;
+export type UpdateAdminQuestionMutationBody = BodyType<AdminQuestionInput>;
+export type UpdateAdminQuestionMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Update, re-tier, or change difficulty for a managed question
+ */
+export const useUpdateAdminQuestion = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateAdminQuestion>>,
+    TError,
+    { id: number; data: BodyType<AdminQuestionInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof updateAdminQuestion>>,
+  TError,
+  { id: number; data: BodyType<AdminQuestionInput> },
+  TContext
+> => {
+  return useMutation(getUpdateAdminQuestionMutationOptions(options));
+};
+
+/**
+ * @summary Delete a managed question
+ */
+export const getDeleteAdminQuestionUrl = (id: number) => {
+  return `/api/admin/questions/${id}`;
+};
+
+export const deleteAdminQuestion = async (
+  id: number,
+  options?: RequestInit,
+): Promise<SuccessResponse> => {
+  return customFetch<SuccessResponse>(getDeleteAdminQuestionUrl(id), {
+    ...options,
+    method: "DELETE",
+  });
+};
+
+export const getDeleteAdminQuestionMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteAdminQuestion>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteAdminQuestion>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ["deleteAdminQuestion"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteAdminQuestion>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return deleteAdminQuestion(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteAdminQuestionMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteAdminQuestion>>
+>;
+
+export type DeleteAdminQuestionMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Delete a managed question
+ */
+export const useDeleteAdminQuestion = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteAdminQuestion>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deleteAdminQuestion>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  return useMutation(getDeleteAdminQuestionMutationOptions(options));
+};
 
 /**
  * @summary Update app-wide admin settings

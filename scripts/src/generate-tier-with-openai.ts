@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import OpenAI from "openai";
-import { ExamTier } from "../../artifacts/comptia-quiz/src/data/exam-bank";
+type ExamTier = 1 | 2 | 3;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 

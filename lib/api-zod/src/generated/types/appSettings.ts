@@ -9,4 +9,7 @@
 export interface AppSettings {
   announcement: string;
   maintenanceMode: boolean;
+  pricingHeadline: string;
+  monthlyPriceLabel: string;
+  yearlyPriceLabel: string;
 }

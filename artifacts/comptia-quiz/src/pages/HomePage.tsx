@@ -8,6 +8,7 @@ import { ALL_DOMAINS, DomainTopic, getDomainColor, DOMAIN_METADATA } from "@/dat
 import { getTopicPoolCount, getTopicsInRandomOrder } from "@/data/topic-pool";
 import { computeGamification, GamificationState } from "@/lib/gamification";
 import { ExamTier } from "@/data/exam-bank";
+import { useGetAppSettings } from "@workspace/api-client-react";
 
 import {
   Difficulty,
@@ -80,6 +81,7 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
 
   const gamification = useMemo(() => computeGamification(quizHistory), [quizHistory]);
   const randomTopics = useMemo(() => getTopicsInRandomOrder(), []);
+  const { data: appSettings } = useGetAppSettings();
 
   useEffect(() => {
     setWeakCount(getWeakCount());
@@ -89,8 +91,8 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
     selected === "all"
       ? getDifficultyCount(difficulty)
       : getDifficultyBreakdown(selected)[difficulty];
-  const totalQuestions = selectedCount;
-  const fastCount = Math.ceil(selectedCount / 2);
+  const totalQuestions = Math.min(90, selectedCount);
+  const fastCount = Math.min(45, totalQuestions);
   const diffBreakdown = getDifficultyBreakdown(selected === "all" ? undefined : selected);
 
   return (
@@ -214,6 +216,16 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
           <p className="text-sky-300/80 text-sm mt-1.5 italic">
             Build confidence by mastering what you know with certainty
           </p>
+           {appSettings?.announcement && (
+             <div className="mt-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-2.5 text-left text-xs text-red-200">
+               {appSettings.announcement}
+             </div>
+           )}
+           {appSettings?.maintenanceMode && (
+             <div className="mt-2 rounded-xl border border-amber-500/20 bg-amber-500/10 px-4 py-2.5 text-left text-xs text-amber-200">
+               Maintenance mode is active. Your saved progress remains available.
+             </div>
+           )}
 
           {/* Road to Certification mini bar */}
           {gamification.roadToCertPct > 0 && (

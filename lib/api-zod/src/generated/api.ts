@@ -142,6 +142,153 @@ export const GetAdminOverviewResponse = zod.object({
 export const GetAppSettingsResponse = zod.object({
   announcement: zod.string(),
   maintenanceMode: zod.boolean(),
+  pricingHeadline: zod.string(),
+  monthlyPriceLabel: zod.string(),
+  yearlyPriceLabel: zod.string(),
+});
+
+/**
+ * @summary Load active admin-managed question overrides
+ */
+export const getManagedQuestionsResponseOptionsMin = 4;
+export const getManagedQuestionsResponseOptionsMax = 4;
+
+export const GetManagedQuestionsResponseItem = zod.object({
+  id: zod.number(),
+  externalId: zod.string().nullable(),
+  category: zod.string(),
+  tier: zod.union([zod.literal(1), zod.literal(2), zod.literal(3)]),
+  difficulty: zod.enum(["easy", "medium", "hard"]),
+  question: zod.string(),
+  options: zod
+    .array(zod.string())
+    .min(getManagedQuestionsResponseOptionsMin)
+    .max(getManagedQuestionsResponseOptionsMax),
+  correctIndex: zod.number(),
+  explanation: zod.string(),
+  active: zod.boolean(),
+  createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+  createdBy: zod.string(),
+});
+export const GetManagedQuestionsResponse = zod.array(
+  GetManagedQuestionsResponseItem,
+);
+
+/**
+ * @summary Check protected admin simulation access
+ */
+export const GetAdminAccessResponse = zod.object({
+  isAdmin: zod.boolean(),
+  freeTestSimulation: zod.boolean(),
+});
+
+/**
+ * @summary List managed questions
+ */
+export const getAdminQuestionsResponseDataItemOptionsMin = 4;
+export const getAdminQuestionsResponseDataItemOptionsMax = 4;
+
+export const GetAdminQuestionsResponse = zod.object({
+  data: zod.array(
+    zod.object({
+      id: zod.number(),
+      externalId: zod.string().nullable(),
+      category: zod.string(),
+      tier: zod.union([zod.literal(1), zod.literal(2), zod.literal(3)]),
+      difficulty: zod.enum(["easy", "medium", "hard"]),
+      question: zod.string(),
+      options: zod
+        .array(zod.string())
+        .min(getAdminQuestionsResponseDataItemOptionsMin)
+        .max(getAdminQuestionsResponseDataItemOptionsMax),
+      correctIndex: zod.number(),
+      explanation: zod.string(),
+      active: zod.boolean(),
+      createdAt: zod.coerce.date(),
+      updatedAt: zod.coerce.date(),
+      createdBy: zod.string(),
+    }),
+  ),
+});
+
+/**
+ * @summary Create a managed question
+ */
+export const createAdminQuestionBodyOptionsMin = 4;
+export const createAdminQuestionBodyOptionsMax = 4;
+
+export const CreateAdminQuestionBody = zod.object({
+  externalId: zod.string().optional(),
+  category: zod.string().optional(),
+  tier: zod.union([zod.literal(1), zod.literal(2), zod.literal(3)]).optional(),
+  difficulty: zod.enum(["easy", "medium", "hard"]).optional(),
+  question: zod.string(),
+  options: zod
+    .array(zod.string())
+    .min(createAdminQuestionBodyOptionsMin)
+    .max(createAdminQuestionBodyOptionsMax),
+  correctIndex: zod.number(),
+  explanation: zod.string().optional(),
+  active: zod.boolean().optional(),
+});
+
+/**
+ * @summary Update, re-tier, or change difficulty for a managed question
+ */
+export const UpdateAdminQuestionParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const updateAdminQuestionBodyOptionsMin = 4;
+export const updateAdminQuestionBodyOptionsMax = 4;
+
+export const UpdateAdminQuestionBody = zod.object({
+  externalId: zod.string().optional(),
+  category: zod.string().optional(),
+  tier: zod.union([zod.literal(1), zod.literal(2), zod.literal(3)]).optional(),
+  difficulty: zod.enum(["easy", "medium", "hard"]).optional(),
+  question: zod.string(),
+  options: zod
+    .array(zod.string())
+    .min(updateAdminQuestionBodyOptionsMin)
+    .max(updateAdminQuestionBodyOptionsMax),
+  correctIndex: zod.number(),
+  explanation: zod.string().optional(),
+  active: zod.boolean().optional(),
+});
+
+export const updateAdminQuestionResponseOptionsMin = 4;
+export const updateAdminQuestionResponseOptionsMax = 4;
+
+export const UpdateAdminQuestionResponse = zod.object({
+  id: zod.number(),
+  externalId: zod.string().nullable(),
+  category: zod.string(),
+  tier: zod.union([zod.literal(1), zod.literal(2), zod.literal(3)]),
+  difficulty: zod.enum(["easy", "medium", "hard"]),
+  question: zod.string(),
+  options: zod
+    .array(zod.string())
+    .min(updateAdminQuestionResponseOptionsMin)
+    .max(updateAdminQuestionResponseOptionsMax),
+  correctIndex: zod.number(),
+  explanation: zod.string(),
+  active: zod.boolean(),
+  createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+  createdBy: zod.string(),
+});
+
+/**
+ * @summary Delete a managed question
+ */
+export const DeleteAdminQuestionParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const DeleteAdminQuestionResponse = zod.object({
+  success: zod.boolean(),
 });
 
 /**

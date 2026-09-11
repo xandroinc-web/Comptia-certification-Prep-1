@@ -5,6 +5,7 @@ import { db } from "@workspace/db";
 import {
   adminAuditLogsTable,
   adminMediaTable,
+  adminQuestionsTable,
   adminSettingsTable,
   quizResultsTable,
 } from "@workspace/db";
@@ -65,7 +66,7 @@ async function writeAudit(
   });
 }
 
-router.get("/app-settings", async (_req, res): Promise<void> => {
+router.get("/app-settings", async (req, res): Promise<void> => {
   try {
     const [setting] = await db
       .select({ value: adminSettingsTable.value })
@@ -76,12 +77,160 @@ router.get("/app-settings", async (_req, res): Promise<void> => {
     res.json({
       announcement: typeof value.announcement === "string" ? value.announcement : "",
       maintenanceMode: value.maintenanceMode === true,
+      pricingHeadline: typeof value.pricingHeadline === "string" ? value.pricingHeadline : "Upgrade to Pro",
+      monthlyPriceLabel: typeof value.monthlyPriceLabel === "string" ? value.monthlyPriceLabel : "",
+      yearlyPriceLabel: typeof value.yearlyPriceLabel === "string" ? value.yearlyPriceLabel : "",
     });
   } catch (error) {
     // Public settings are an enhancement; keep the quiz available if the
     // optional admin tables have not been provisioned yet.
     req.log.warn({ err: error }, "Unable to load public app settings");
     res.json({ announcement: "", maintenanceMode: false });
+  }
+});
+
+router.get("/managed-questions", async (_req, res): Promise<void> => {
+  try {
+    const questions = await db
+      .select()
+      .from(adminQuestionsTable)
+      .where(eq(adminQuestionsTable.active, true))
+      .orderBy(adminQuestionsTable.id);
+    res.json(questions);
+  } catch {
+    res.json([]);
+  }
+});
+
+router.get("/admin/access", requireAdmin, async (req, res): Promise<void> => {
+  try {
+    const [setting] = await db
+      .select({ value: adminSettingsTable.value })
+      .from(adminSettingsTable)
+      .where(eq(adminSettingsTable.key, "app"))
+      .limit(1);
+    res.json({
+      isAdmin: true,
+      freeTestSimulation: setting?.value?.freeTestSimulation === true,
+    });
+  } catch (error) {
+    req.log.error({ err: error }, "Failed to load admin access settings");
+    res.status(500).json({ error: "Failed to load admin access settings" });
+  }
+});
+
+function validQuestionPayload(value: any): value is {
+  category?: string;
+  tier?: number;
+  difficulty?: string;
+  question: string;
+  options: string[];
+  correctIndex: number;
+  explanation?: string;
+  active?: boolean;
+  externalId?: string;
+} {
+  return Boolean(
+    value &&
+      typeof value.question === "string" &&
+      value.question.trim() &&
+      Array.isArray(value.options) &&
+      value.options.length === 4 &&
+      value.options.every((option: unknown) => typeof option === "string" && option.trim()) &&
+      Number.isInteger(value.correctIndex) &&
+      value.correctIndex >= 0 &&
+      value.correctIndex < 4,
+  );
+}
+
+router.get("/admin/questions", requireAdmin, async (_req, res): Promise<void> => {
+  try {
+    res.json({ data: await db.select().from(adminQuestionsTable).orderBy(desc(adminQuestionsTable.updatedAt)) });
+  } catch {
+    res.status(500).json({ error: "Failed to load managed questions" });
+  }
+});
+
+router.post("/admin/questions", requireAdmin, async (req, res): Promise<void> => {
+  if (!validQuestionPayload(req.body)) {
+    res.status(400).json({ error: "Question, four options, and a valid answer are required" });
+    return;
+  }
+  try {
+    const [question] = await db
+      .insert(adminQuestionsTable)
+      .values({
+        externalId: typeof req.body.externalId === "string" ? req.body.externalId.trim() || null : null,
+        category: typeof req.body.category === "string" ? req.body.category : "A+",
+        tier: req.body.tier === 1 || req.body.tier === 2 || req.body.tier === 3 ? req.body.tier : 2,
+        difficulty: req.body.difficulty === "easy" || req.body.difficulty === "medium" || req.body.difficulty === "hard" ? req.body.difficulty : "medium",
+        question: req.body.question.trim(),
+        options: req.body.options.map((option: string) => option.trim()),
+        correctIndex: req.body.correctIndex,
+        explanation: typeof req.body.explanation === "string" ? req.body.explanation.trim() : "",
+        active: req.body.active !== false,
+        createdBy: adminUserId(req),
+      })
+      .returning();
+    await writeAudit(req, "question.created", "question", String(question.id));
+    res.status(201).json(question);
+  } catch (error) {
+    req.log.error({ err: error }, "Failed to create managed question");
+    res.status(500).json({ error: "Failed to create managed question" });
+  }
+});
+
+router.patch("/admin/questions/:id", requireAdmin, async (req, res): Promise<void> => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || !validQuestionPayload({ ...req.body, question: req.body.question ?? "existing", options: req.body.options ?? ["a", "b", "c", "d"], correctIndex: req.body.correctIndex ?? 0 })) {
+    res.status(400).json({ error: "Question fields are invalid" });
+    return;
+  }
+  try {
+    const [question] = await db
+      .update(adminQuestionsTable)
+      .set({
+        ...(req.body.category !== undefined ? { category: req.body.category } : {}),
+        ...(req.body.tier !== undefined && [1, 2, 3].includes(req.body.tier) ? { tier: req.body.tier } : {}),
+        ...(req.body.difficulty !== undefined && ["easy", "medium", "hard"].includes(req.body.difficulty) ? { difficulty: req.body.difficulty } : {}),
+        question: req.body.question.trim(),
+        options: req.body.options.map((option: string) => option.trim()),
+        correctIndex: req.body.correctIndex,
+        explanation: typeof req.body.explanation === "string" ? req.body.explanation.trim() : "",
+        ...(req.body.active !== undefined ? { active: Boolean(req.body.active) } : {}),
+        updatedAt: new Date(),
+      })
+      .where(eq(adminQuestionsTable.id, id))
+      .returning();
+    if (!question) {
+      res.status(404).json({ error: "Managed question not found" });
+      return;
+    }
+    await writeAudit(req, "question.updated", "question", String(id));
+    res.json(question);
+  } catch (error) {
+    req.log.error({ err: error }, "Failed to update managed question");
+    res.status(500).json({ error: "Failed to update managed question" });
+  }
+});
+
+router.delete("/admin/questions/:id", requireAdmin, async (req, res): Promise<void> => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id)) {
+    res.status(400).json({ error: "Invalid question id" });
+    return;
+  }
+  try {
+    const [question] = await db.delete(adminQuestionsTable).where(eq(adminQuestionsTable.id, id)).returning();
+    if (!question) {
+      res.status(404).json({ error: "Managed question not found" });
+      return;
+    }
+    await writeAudit(req, "question.deleted", "question", String(id));
+    res.json({ success: true });
+  } catch (error) {
+    req.log.error({ err: error }, "Failed to delete managed question");
+    res.status(500).json({ error: "Failed to delete managed question" });
   }
 });
 

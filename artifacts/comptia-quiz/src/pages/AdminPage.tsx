@@ -24,21 +24,26 @@ import {
   UserPlus,
   Users,
   Video,
-  X,
 } from "lucide-react";
 import {
   AdminMedia,
+  AdminQuestion,
   AdminUser,
   getGetAdminOverviewQueryKey,
+  getGetAdminQuestionsQueryKey,
   getGetAdminUsersQueryKey,
   useApplyAdminUserAction,
   useCreateAdminMedia,
   useCreateAdminUser,
   useDeleteAdminMedia,
+  useDeleteAdminQuestion,
+  useCreateAdminQuestion,
+  useGetAdminQuestions,
   useGetAdminOverview,
   useGetAdminUsers,
   useUpdateAdminMedia,
   useUpdateAdminSettings,
+  useUpdateAdminQuestion,
 } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 
@@ -93,8 +98,10 @@ export default function AdminPage() {
   const [section, setSection] = useState<Section>("overview");
   const [message, setMessage] = useState("");
   const [search, setSearch] = useState("");
-  const [newMedia, setNewMedia] = useState({ kind: "video", title: "", url: "", description: "" });
+  const [newMedia, setNewMedia] = useState<{ kind: "video" | "link"; title: string; url: string; description: string }>({ kind: "video", title: "", url: "", description: "" });
   const [newUser, setNewUser] = useState({ email: "", firstName: "", lastName: "" });
+  const blankQuestion = { id: undefined as number | undefined, category: "A+", tier: 2, difficulty: "medium", question: "", options: ["", "", "", ""], correctIndex: 0, explanation: "", active: true };
+  const [questionForm, setQuestionForm] = useState(blankQuestion);
   const [settings, setSettings] = useState({
     announcement: "",
     maintenanceMode: false,
@@ -104,24 +111,36 @@ export default function AdminPage() {
     defaultTimeLimitSeconds: 60,
     anonymousTrialLimit: 1,
     freeTrialLimit: 3,
+    freeTestSimulation: false,
   });
 
   const overview = useGetAdminOverview({
     query: {
       enabled: Boolean(isLoaded && isSignedIn),
       retry: false,
+      queryKey: ["admin-overview"],
     },
   });
   const users = useGetAdminUsers(
     { query: search.trim() || undefined, limit: 50 },
-    { query: { enabled: Boolean(overview.data && section === "users"), retry: false } },
+    { query: { enabled: Boolean(overview.data && section === "users"), retry: false, queryKey: ["admin-users", search] } },
   );
+  const questions = useGetAdminQuestions({
+    query: {
+      enabled: Boolean(overview.data && section === "testing"),
+      retry: false,
+      queryKey: ["admin-questions"],
+    },
+  });
   const updateSettings = useUpdateAdminSettings();
   const createMedia = useCreateAdminMedia();
   const updateMedia = useUpdateAdminMedia();
   const deleteMedia = useDeleteAdminMedia();
   const createUser = useCreateAdminUser();
   const userAction = useApplyAdminUserAction();
+  const createQuestion = useCreateAdminQuestion();
+  const updateQuestion = useUpdateAdminQuestion();
+  const deleteQuestion = useDeleteAdminQuestion();
 
   const isAuthorized = Boolean(overview.data);
   const settingsValue = useMemo(
@@ -141,13 +160,68 @@ export default function AdminPage() {
         defaultTimeLimitSeconds: Number(settingsValue.defaultTimeLimitSeconds) || 60,
         anonymousTrialLimit: Number(settingsValue.anonymousTrialLimit) || 1,
         freeTrialLimit: Number(settingsValue.freeTrialLimit) || 3,
+        freeTestSimulation: settingsValue.freeTestSimulation === true,
       }));
     }
   }, [settingsValue]);
 
   function invalidateOverview() {
     queryClient.invalidateQueries({ queryKey: getGetAdminOverviewQueryKey() });
+    queryClient.invalidateQueries({ queryKey: getGetAdminQuestionsQueryKey() });
     queryClient.invalidateQueries({ queryKey: getGetAdminUsersQueryKey() });
+  }
+
+  function editQuestion(question: AdminQuestion) {
+    setQuestionForm({
+      id: question.id,
+      category: question.category,
+      tier: question.tier,
+      difficulty: question.difficulty,
+      question: question.question,
+      options: [...question.options],
+      correctIndex: question.correctIndex,
+      explanation: question.explanation,
+      active: question.active,
+    });
+  }
+
+  async function saveQuestion(event: React.FormEvent) {
+    event.preventDefault();
+    if (questionForm.options.some((option) => !option.trim()) || !questionForm.question.trim()) {
+      notify("Enter a stem and four answer choices.");
+      return;
+    }
+    const data = {
+      category: questionForm.category,
+      tier: questionForm.tier as 1 | 2 | 3,
+      difficulty: questionForm.difficulty as "easy" | "medium" | "hard",
+      question: questionForm.question.trim(),
+      options: questionForm.options.map((option) => option.trim()),
+      correctIndex: questionForm.correctIndex,
+      explanation: questionForm.explanation.trim(),
+      active: questionForm.active,
+    };
+    try {
+      if (questionForm.id) await updateQuestion.mutateAsync({ id: questionForm.id, data });
+      else await createQuestion.mutateAsync({ data });
+      setQuestionForm(blankQuestion);
+      invalidateOverview();
+      notify(questionForm.id ? "Question updated." : "Question added to the learner bank.");
+    } catch (error) {
+      notify(errorText(error));
+    }
+  }
+
+  async function removeQuestion(question: AdminQuestion) {
+    if (!window.confirm(`Delete this question? This cannot be undone.`)) return;
+    try {
+      await deleteQuestion.mutateAsync({ id: question.id });
+      if (questionForm.id === question.id) setQuestionForm(blankQuestion);
+      invalidateOverview();
+      notify("Question deleted.");
+    } catch (error) {
+      notify(errorText(error));
+    }
   }
 
   function notify(text: string) {
@@ -168,7 +242,7 @@ export default function AdminPage() {
   async function addMedia(event: React.FormEvent) {
     event.preventDefault();
     try {
-      await createMedia.mutateAsync({ data: { ...newMedia, active: true } });
+      await createMedia.mutateAsync({ data: { ...newMedia, kind: newMedia.kind, active: true } });
       setNewMedia({ kind: "video", title: "", url: "", description: "" });
       invalidateOverview();
       notify("Media item added.");
@@ -273,7 +347,7 @@ export default function AdminPage() {
     );
   }
 
-  const stats = overview.data.stats;
+  const stats = overview.data!.stats;
   const title = section === "overview" ? "Command center" : sections.find((item) => item.id === section)?.label;
 
   return (
@@ -333,8 +407,8 @@ export default function AdminPage() {
                 <div className={cardClass}>
                   <h2 className="font-semibold">Latest activity</h2>
                   <div className="mt-4 space-y-3">
-                    {overview.data.auditLogs.slice(0, 5).map((log) => <div key={log.id} className="flex items-start justify-between gap-3 text-sm"><div><p className="text-slate-300">{log.action}</p><p className="text-xs text-slate-600">{log.targetType} {log.targetId ?? ""}</p></div><time className="shrink-0 text-xs text-slate-600">{formatDate(log.createdAt)}</time></div>)}
-                    {!overview.data.auditLogs.length && <EmptyState>No admin actions yet.</EmptyState>}
+                    {overview.data!.auditLogs.slice(0, 5).map((log) => <div key={log.id} className="flex items-start justify-between gap-3 text-sm"><div><p className="text-slate-300">{log.action}</p><p className="text-xs text-slate-600">{log.targetType} {log.targetId ?? ""}</p></div><time className="shrink-0 text-xs text-slate-600">{formatDate(log.createdAt)}</time></div>)}
+                    {!overview.data!.auditLogs.length && <EmptyState>No admin actions yet.</EmptyState>}
                   </div>
                 </div>
               </div>
@@ -342,23 +416,39 @@ export default function AdminPage() {
           )}
 
           {section === "testing" && (
-            <div className="grid gap-6 xl:grid-cols-2">
-              <div className={cardClass}><h2 className="font-semibold">Quiz lab</h2><p className="mt-2 text-sm leading-6 text-slate-400">Test the production learner flows without a questionnaire bypass. These buttons open the same routes a learner uses.</p><div className="mt-5 space-y-3">{[["Full practice", "/", "Mixed difficulty and timed flow"], ["Progress history", "/progress", "Saved scores and weak areas"], ["Pricing checkout", "/pricing", "Stripe products and subscription CTA"]].map(([label, path, detail]) => <button key={path} onClick={() => setLocation(path)} className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-black/20 p-4 text-left hover:border-red-500/40"><span><span className="block text-sm font-medium">{label}</span><span className="mt-1 block text-xs text-slate-500">{detail}</span></span><ExternalLink size={16} className="text-red-400" /></button>)}</div></div>
-              <div className={cardClass}><h2 className="font-semibold">Guardrails</h2><div className="mt-5 space-y-4 text-sm text-slate-400"><p className="flex gap-3"><Check className="shrink-0 text-emerald-400" size={17} /> Tier locks and trial limits still apply in the learner flow.</p><p className="flex gap-3"><Check className="shrink-0 text-emerald-400" size={17} /> Admin API access is server-authorized, not route-hidden.</p><p className="flex gap-3"><Check className="shrink-0 text-emerald-400" size={17} /> Every content and account action is written to audit history.</p><p className="flex gap-3"><Check className="shrink-0 text-emerald-400" size={17} /> Clerk credentials never enter the browser.</p></div></div>
+            <div className="space-y-6">
+              <div className="grid gap-6 xl:grid-cols-2">
+                <div className={cardClass}><h2 className="font-semibold">Quiz lab</h2><p className="mt-2 text-sm leading-6 text-slate-400">Test the production learner flows without a questionnaire bypass. These buttons open the same routes a learner uses.</p><div className="mt-5 space-y-3">{[["Full practice", "/", "Mixed difficulty and timed flow"], ["Progress history", "/progress", "Saved scores and weak areas"], ["Pricing checkout", "/pricing", "Stripe products and subscription CTA"]].map(([label, path, detail]) => <button key={path} onClick={() => setLocation(path)} className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-black/20 p-4 text-left hover:border-red-500/40"><span><span className="block text-sm font-medium">{label}</span><span className="mt-1 block text-xs text-slate-500">{detail}</span></span><ExternalLink size={16} className="text-red-400" /></button>)}</div></div>
+                <div className={cardClass}><h2 className="font-semibold">Guardrails</h2><div className="mt-5 space-y-4 text-sm text-slate-400"><p className="flex gap-3"><Check className="shrink-0 text-emerald-400" size={17} /> Tier locks and trial limits still apply in the learner flow.</p><p className="flex gap-3"><Check className="shrink-0 text-emerald-400" size={17} /> Admin API access is server-authorized, not route-hidden.</p><p className="flex gap-3"><Check className="shrink-0 text-emerald-400" size={17} /> Every content and account action is written to audit history.</p><p className="flex gap-3"><Check className="shrink-0 text-emerald-400" size={17} /> Clerk credentials never enter the browser.</p></div></div>
+              </div>
+              <div className="grid gap-6 xl:grid-cols-[0.85fr_1.15fr]">
+                <form className={cardClass} onSubmit={saveQuestion}>
+                  <div className="flex items-center justify-between"><div><h2 className="font-semibold">{questionForm.id ? "Edit question" : "Add question"}</h2><p className="mt-1 text-sm text-slate-500">Active managed questions are merged into the learner bank.</p></div>{questionForm.id && <button type="button" onClick={() => setQuestionForm(blankQuestion)} className="text-xs text-slate-500 hover:text-white">Cancel edit</button>}</div>
+                  <div className="mt-5 space-y-3">
+                    <textarea required className={`${inputClass} min-h-28`} placeholder="Question stem" value={questionForm.question} onChange={(e) => setQuestionForm({ ...questionForm, question: e.target.value })} />
+                    <div className="grid grid-cols-3 gap-2"><select className={inputClass} value={questionForm.category} onChange={(e) => setQuestionForm({ ...questionForm, category: e.target.value })}><option>A+</option><option>Network+</option><option>Security+</option></select><select className={inputClass} value={questionForm.tier} onChange={(e) => setQuestionForm({ ...questionForm, tier: Number(e.target.value) as 1 | 2 | 3 })}><option value={1}>Tier 1</option><option value={2}>Tier 2</option><option value={3}>Tier 3</option></select><select className={inputClass} value={questionForm.difficulty} onChange={(e) => setQuestionForm({ ...questionForm, difficulty: e.target.value as "easy" | "medium" | "hard" })}><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option></select></div>
+                    {questionForm.options.map((option, index) => <div key={index} className="flex gap-2"><input required className={inputClass} placeholder={`Answer ${index + 1}`} value={option} onChange={(e) => { const options = [...questionForm.options]; options[index] = e.target.value; setQuestionForm({ ...questionForm, options }); }} /><label className="flex items-center gap-1 text-xs text-slate-500"><input type="radio" name="correct-answer" checked={questionForm.correctIndex === index} onChange={() => setQuestionForm({ ...questionForm, correctIndex: index })} /> Correct</label></div>)}
+                    <textarea className={`${inputClass} min-h-20`} placeholder="Explanation" value={questionForm.explanation} onChange={(e) => setQuestionForm({ ...questionForm, explanation: e.target.value })} />
+                    <label className="flex items-center gap-2 text-sm text-slate-300"><input type="checkbox" checked={questionForm.active} onChange={(e) => setQuestionForm({ ...questionForm, active: e.target.checked })} className="h-4 w-4 accent-red-600" /> Active in learner bank</label>
+                    <Button disabled={createQuestion.isPending || updateQuestion.isPending} className="bg-red-600 hover:bg-red-500"><Save size={16} /> {questionForm.id ? "Save changes" : "Add question"}</Button>
+                  </div>
+                </form>
+                <div className={cardClass}><div className="flex items-center justify-between"><div><h2 className="font-semibold">Managed question bank</h2><p className="mt-1 text-sm text-slate-500">{questions.data?.data.length ?? 0} admin-managed questions</p></div><ClipboardList className="text-red-400" size={20} /></div><div className="mt-5 max-h-[620px] space-y-3 overflow-y-auto">{questions.isLoading && <Loader2 className="mx-auto animate-spin text-red-400" />}{questions.data?.data.map((question) => <div key={question.id} className="rounded-xl border border-white/10 bg-black/20 p-4"><div className="flex items-start justify-between gap-3"><div><div className="flex flex-wrap gap-2 text-[10px] uppercase tracking-wider text-slate-500"><span>{question.category}</span><span>Tier {question.tier}</span><span className={question.difficulty === "hard" ? "text-red-300" : question.difficulty === "medium" ? "text-amber-300" : "text-emerald-300"}>{question.difficulty}</span><span>{question.active ? "Active" : "Hidden"}</span></div><p className="mt-2 text-sm leading-5 text-slate-200">{question.question}</p></div><div className="flex shrink-0 gap-2"><button onClick={() => editQuestion(question)} className="rounded-lg border border-white/10 px-2 py-1 text-xs text-slate-400 hover:text-white">Edit</button><button onClick={() => removeQuestion(question)} className="rounded-lg border border-red-500/20 px-2 py-1 text-xs text-red-300 hover:bg-red-500/10">Delete</button></div></div><p className="mt-2 text-xs text-slate-500">Correct: {question.options[question.correctIndex]}</p></div>)}{!questions.isLoading && !questions.data?.data.length && <EmptyState>No managed questions yet.</EmptyState>}</div></div>
+              </div>
             </div>
           )}
 
           {section === "pricing" && (
             <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
               <div className={cardClass}><h2 className="font-semibold">Public pricing copy</h2><p className="mt-2 text-sm text-slate-500">Control the learner-facing labels without changing Stripe objects.</p><div className="mt-5 space-y-4"><label className="block text-sm text-slate-300">Headline<input className={`${inputClass} mt-2`} value={settings.pricingHeadline} onChange={(e) => setSettings({ ...settings, pricingHeadline: e.target.value })} /></label><label className="block text-sm text-slate-300">Monthly display override<input className={`${inputClass} mt-2`} placeholder="Leave blank to use Stripe" value={settings.monthlyPriceLabel} onChange={(e) => setSettings({ ...settings, monthlyPriceLabel: e.target.value })} /></label><label className="block text-sm text-slate-300">Yearly display override<input className={`${inputClass} mt-2`} placeholder="Leave blank to use Stripe" value={settings.yearlyPriceLabel} onChange={(e) => setSettings({ ...settings, yearlyPriceLabel: e.target.value })} /></label><Button onClick={saveSettings} disabled={updateSettings.isPending} className="bg-red-600 hover:bg-red-500"><Save size={16} /> Save pricing copy</Button></div></div>
-              <div className={cardClass}><h2 className="font-semibold">Stripe catalog</h2><p className="mt-2 text-sm text-slate-500">Live products and prices currently available for checkout.</p><div className="mt-5 space-y-3">{overview.data.products.map((product: any) => <div key={product.id} className="rounded-xl border border-white/10 p-4"><div className="flex items-center justify-between"><p className="font-medium">{product.name ?? "Untitled product"}</p><span className={product.active ? "text-emerald-400" : "text-slate-600"}>{product.active ? "Active" : "Archived"}</span></div><div className="mt-3 grid gap-2 sm:grid-cols-2">{(product.prices ?? []).map((price: any) => <div key={price.id} className="rounded-lg bg-black/20 px-3 py-2 text-xs text-slate-400"><span className="font-semibold text-white">{price.amount != null ? `${(price.amount / 100).toFixed(2)} ${(price.currency ?? "").toUpperCase()}` : "No amount"}</span><span className="ml-2">{price.recurring?.interval ?? "one-time"}</span></div>)}</div></div>)}{!overview.data.products.length && <EmptyState>No Stripe products available.</EmptyState>}</div></div>
+               <div className={cardClass}><h2 className="font-semibold">Stripe catalog</h2><p className="mt-2 text-sm text-slate-500">Live products and prices currently available for checkout.</p><div className="mt-5 space-y-3">{overview.data!.products.map((product: any) => <div key={product.id} className="rounded-xl border border-white/10 p-4"><div className="flex items-center justify-between"><p className="font-medium">{product.name ?? "Untitled product"}</p><span className={product.active ? "text-emerald-400" : "text-slate-600"}>{product.active ? "Active" : "Archived"}</span></div><div className="mt-3 grid gap-2 sm:grid-cols-2">{(product.prices ?? []).map((price: any) => <div key={price.id} className="rounded-lg bg-black/20 px-3 py-2 text-xs text-slate-400"><span className="font-semibold text-white">{price.amount != null ? `${(price.amount / 100).toFixed(2)} ${(price.currency ?? "").toUpperCase()}` : "No amount"}</span><span className="ml-2">{price.recurring?.interval ?? "one-time"}</span></div>)}</div></div>)}{!overview.data!.products.length && <EmptyState>No Stripe products available.</EmptyState>}</div></div>
             </div>
           )}
 
           {section === "media" && (
             <div className="grid gap-6 xl:grid-cols-[0.8fr_1.2fr]">
-              <form className={cardClass} onSubmit={addMedia}><h2 className="font-semibold">Add a media item</h2><p className="mt-2 text-sm text-slate-500">Keep learner resources in one controlled place.</p><div className="mt-5 space-y-4"><label className="block text-sm text-slate-300">Type<select className={`${inputClass} mt-2`} value={newMedia.kind} onChange={(e) => setNewMedia({ ...newMedia, kind: e.target.value })}><option value="video">Video</option><option value="link">External link</option></select></label><label className="block text-sm text-slate-300">Title<input required className={`${inputClass} mt-2`} value={newMedia.title} onChange={(e) => setNewMedia({ ...newMedia, title: e.target.value })} /></label><label className="block text-sm text-slate-300">URL<input required type="url" className={`${inputClass} mt-2`} placeholder="https://" value={newMedia.url} onChange={(e) => setNewMedia({ ...newMedia, url: e.target.value })} /></label><label className="block text-sm text-slate-300">Description<textarea className={`${inputClass} mt-2 min-h-20`} value={newMedia.description} onChange={(e) => setNewMedia({ ...newMedia, description: e.target.value })} /></label><Button disabled={createMedia.isPending} className="bg-red-600 hover:bg-red-500"><Plus size={16} /> Add item</Button></div></form>
-              <div className={cardClass}><div className="flex items-center justify-between"><div><h2 className="font-semibold">Published resources</h2><p className="mt-1 text-sm text-slate-500">Hide an item to preserve it without deleting it.</p></div><Link2 className="text-red-400" size={20} /></div><div className="mt-5 space-y-3">{overview.data.media.map((item) => <div key={item.id} className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-white/10 p-4"><div className="flex min-w-0 items-center gap-3"><div className="rounded-lg bg-red-500/10 p-2 text-red-400">{item.kind === "video" ? <Video size={17} /> : <Link2 size={17} />}</div><div className="min-w-0"><p className="truncate text-sm font-medium">{item.title}</p><p className="truncate text-xs text-slate-500">{item.url}</p></div></div><div className="flex items-center gap-2"><button onClick={() => toggleMedia(item)} className={`rounded-lg px-2.5 py-1.5 text-xs ${item.active ? "bg-emerald-500/10 text-emerald-300" : "bg-white/5 text-slate-500"}`}>{item.active ? "Live" : "Hidden"}</button><a href={item.url} target="_blank" rel="noreferrer" className="rounded-lg p-2 text-slate-500 hover:bg-white/5 hover:text-white"><ExternalLink size={15} /></a><button onClick={() => removeMedia(item)} className="rounded-lg p-2 text-slate-500 hover:bg-red-500/10 hover:text-red-300"><Trash2 size={15} /></button></div></div>)}{!overview.data.media.length && <EmptyState>No videos or links yet.</EmptyState>}</div></div>
+              <form className={cardClass} onSubmit={addMedia}><h2 className="font-semibold">Add a media item</h2><p className="mt-2 text-sm text-slate-500">Keep learner resources in one controlled place.</p><div className="mt-5 space-y-4"><label className="block text-sm text-slate-300">Type<select className={`${inputClass} mt-2`} value={newMedia.kind} onChange={(e) => setNewMedia({ ...newMedia, kind: e.target.value as "video" | "link" })}><option value="video">Video</option><option value="link">External link</option></select></label><label className="block text-sm text-slate-300">Title<input required className={`${inputClass} mt-2`} value={newMedia.title} onChange={(e) => setNewMedia({ ...newMedia, title: e.target.value })} /></label><label className="block text-sm text-slate-300">URL<input required type="url" className={`${inputClass} mt-2`} placeholder="https://" value={newMedia.url} onChange={(e) => setNewMedia({ ...newMedia, url: e.target.value })} /></label><label className="block text-sm text-slate-300">Description<textarea className={`${inputClass} mt-2 min-h-20`} value={newMedia.description} onChange={(e) => setNewMedia({ ...newMedia, description: e.target.value })} /></label><Button disabled={createMedia.isPending} className="bg-red-600 hover:bg-red-500"><Plus size={16} /> Add item</Button></div></form>
+               <div className={cardClass}><div className="flex items-center justify-between"><div><h2 className="font-semibold">Published resources</h2><p className="mt-1 text-sm text-slate-500">Hide an item to preserve it without deleting it.</p></div><Link2 className="text-red-400" size={20} /></div><div className="mt-5 space-y-3">{overview.data!.media.map((item) => <div key={item.id} className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-white/10 p-4"><div className="flex min-w-0 items-center gap-3"><div className="rounded-lg bg-red-500/10 p-2 text-red-400">{item.kind === "video" ? <Video size={17} /> : <Link2 size={17} />}</div><div className="min-w-0"><p className="truncate text-sm font-medium">{item.title}</p><p className="truncate text-xs text-slate-500">{item.url}</p></div></div><div className="flex items-center gap-2"><button onClick={() => toggleMedia(item)} className={`rounded-lg px-2.5 py-1.5 text-xs ${item.active ? "bg-emerald-500/10 text-emerald-300" : "bg-white/5 text-slate-500"}`}>{item.active ? "Live" : "Hidden"}</button><a href={item.url} target="_blank" rel="noreferrer" className="rounded-lg p-2 text-slate-500 hover:bg-white/5 hover:text-white"><ExternalLink size={15} /></a><button onClick={() => removeMedia(item)} className="rounded-lg p-2 text-slate-500 hover:bg-red-500/10 hover:text-red-300"><Trash2 size={15} /></button></div></div>)}{!overview.data!.media.length && <EmptyState>No videos or links yet.</EmptyState>}</div></div>
             </div>
           )}
 
@@ -373,12 +463,12 @@ export default function AdminPage() {
 
           {section === "settings" && (
             <div className="max-w-2xl">
-              <div className={cardClass}><h2 className="font-semibold">App-wide configuration</h2><p className="mt-2 text-sm leading-6 text-slate-500">These controls affect public copy and operational defaults. They do not unlock quiz content or bypass learner limits.</p><div className="mt-6 space-y-5"><label className="block text-sm text-slate-300">Announcement banner<textarea className={`${inputClass} mt-2 min-h-24`} placeholder="Optional message shown on the home screen" value={settings.announcement} onChange={(e) => setSettings({ ...settings, announcement: e.target.value })} /></label><label className="flex items-center gap-3 rounded-xl border border-white/10 bg-black/20 p-3 text-sm text-slate-300"><input type="checkbox" checked={settings.maintenanceMode} onChange={(e) => setSettings({ ...settings, maintenanceMode: e.target.checked })} className="h-4 w-4 accent-red-600" /> Show maintenance mode notice</label><div className="grid gap-4 sm:grid-cols-3"><label className="text-sm text-slate-300">Default timer (sec)<input type="number" min={10} className={`${inputClass} mt-2`} value={settings.defaultTimeLimitSeconds} onChange={(e) => setSettings({ ...settings, defaultTimeLimitSeconds: Number(e.target.value) })} /></label><label className="text-sm text-slate-300">Anonymous trials<input type="number" min={0} className={`${inputClass} mt-2`} value={settings.anonymousTrialLimit} onChange={(e) => setSettings({ ...settings, anonymousTrialLimit: Number(e.target.value) })} /></label><label className="text-sm text-slate-300">Free trials<input type="number" min={0} className={`${inputClass} mt-2`} value={settings.freeTrialLimit} onChange={(e) => setSettings({ ...settings, freeTrialLimit: Number(e.target.value) })} /></label></div><Button onClick={saveSettings} disabled={updateSettings.isPending} className="bg-red-600 hover:bg-red-500"><Save size={16} /> Save settings</Button></div></div>
+              <div className={cardClass}><h2 className="font-semibold">App-wide configuration</h2><p className="mt-2 text-sm leading-6 text-slate-500">These controls affect public copy and operational defaults. They do not unlock quiz content or bypass learner limits.</p><div className="mt-6 space-y-5"><label className="block text-sm text-slate-300">Announcement banner<textarea className={`${inputClass} mt-2 min-h-24`} placeholder="Optional message shown on the home screen" value={settings.announcement} onChange={(e) => setSettings({ ...settings, announcement: e.target.value })} /></label><label className="flex items-center gap-3 rounded-xl border border-white/10 bg-black/20 p-3 text-sm text-slate-300"><input type="checkbox" checked={settings.maintenanceMode} onChange={(e) => setSettings({ ...settings, maintenanceMode: e.target.checked })} className="h-4 w-4 accent-red-600" /> Show maintenance mode notice</label><label className="flex items-center gap-3 rounded-xl border border-red-500/20 bg-red-500/5 p-3 text-sm text-red-200"><input type="checkbox" checked={settings.freeTestSimulation} onChange={(e) => setSettings({ ...settings, freeTestSimulation: e.target.checked })} className="h-4 w-4 accent-red-600" /> Free Test Simulation for this admin account<div className="ml-auto text-[10px] uppercase tracking-wider text-red-400">Owner only</div></label><div className="grid gap-4 sm:grid-cols-3"><label className="text-sm text-slate-300">Default timer (sec)<input type="number" min={10} className={`${inputClass} mt-2`} value={settings.defaultTimeLimitSeconds} onChange={(e) => setSettings({ ...settings, defaultTimeLimitSeconds: Number(e.target.value) })} /></label><label className="text-sm text-slate-300">Anonymous trials<input type="number" min={0} className={`${inputClass} mt-2`} value={settings.anonymousTrialLimit} onChange={(e) => setSettings({ ...settings, anonymousTrialLimit: Number(e.target.value) })} /></label><label className="text-sm text-slate-300">Free trials<input type="number" min={0} className={`${inputClass} mt-2`} value={settings.freeTrialLimit} onChange={(e) => setSettings({ ...settings, freeTrialLimit: Number(e.target.value) })} /></label></div><Button onClick={saveSettings} disabled={updateSettings.isPending} className="bg-red-600 hover:bg-red-500"><Save size={16} /> Save settings</Button></div></div>
             </div>
           )}
 
           {section === "audit" && (
-            <div className={cardClass}><div className="flex items-center justify-between"><div><h2 className="font-semibold">Audit history</h2><p className="mt-1 text-sm text-slate-500">A server-recorded trail of admin mutations.</p></div><LockKeyhole className="text-red-400" size={20} /></div><div className="mt-5 overflow-x-auto"><table className="w-full min-w-[650px] text-left text-sm"><thead className="text-xs uppercase tracking-wider text-slate-600"><tr><th className="pb-3">Action</th><th className="pb-3">Target</th><th className="pb-3">Actor</th><th className="pb-3">When</th></tr></thead><tbody>{overview.data.auditLogs.map((log) => <tr key={log.id} className="border-t border-white/5"><td className="py-3 text-slate-300">{log.action}</td><td className="py-3 text-slate-500">{log.targetType} {log.targetId ?? "—"}</td><td className="py-3 font-mono text-xs text-slate-600">{log.actorUserId}</td><td className="py-3 text-slate-500">{formatDate(log.createdAt)}</td></tr>)}</tbody></table>{!overview.data.auditLogs.length && <EmptyState>No audit events yet.</EmptyState>}</div></div>
+            <div className={cardClass}><div className="flex items-center justify-between"><div><h2 className="font-semibold">Audit history</h2><p className="mt-1 text-sm text-slate-500">A server-recorded trail of admin mutations.</p></div><LockKeyhole className="text-red-400" size={20} /></div><div className="mt-5 overflow-x-auto"><table className="w-full min-w-[650px] text-left text-sm"><thead className="text-xs uppercase tracking-wider text-slate-600"><tr><th className="pb-3">Action</th><th className="pb-3">Target</th><th className="pb-3">Actor</th><th className="pb-3">When</th></tr></thead><tbody>{overview.data!.auditLogs.map((log) => <tr key={log.id} className="border-t border-white/5"><td className="py-3 text-slate-300">{log.action}</td><td className="py-3 text-slate-500">{log.targetType} {log.targetId ?? "—"}</td><td className="py-3 font-mono text-xs text-slate-600">{log.actorUserId}</td><td className="py-3 text-slate-500">{formatDate(log.createdAt)}</td></tr>)}</tbody></table>{!overview.data!.auditLogs.length && <EmptyState>No audit events yet.</EmptyState>}</div></div>
           )}
         </main>
       </div>

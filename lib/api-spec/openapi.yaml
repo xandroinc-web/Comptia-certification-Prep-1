@@ -141,6 +141,94 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AppSettings"
+  /managed-questions:
+    get:
+      operationId: getManagedQuestions
+      tags: [admin]
+      summary: Load active admin-managed question overrides
+      responses:
+        "200":
+          description: Active managed questions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AdminQuestion"
+  /admin/access:
+    get:
+      operationId: getAdminAccess
+      tags: [admin]
+      summary: Check protected admin simulation access
+      responses:
+        "200":
+          description: Admin access flags
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminAccessResponse"
+  /admin/questions:
+    get:
+      operationId: getAdminQuestions
+      tags: [admin]
+      summary: List managed questions
+      responses:
+        "200":
+          description: Managed question list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminQuestionsResponse"
+    post:
+      operationId: createAdminQuestion
+      tags: [admin]
+      summary: Create a managed question
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminQuestionInput"
+      responses:
+        "201":
+          description: Managed question created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminQuestion"
+  /admin/questions/{id}:
+    patch:
+      operationId: updateAdminQuestion
+      tags: [admin]
+      summary: Update, re-tier, or change difficulty for a managed question
+      parameters:
+        - $ref: "#/components/parameters/AdminQuestionId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminQuestionInput"
+      responses:
+        "200":
+          description: Managed question updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminQuestion"
+    delete:
+      operationId: deleteAdminQuestion
+      tags: [admin]
+      summary: Delete a managed question
+      parameters:
+        - $ref: "#/components/parameters/AdminQuestionId"
+      responses:
+        "200":
+          description: Managed question deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
   /admin/settings:
     patch:
       operationId: updateAdminSettings
@@ -296,6 +384,12 @@ paths:
 components:
   parameters:
     AdminMediaId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    AdminQuestionId:
       name: id
       in: path
       required: true
@@ -639,5 +733,93 @@ components:
           type: string
         maintenanceMode:
           type: boolean
-      required: [announcement, maintenanceMode]
+        pricingHeadline:
+          type: string
+        monthlyPriceLabel:
+          type: string
+        yearlyPriceLabel:
+          type: string
+      required: [announcement, maintenanceMode, pricingHeadline, monthlyPriceLabel, yearlyPriceLabel]
+    AdminAccessResponse:
+      type: object
+      properties:
+        isAdmin:
+          type: boolean
+        freeTestSimulation:
+          type: boolean
+      required: [isAdmin, freeTestSimulation]
+    AdminQuestion:
+      type: object
+      properties:
+        id:
+          type: integer
+        externalId:
+          type: ["string", "null"]
+        category:
+          type: string
+        tier:
+          type: integer
+          enum: [1, 2, 3]
+        difficulty:
+          type: string
+          enum: [easy, medium, hard]
+        question:
+          type: string
+        options:
+          type: array
+          minItems: 4
+          maxItems: 4
+          items:
+            type: string
+        correctIndex:
+          type: integer
+        explanation:
+          type: string
+        active:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+      required: [id, externalId, category, tier, difficulty, question, options, correctIndex, explanation, active, createdAt, updatedAt, createdBy]
+    AdminQuestionInput:
+      type: object
+      properties:
+        externalId:
+          type: string
+        category:
+          type: string
+        tier:
+          type: integer
+          enum: [1, 2, 3]
+        difficulty:
+          type: string
+          enum: [easy, medium, hard]
+        question:
+          type: string
+        options:
+          type: array
+          minItems: 4
+          maxItems: 4
+          items:
+            type: string
+        correctIndex:
+          type: integer
+        explanation:
+          type: string
+        active:
+          type: boolean
+      required: [question, options, correctIndex]
+    AdminQuestionsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminQuestion"
+      required: [data]
 

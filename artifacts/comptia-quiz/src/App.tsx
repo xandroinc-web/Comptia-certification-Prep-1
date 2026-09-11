@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { SignIn, SignUp, Show, useUser, useAuth } from "@clerk/react";
 import { Switch, Route, useLocation } from "wouter";
 import TechBackground from "@/components/TechBackground";
@@ -23,6 +23,8 @@ import {
   useGetQuizResults,
   useCreateQuizResult,
   useGetSubscription,
+  useGetAdminAccess,
+  useGetManagedQuestions,
 } from "@workspace/api-client-react";
 import {
   canStartTrial,
@@ -38,6 +40,7 @@ import PricingPage from "@/pages/PricingPage";
 import CheckoutSuccessPage from "@/pages/CheckoutSuccessPage";
 import CheckoutCancelPage from "@/pages/CheckoutCancelPage";
 import ProgressPage from "@/pages/ProgressPage";
+import AdminPage from "@/pages/AdminPage";
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -98,6 +101,10 @@ function ProgressRoute() {
   const isPro =
     subData?.subscription?.status === "active" ||
     subData?.subscription?.status === "trialing";
+  const { data: adminAccess } = useGetAdminAccess({
+    query: { enabled: shouldFetch, retry: false, queryKey: ["admin-access"] },
+  });
+  const effectiveIsPro = isPro || adminAccess?.freeTestSimulation === true;
   return (
     <div className="min-h-screen">
       <TechBackground />
@@ -108,7 +115,7 @@ function ProgressRoute() {
           onStartQuiz={(cat, diff) => {
             window.location.href = `${basePath}/`;
           }}
-          isPro={isPro}
+           isPro={effectiveIsPro}
         />
       </div>
     </div>
@@ -171,10 +178,42 @@ function AppContent() {
   const isPro =
     subData?.subscription?.status === "active" ||
     subData?.subscription?.status === "trialing";
+  const { data: adminAccess } = useGetAdminAccess({
+    query: { enabled: shouldFetch, retry: false, queryKey: ["admin-access"] },
+  });
+  const isSimulationPro = adminAccess?.freeTestSimulation === true;
+  const { data: managedQuestionData } = useGetManagedQuestions({
+    query: { queryKey: ["managed-questions"], staleTime: 60_000 },
+  });
+  const managedQuestions = useMemo<(Question & { adminTier?: number })[]>(
+    () =>
+      (managedQuestionData ?? []).map((question) => ({
+        id: 1_000_000 + question.id,
+        category: ["A+", "Network+", "Security+"].includes(question.category)
+          ? (question.category as ExamCategory)
+          : "A+",
+        question: question.question,
+        options: question.options,
+        correctIndex: question.correctIndex,
+        explanation: question.explanation,
+        difficulty: question.difficulty,
+        adminTier: question.tier,
+      })),
+    [managedQuestionData],
+  );
+
+  function includeManagedQuestions(questions: Question[], selected: "all" | ExamCategory, diff: Difficulty, count: number) {
+    const matching = managedQuestions.filter(
+      (question) =>
+        (selected === "all" || question.category === selected) &&
+        question.difficulty === diff,
+    );
+    return scrambleOptions([...questions, ...matching]).slice(0, count);
+  }
 
   function checkTrial(): boolean {
     const signedIn = isSignedIn ?? false;
-    if (isPro) return true;
+    if (isPro || isSimulationPro) return true;
     if (!canStartTrial(signedIn, isPro)) {
       setState("pricing");
       return false;
@@ -185,14 +224,14 @@ function AppContent() {
 
   function handleStart(selected: "all" | ExamCategory, length: "full" | "fast", diff: Difficulty) {
     if (!checkTrial()) return;
-    const halfCount =
-      length === "fast"
-        ? Math.ceil((selected === "all" ? 270 : 90) / 2)
-        : undefined;
-    const qs =
+    // Full mode is the 90-question practice run. Fast mode is exactly half
+    // that length; do not derive it from the 270-question bank size.
+    const questionCount = length === "fast" ? 45 : 90;
+     const baseQuestions =
       selected === "all"
-        ? getAllQuestions(halfCount, diff)
-        : getQuestionsByCategory(selected, halfCount, diff);
+        ? getAllQuestions(questionCount, diff)
+        : getQuestionsByCategory(selected, questionCount, diff);
+     const qs = includeManagedQuestions(baseQuestions, selected, diff, questionCount);
     const limit = getTimeLimitSeconds(qs.length, diff);
     setMode(selected);
     setDifficulty(diff);
@@ -306,7 +345,8 @@ function AppContent() {
   function handleStartExamTier(tier: ExamTier) {
     if (!examUnlocked[tier]) return;
     if (!checkTrial()) return;
-    const qs = getTierAsQuestions(tier);
+    const managedTierQuestions = managedQuestions.filter((question) => question.adminTier === tier);
+    const qs = scrambleOptions([...getTierAsQuestions(tier), ...managedTierQuestions]).slice(0, 270);
     const limit = getTierTimeLimitSeconds(tier);
     const tierDifficulty: Difficulty = tier === 1 ? "easy" : tier === 2 ? "medium" : "hard";
     setMode(`Exam Tier ${tier}`);
@@ -419,10 +459,10 @@ function AppContent() {
           onProgress={() => setState("progress")}
           quizHistory={quizHistory || []}
           historyLoading={historyLoading}
-          isPro={isPro}
+          isPro={isPro || isSimulationPro}
           isSignedIn={isSignedIn ?? false}
-          remainingTrials={getRemainingTrials(isSignedIn ?? false, isPro)}
-          trialStatusMessage={getTrialStatusMessage(isSignedIn ?? false, isPro)}
+          remainingTrials={getRemainingTrials(isSignedIn ?? false, isPro || isSimulationPro)}
+          trialStatusMessage={getTrialStatusMessage(isSignedIn ?? false, isPro || isSimulationPro)}
         />
       )}
       {state === "quiz" && (
@@ -507,6 +547,7 @@ export default function App() {
         />
       )} />
       <Route path="/progress" component={ProgressRoute} />
+      <Route path="/admin" component={AdminPage} />
       <Route path="/" component={AppContent} />
     </Switch>
   );

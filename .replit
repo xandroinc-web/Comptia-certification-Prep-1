@@ -1,4 +1,4 @@
-modules = ["nodejs-24"]
+modules = ["nodejs-24", "postgresql-16"]
 
 [deployment]
 router = "application"
@@ -39,3 +39,6 @@ externalPort = 80
 
 [userenv.shared]
 ADMIN_USER_IDS = "user_3EA3tRbwonodayJYsQeFthJCeQX"
+
+[nix]
+channel = "stable-25_05"

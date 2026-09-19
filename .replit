@@ -34,3 +34,8 @@ externalPort = 3000
 [[ports]]
 localPort = 25263
 externalPort = 80
+
+[userenv]
+
+[userenv.shared]
+ADMIN_USER_IDS = "user_3EA3tRbwonodayJYsQeFthJCeQX"

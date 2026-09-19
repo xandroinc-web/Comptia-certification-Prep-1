@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { SignIn, SignUp, Show, useUser, useAuth } from "@clerk/react";
 import { Switch, Route, useLocation } from "wouter";
+import { ShieldCheck, X } from "lucide-react";
 import TechBackground from "@/components/TechBackground";
 import {
   ExamCategory,
@@ -88,6 +89,93 @@ function SignUpPage() {
   );
 }
 
+function AdminAccessButton() {
+  const { isLoaded, isSignedIn } = useAuth();
+  const [showPrompt, setShowPrompt] = useState(false);
+
+  if (!isLoaded) return null;
+
+  function openAdmin() {
+    if (isSignedIn) {
+      window.location.href = `${basePath}/admin`;
+      return;
+    }
+    setShowPrompt(true);
+  }
+
+  function continueToSignIn() {
+    window.location.href = `${basePath}/sign-in`;
+  }
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={openAdmin}
+        aria-label="Open secure admin access"
+        title="Secure admin access"
+        className="fixed bottom-4 right-4 z-50 flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-slate-950/70 text-slate-500 shadow-lg shadow-black/20 backdrop-blur transition hover:border-red-500/40 hover:bg-slate-900 hover:text-red-300 focus:outline-none focus:ring-2 focus:ring-red-500/60 focus:ring-offset-2 focus:ring-offset-slate-950"
+      >
+        <ShieldCheck size={16} strokeWidth={1.8} />
+      </button>
+
+      {showPrompt && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm"
+          role="presentation"
+          onClick={() => setShowPrompt(false)}
+        >
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="admin-access-title"
+            className="relative w-full max-w-sm rounded-2xl border border-white/10 bg-[#0c111b] p-5 shadow-2xl shadow-black/40"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setShowPrompt(false)}
+              aria-label="Close admin access prompt"
+              className="absolute right-3 top-3 rounded-md p-1 text-slate-500 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-red-500/60"
+            >
+              <X size={16} />
+            </button>
+            <div className="flex items-start gap-3 pr-6">
+              <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-2 text-red-300">
+                <ShieldCheck size={18} />
+              </div>
+              <div>
+                <h2 id="admin-access-title" className="font-semibold text-white">
+                  Secure admin access
+                </h2>
+                <p className="mt-1 text-sm leading-5 text-slate-400">
+                  Continue to the secure sign-in prompt. Your admin password or token is handled by Clerk and is never stored by this app.
+                </p>
+              </div>
+            </div>
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowPrompt(false)}
+                className="rounded-lg border border-white/10 px-3 py-2 text-sm text-slate-300 transition hover:bg-white/5 hover:text-white"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={continueToSignIn}
+                className="rounded-lg bg-red-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-400/70"
+              >
+                Continue to sign in
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
+    </>
+  );
+}
+
 function ProgressRoute() {
   const { user, isLoaded } = useUser();
   const { isSignedIn } = useAuth();
@@ -118,6 +206,7 @@ function ProgressRoute() {
            isPro={effectiveIsPro}
         />
       </div>
+      <AdminAccessButton />
     </div>
   );
 }
@@ -514,6 +603,7 @@ function AppContent() {
         />
       )}
       </div>
+      <AdminAccessButton />
     </div>
   );
 }

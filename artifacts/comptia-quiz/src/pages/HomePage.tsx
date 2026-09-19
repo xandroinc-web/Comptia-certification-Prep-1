@@ -33,6 +33,7 @@ interface HomePageProps {
   quizHistory: QuizResult[];
   historyLoading: boolean;
   isPro: boolean;
+  isAdmin: boolean;
   isSignedIn: boolean;
   remainingTrials: number;
   trialStatusMessage: string | null;
@@ -70,7 +71,7 @@ const DOMAIN_ICONS: Record<DomainTopic, React.ReactNode> = {
   "4.0 Operational Procedures": <ClipboardList size={14} />,
 };
 
-export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onStudyTopic, onStartExamTier, examUnlocked, examTierScores, onPricing, onProgress, quizHistory, historyLoading, isPro, isSignedIn, remainingTrials, trialStatusMessage }: HomePageProps) {
+export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onStudyTopic, onStartExamTier, examUnlocked, examTierScores, onPricing, onProgress, quizHistory, historyLoading, isPro, isAdmin, isSignedIn, remainingTrials, trialStatusMessage }: HomePageProps) {
   const [selected, setSelected] = useState<"all" | ExamCategory>("all");
   const [testLength, setTestLength] = useState<TestLength>("full");
   const [difficulty, setDifficulty] = useState<Difficulty>("medium");
@@ -314,9 +315,15 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
           <p className="text-gray-500 text-sm mb-4">
             Locked progression: 270 questions per tier (Mild → Medium → HellMode). Pass each tier to unlock the next. HellMode uses hard-weighted scoring, reverse-recall prompts, and a 45-second clock. Score 90%+ for a Winner's Circle badge and 95%+ to unlock 10 bonus questions.
           </p>
+          {isAdmin && (
+            <div className="mb-4 rounded-lg border border-red-500/20 bg-red-500/5 px-3 py-2 text-xs text-red-300">
+              Owner testing enabled: all tiers and retests are available without learner locks or trial limits.
+            </div>
+          )}
           <div className="grid grid-cols-3 gap-2">
             {([1, 2, 3] as ExamTier[]).map((tier) => {
               const unlocked = examUnlocked[tier];
+              const canStartTier = isAdmin || unlocked;
               const score = examTierScores[tier];
               const completed = score > 0;
               const passed = score >= 80;
@@ -324,7 +331,7 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
                 <div
                   key={tier}
                   className={`rounded-xl border p-3 text-center ${
-                    unlocked
+                    canStartTier
                       ? completed
                         ? passed
                           ? "bg-emerald-500/10 border-emerald-500/30"
@@ -342,27 +349,28 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
                   <p className={`text-xs mb-2 ${tier === 3 ? "text-red-400/80 font-semibold" : "text-gray-500"}`}>
                     {tier === 3 ? "270 questions · 45s each · hard-scored" : "270 questions"}
                   </p>
-                  {completed ? (
+                  {completed && (
                     <p className={`text-xs font-bold ${passed ? "text-emerald-400" : "text-red-400"}`}>
                       {passed ? "✓ Passed" : "✗ Retry"} — {score}%
                     </p>
-                  ) : unlocked ? (
+                  )}
+                  {canStartTier && (!completed || isAdmin) ? (
                     <button
-                      onClick={() => remainingTrials === 0 ? onPricing() : onStartExamTier(tier)}
-                      disabled={remainingTrials === 0}
+                      onClick={() => !isAdmin && remainingTrials === 0 ? onPricing() : onStartExamTier(tier)}
+                      disabled={!isAdmin && remainingTrials === 0}
                       className={`w-full mt-1 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                        remainingTrials === 0
+                        !isAdmin && remainingTrials === 0
                           ? "bg-gray-800 text-gray-500 cursor-not-allowed"
                           : "bg-red-600 hover:bg-red-500 text-white"
                       }`}
                     >
-                      {remainingTrials === 0 ? "Locked" : "Start"}
+                      {!isAdmin && remainingTrials === 0 ? "Locked" : isAdmin ? "Test tier" : "Start"}
                     </button>
-                  ) : (
+                  ) : !canStartTier ? (
                     <p className="text-gray-600 text-xs flex items-center justify-center gap-1">
                       <Lock size={10} /> Locked
                     </p>
-                  )}
+                  ) : null}
                 </div>
               );
             })}

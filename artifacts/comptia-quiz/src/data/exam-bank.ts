@@ -219,23 +219,32 @@ function hardenHellModeQuestion(q: Question): Question {
     const options = shuffleArray([acronym, ...acronymOptions]);
     return {
       ...q,
-      question: `During ${context}, the team must implement or identify "${correctExpansion}". Which acronym should be documented for this requirement?`,
+      question: `During ${context}, the team must implement or identify "${correctExpansion}". A reviewer says two controls appear plausible, but only one matches the evidence and the stated requirement. Which acronym should be documented for this requirement?`,
       options,
       correctIndex: options.indexOf(acronym),
       difficulty: "hard",
     };
   }
 
+  const base = replaceDuplicateOptions(q);
+  const sourcePool = category ? optionPools[category] : allCorrectAnswers;
+  const plausibleDistractors = choosePlausibleDistractors(base, sourcePool);
+  const options = plausibleDistractors.length >= 3
+    ? shuffleArray([base.options[base.correctIndex], ...plausibleDistractors])
+    : base.options;
   const hardened: Question = {
-    ...replaceDuplicateOptions(q),
+    ...base,
+    options,
+    correctIndex: options.indexOf(base.options[base.correctIndex]),
     difficulty: "hard",
   };
   if (hardened.question.startsWith("Forensic case:")) return hardened;
   return {
     ...hardened,
     question:
-      `Forensic case: two symptoms appeared after a controlled change, but only one is causal. ` +
-      `Account for dependencies, evidence order, and the least-disruptive corrective action before answering. ${hardened.question}`,
+      `HellMode case: two symptoms appeared after a controlled change, but only one is causal. ` +
+      `Account for dependencies, evidence order, competing plausible answers, and the least-disruptive corrective action before answering. ` +
+      `${hardened.question} Select the single answer that best satisfies the requirement without introducing a new risk.`,
   };
 }
 

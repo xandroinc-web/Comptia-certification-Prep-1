@@ -192,7 +192,10 @@ function ProgressRoute() {
   const { data: adminAccess } = useGetAdminAccess({
     query: { enabled: shouldFetch, retry: false, queryKey: ["admin-access"] },
   });
-  const effectiveIsPro = isPro || adminAccess?.freeTestSimulation === true;
+  const effectiveIsPro =
+    isPro ||
+    adminAccess?.freeTestSimulation === true ||
+    adminAccess?.isAdmin === true;
   return (
     <div className="min-h-screen">
       <TechBackground />
@@ -271,6 +274,7 @@ function AppContent() {
     query: { enabled: shouldFetch, retry: false, queryKey: ["admin-access"] },
   });
   const isSimulationPro = adminAccess?.freeTestSimulation === true;
+  const isAdmin = adminAccess?.isAdmin === true;
   const { data: managedQuestionData } = useGetManagedQuestions({
     query: { queryKey: ["managed-questions"], staleTime: 60_000 },
   });
@@ -302,7 +306,7 @@ function AppContent() {
 
   function checkTrial(): boolean {
     const signedIn = isSignedIn ?? false;
-    if (isPro || isSimulationPro) return true;
+    if (isPro || isSimulationPro || isAdmin) return true;
     if (!canStartTrial(signedIn, isPro)) {
       setState("pricing");
       return false;
@@ -432,7 +436,7 @@ function AppContent() {
   }
 
   function handleStartExamTier(tier: ExamTier) {
-    if (!examUnlocked[tier]) return;
+    if (!isAdmin && !examUnlocked[tier]) return;
     if (!checkTrial()) return;
     const managedTierQuestions = managedQuestions.filter((question) => question.adminTier === tier);
     const qs = scrambleOptions([...getTierAsQuestions(tier), ...managedTierQuestions]).slice(0, 270);
@@ -451,6 +455,13 @@ function AppContent() {
     setFinalAnswers([]);
     setState("quiz");
   }
+
+  useEffect(() => {
+    const requestedTier = Number(new URLSearchParams(window.location.search).get("adminTier"));
+    if (!isAdmin || ![1, 2, 3].includes(requestedTier)) return;
+    window.history.replaceState({}, document.title, `${basePath}/`);
+    handleStartExamTier(requestedTier as ExamTier);
+  }, [isAdmin]);
 
   function handleExamFinish(answers: (number | null)[], qTimes: number[]) {
     const currentTier = examTier as ExamTier;
@@ -548,10 +559,11 @@ function AppContent() {
           onProgress={() => setState("progress")}
           quizHistory={quizHistory || []}
           historyLoading={historyLoading}
-          isPro={isPro || isSimulationPro}
+           isPro={isPro || isSimulationPro || isAdmin}
+           isAdmin={isAdmin}
           isSignedIn={isSignedIn ?? false}
-          remainingTrials={getRemainingTrials(isSignedIn ?? false, isPro || isSimulationPro)}
-          trialStatusMessage={getTrialStatusMessage(isSignedIn ?? false, isPro || isSimulationPro)}
+           remainingTrials={getRemainingTrials(isSignedIn ?? false, isPro || isSimulationPro || isAdmin)}
+           trialStatusMessage={getTrialStatusMessage(isSignedIn ?? false, isPro || isSimulationPro || isAdmin)}
         />
       )}
       {state === "quiz" && (

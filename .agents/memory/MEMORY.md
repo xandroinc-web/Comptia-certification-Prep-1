@@ -1,1 +1,2 @@
 - [HellMode quality](hellmode-quality.md) — keep the hardest tier explicitly hard-scored, time-boxed, and validated for meaningful distractors.
+- [Stripe admin resilience](stripe-admin-resilience.md) — optional Stripe sync tables must not prevent the protected admin overview from loading.

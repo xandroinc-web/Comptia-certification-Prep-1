@@ -253,14 +253,23 @@ function serializeUser(user: any) {
 
 router.get("/admin/overview", requireAdmin, async (req, res): Promise<void> => {
   try {
-    const [settings, media, auditLogs, resultCount, activeSubscriptions] =
+    const [settings, media, auditLogs, resultCount] =
       await Promise.all([
         db.select().from(adminSettingsTable).orderBy(adminSettingsTable.key),
         db.select().from(adminMediaTable).orderBy(desc(adminMediaTable.updatedAt)),
         db.select().from(adminAuditLogsTable).orderBy(desc(adminAuditLogsTable.createdAt)).limit(12),
         db.select({ count: sql<number>`count(*)` }).from(quizResultsTable),
-        db.execute(sql`SELECT count(*)::int AS count FROM stripe.subscriptions WHERE status IN ('active', 'trialing')`),
       ]);
+
+    let activeSubscriptions = 0;
+    try {
+      const subscriptionRows = await db.execute(
+        sql`SELECT count(*)::int AS count FROM stripe.subscriptions WHERE status IN ('active', 'trialing')`,
+      );
+      activeSubscriptions = Number((subscriptionRows.rows[0] as any)?.count ?? 0);
+    } catch (error) {
+      req.log.warn({ err: error }, "Unable to read Stripe subscription count");
+    }
 
     let users = 0;
     try {
@@ -303,7 +312,7 @@ router.get("/admin/overview", requireAdmin, async (req, res): Promise<void> => {
       stats: {
         users,
         quizResults: Number(resultCount[0]?.count ?? 0),
-        activeSubscriptions: Number((activeSubscriptions.rows[0] as any)?.count ?? 0),
+        activeSubscriptions,
         activeMedia: media.filter((item) => item.active).length,
       },
       settings,

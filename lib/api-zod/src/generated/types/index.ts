@@ -7,6 +7,8 @@
  */
 
 export * from "./adminAccessResponse";
+export * from "./adminAccessResponsePermissionsItem";
+export * from "./adminAccessResponseRole";
 export * from "./adminActionResponse";
 export * from "./adminAuditLog";
 export * from "./adminAuditLogMetadata";
@@ -28,6 +30,10 @@ export * from "./adminQuestionTier";
 export * from "./adminSetting";
 export * from "./adminSettingsInput";
 export * from "./adminSettingValue";
+export * from "./adminSimulationEventInput";
+export * from "./adminSimulationEventInputEvent";
+export * from "./adminSimulationEventInputFeatureFlags";
+export * from "./adminSimulationEventInputProfile";
 export * from "./adminStats";
 export * from "./adminUser";
 export * from "./adminUserAction";

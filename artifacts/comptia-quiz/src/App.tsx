@@ -26,6 +26,7 @@ import {
   useGetSubscription,
   useGetAdminAccess,
   useGetManagedQuestions,
+  useCreateAdminSimulationEvent,
 } from "@workspace/api-client-react";
 import {
   canStartTrial,
@@ -42,10 +43,17 @@ import CheckoutSuccessPage from "@/pages/CheckoutSuccessPage";
 import CheckoutCancelPage from "@/pages/CheckoutCancelPage";
 import ProgressPage from "@/pages/ProgressPage";
 import AdminPage from "@/pages/AdminPage";
+import {
+  clearAdminSimulation,
+  getAdminSimulationRuns,
+  loadAdminSimulationConfig,
+  recordAdminSimulationRun,
+  type AdminSimulationConfig,
+} from "@/lib/admin-simulation";
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 
-type AppState = "home" | "quiz" | "passfail" | "results" | "pricing" | "progress";
+type AppState = "home" | "quiz" | "passfail" | "results" | "pricing" | "progress" | "restricted";
 
 type QuizMode = "all" | ExamCategory | { topic: DomainTopic };
 
@@ -215,6 +223,7 @@ function ProgressRoute() {
 }
 
 function AppContent() {
+  const [, setLocation] = useLocation();
   const [state, setState] = useState<AppState>("home");
   const [mode, setMode] = useState<string>("all");
   const [difficulty, setDifficulty] = useState<Difficulty>("medium");
@@ -235,6 +244,10 @@ function AppContent() {
   const [examTierTimes, setExamTierTimes] = useState<Partial<Record<ExamTier, number[]>>>({});
   const [isBonusMode, setIsBonusMode] = useState(false);
   const [examFinalPct, setExamFinalPct] = useState(0);
+  const [adminSimulation, setAdminSimulation] = useState<AdminSimulationConfig | null>(null);
+  const [adminSimulationRuns, setAdminSimulationRuns] = useState(0);
+  const [simulationExamUnlocked, setSimulationExamUnlocked] = useState<Record<ExamTier, boolean>>({ 1: true, 2: false, 3: false });
+  const [simulationExamScores, setSimulationExamScores] = useState<Record<ExamTier, number>>({ 1: 0, 2: 0, 3: 0 });
 
   useEffect(() => {
     try {
@@ -259,6 +272,7 @@ function AppContent() {
   const { user, isLoaded } = useUser();
   const { isSignedIn } = useAuth();
   const createResult = useCreateQuizResult();
+  const createAdminSimulationEvent = useCreateAdminSimulationEvent();
 
   const shouldFetch = Boolean(isLoaded && isSignedIn && user);
   const { data: quizHistory, isLoading: historyLoading } = useGetQuizResults({
@@ -270,11 +284,67 @@ function AppContent() {
   const isPro =
     subData?.subscription?.status === "active" ||
     subData?.subscription?.status === "trialing";
-  const { data: adminAccess } = useGetAdminAccess({
+  const adminAccessQuery = useGetAdminAccess({
     query: { enabled: shouldFetch, retry: false, queryKey: ["admin-access"] },
   });
+  const adminAccess = adminAccessQuery.data;
   const isSimulationPro = adminAccess?.freeTestSimulation === true;
   const isAdmin = adminAccess?.isAdmin === true;
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("adminSimulation") !== "1" || !isLoaded) return;
+    if (!isSignedIn) {
+      window.history.replaceState({}, document.title, `${basePath}/`);
+      return;
+    }
+    if (!user || adminAccessQuery.isFetching || adminAccessQuery.isPending) return;
+    if (isAdmin) {
+      const config = loadAdminSimulationConfig();
+      if (config) {
+        setAdminSimulation(config);
+        setAdminSimulationRuns(getAdminSimulationRuns());
+        setSimulationExamUnlocked({ 1: true, 2: false, 3: false });
+        setSimulationExamScores({ 1: 0, 2: 0, 3: 0 });
+        if (config.profile === "restricted") setState("restricted");
+      }
+    }
+    window.history.replaceState({}, document.title, `${basePath}/`);
+  }, [isLoaded, isSignedIn, user, isAdmin, adminAccessQuery.isFetching, adminAccessQuery.isPending]);
+
+  const simulatedPremium = adminSimulation?.profile === "pro" || adminSimulation?.profile === "hellmode";
+  const isOwnerTesting = isAdmin && !adminSimulation;
+  const effectiveIsPro = adminSimulation ? simulatedPremium : Boolean(isPro || isSimulationPro || isAdmin);
+  const effectiveExamUnlocked: Record<ExamTier, boolean> = adminSimulation
+    ? {
+        1: true,
+        2: adminSimulation.featureFlags.tierProgression && (
+          adminSimulation.profile === "hellmode" || simulationExamUnlocked[2]
+        ),
+        3: adminSimulation.featureFlags.tierProgression && (
+          adminSimulation.profile === "hellmode" || simulationExamUnlocked[3]
+        ),
+      }
+    : examUnlocked;
+  const effectiveExamScores = adminSimulation ? simulationExamScores : examTierScores;
+
+  function logAdminSimulationEvent(
+    event: "session_started" | "quiz_started" | "quiz_completed" | "access_blocked" | "session_ended",
+    quizMode?: string,
+    scorePercent?: number,
+  ) {
+    if (!adminSimulation || !isAdmin) return;
+    createAdminSimulationEvent.mutate({
+      data: {
+        profile: adminSimulation.profile,
+        event,
+        dailyQuizLimit: adminSimulation.dailyQuizLimit,
+        featureFlags: adminSimulation.featureFlags,
+        ...(quizMode ? { quizMode: quizMode.slice(0, 100) } : {}),
+        ...(scorePercent !== undefined ? { scorePercent } : {}),
+      },
+    });
+  }
   const { data: managedQuestionData } = useGetManagedQuestions({
     query: { queryKey: ["managed-questions"], staleTime: 60_000 },
   });
@@ -304,9 +374,25 @@ function AppContent() {
     return scrambleOptions([...questions, ...matching]).slice(0, count);
   }
 
-  function checkTrial(): boolean {
+  function checkTrial(quizMode = "Quiz"): boolean {
     const signedIn = isSignedIn ?? false;
-    if (isPro || isSimulationPro || isAdmin) return true;
+    if (adminSimulation) {
+      if (adminSimulation.profile === "restricted") {
+        logAdminSimulationEvent("access_blocked", quizMode);
+        setState("restricted");
+        return false;
+      }
+      if (adminSimulation.dailyQuizLimit > 0 && adminSimulationRuns >= adminSimulation.dailyQuizLimit) {
+        logAdminSimulationEvent("access_blocked", quizMode);
+        setState("pricing");
+        return false;
+      }
+      const nextRuns = recordAdminSimulationRun();
+      setAdminSimulationRuns(nextRuns);
+      logAdminSimulationEvent("quiz_started", quizMode);
+      return true;
+    }
+    if (isPro || isSimulationPro || isOwnerTesting) return true;
     if (!canStartTrial(signedIn, isPro)) {
       setState("pricing");
       return false;
@@ -316,7 +402,7 @@ function AppContent() {
   }
 
   function handleStart(selected: "all" | ExamCategory, length: "full" | "fast", diff: Difficulty) {
-    if (!checkTrial()) return;
+    if (!checkTrial(`${selected} ${length} quiz`)) return;
     // Full mode is the 90-question practice run. Fast mode is exactly half
     // that length; do not derive it from the 270-question bank size.
     const questionCount = length === "fast" ? 45 : 90;
@@ -337,7 +423,7 @@ function AppContent() {
   }
 
   function handleStudyWeak(selected: "all" | ExamCategory) {
-    if (!checkTrial()) return;
+    if (!checkTrial(`${selected} weak-area study`)) return;
     let qs = getWeakQuestions();
     if (selected !== "all") {
       qs = qs.filter((q) => q.category === selected);
@@ -356,7 +442,7 @@ function AppContent() {
   }
 
   function handleStudyTopic(topic: DomainTopic) {
-    if (!checkTrial()) return;
+    if (!checkTrial(`${topic} topic study`)) return;
     const qs = getMixedTopicQuestions(topic, 30);
     const limit = getTimeLimitSeconds(qs.length, "medium");
     setMode(topic);
@@ -369,13 +455,51 @@ function AppContent() {
     setState("quiz");
   }
 
+  function handleStartSimulation(
+    selected: ExamCategory,
+    diff: Difficulty | "mixed",
+  ) {
+    if (adminSimulation && !adminSimulation.featureFlags.timedSimulations) {
+      logAdminSimulationEvent("access_blocked", `${selected} simulation`);
+      return;
+    }
+    if (
+      !adminSimulation &&
+      !getSimulationStatus(selected, effectiveIsPro).canStart
+    ) {
+      setState("pricing");
+      return;
+    }
+    if (!checkTrial(`${selected} simulation`)) return;
+    if (!adminSimulation && !effectiveIsPro) recordSimulationUsed(selected);
+    const qs = generateSimulation(selected, diff, effectiveIsPro);
+    setMode(`${selected} Simulation`);
+    setDifficulty(diff === "mixed" ? "medium" : diff);
+    setIsWeakMode(false);
+    setIsExamMode(false);
+    setIsBonusMode(false);
+    setExamTier(null);
+    setActiveQuestions(qs);
+    setTimeLimit(qs.length * 60);
+    setQuestionTimes([]);
+    setCompletionTimestamp("");
+    setState("quiz");
+  }
+
   function handleFinish(answers: (number | null)[], qTimes: number[]) {
     setFinalAnswers(answers);
     setQuestionTimes(qTimes);
     const timestamp = new Date().toLocaleString();
     setCompletionTimestamp(timestamp);
 
-    if (isSignedIn) {
+    if (adminSimulation) {
+      const correct = activeQuestions.filter((q, i) => answers[i] === q.correctIndex).length;
+      logAdminSimulationEvent(
+        "quiz_completed",
+        mode,
+        Math.round((correct / activeQuestions.length) * 100),
+      );
+    } else if (isSignedIn) {
       const totalCorrect = activeQuestions.filter(
         (q, i) => answers[i] === q.correctIndex,
       ).length;
@@ -403,7 +527,21 @@ function AppContent() {
   }
 
   function handleRetry() {
-    if (!checkTrial()) return;
+    if (isExamMode && examTier) {
+      handleStartExamTier(examTier);
+      return;
+    }
+    if (isExamMode && isBonusMode) {
+      if (!checkTrial("Bonus round retry")) return;
+      const qs = getBonusAsQuestions();
+      setActiveQuestions(qs);
+      setTimeLimit(qs.length * 60);
+      setQuestionTimes([]);
+      setCompletionTimestamp("");
+      setState("quiz");
+      return;
+    }
+    if (!checkTrial(`${mode} retry`)) return;
     if (isWeakMode) {
       const qs = getWeakQuestions();
       if (mode !== "all" && ["A+", "Network+", "Security+"].includes(mode)) {
@@ -435,9 +573,18 @@ function AppContent() {
     setIsBonusMode(false);
   }
 
+  function endAdminSimulation() {
+    if (adminSimulation) logAdminSimulationEvent("session_ended");
+    clearAdminSimulation();
+    setAdminSimulation(null);
+    setAdminSimulationRuns(0);
+    setState("home");
+    setLocation("/admin");
+  }
+
   function handleStartExamTier(tier: ExamTier) {
-    if (!isAdmin && !examUnlocked[tier]) return;
-    if (!checkTrial()) return;
+    if (!isOwnerTesting && !effectiveExamUnlocked[tier]) return;
+    if (!checkTrial(`Exam Tier ${tier}`)) return;
     const managedTierQuestions = managedQuestions.filter((question) => question.adminTier === tier);
     const qs = scrambleOptions([...getTierAsQuestions(tier), ...managedTierQuestions]).slice(0, 270);
     const limit = getTierTimeLimitSeconds(tier);
@@ -470,19 +617,28 @@ function AppContent() {
 
     setExamTierAnswers((prev) => ({ ...prev, [currentTier]: answers }));
     setExamTierTimes((prev) => ({ ...prev, [currentTier]: qTimes }));
-    setExamTierScores((prev) => {
-      const next = { ...prev, [currentTier]: rawPct };
-      saveExamProgress(examUnlocked, next);
-      return next;
-    });
+    const nextScores = { ...effectiveExamScores, [currentTier]: rawPct };
+    if (adminSimulation) setSimulationExamScores(nextScores);
+    else {
+      setExamTierScores(nextScores);
+      saveExamProgress(effectiveExamUnlocked, nextScores);
+    }
 
     const passed = rawPct >= EXAM_TIER_PASS_PCT;
     const nextTier = (currentTier + 1) as ExamTier;
 
-    if (passed && nextTier <= 3 && !examUnlocked[nextTier]) {
-      const newUnlocked = { ...examUnlocked, [nextTier]: true };
-      setExamUnlocked(newUnlocked);
-      saveExamProgress(newUnlocked, { ...examTierScores, [currentTier]: rawPct });
+    if (
+      passed &&
+      nextTier <= 3 &&
+      !effectiveExamUnlocked[nextTier] &&
+      (!adminSimulation || adminSimulation.featureFlags.tierProgression)
+    ) {
+      const newUnlocked = { ...effectiveExamUnlocked, [nextTier]: true };
+      if (adminSimulation) setSimulationExamUnlocked(newUnlocked);
+      else {
+        setExamUnlocked(newUnlocked);
+        saveExamProgress(newUnlocked, nextScores);
+      }
     }
 
     setFinalAnswers(answers);
@@ -491,16 +647,20 @@ function AppContent() {
 
     if (currentTier === 3) {
       // Calculate final average across all tiers
-      const scores = { ...examTierScores, [currentTier]: rawPct };
+      const scores = nextScores;
       const avg = Math.round((scores[1] + scores[2] + scores[3]) / 3);
       setExamFinalPct(avg);
+    }
+    if (adminSimulation) {
+      logAdminSimulationEvent("quiz_completed", `Exam Tier ${currentTier}`, rawPct);
     }
 
     setState("results");
   }
 
   function handleStartBonus() {
-    if (!checkTrial()) return;
+    if (adminSimulation && !adminSimulation.featureFlags.bonusQuestions) return;
+    if (!checkTrial("Bonus round")) return;
     const qs = getBonusAsQuestions();
     const limit = qs.length * 60;
     setMode("Bonus");
@@ -521,7 +681,48 @@ function AppContent() {
     setFinalAnswers(answers);
     setQuestionTimes(qTimes);
     setCompletionTimestamp(new Date().toLocaleString());
+    if (adminSimulation) {
+      const correct = activeQuestions.filter((q, i) => answers[i] === q.correctIndex).length;
+      logAdminSimulationEvent("quiz_completed", "Bonus round", Math.round((correct / activeQuestions.length) * 100));
+    }
     setState("results");
+  }
+
+  const simulationRunsRemaining = adminSimulation
+    ? adminSimulation.dailyQuizLimit === 0
+      ? null
+      : Math.max(0, adminSimulation.dailyQuizLimit - adminSimulationRuns)
+    : undefined;
+  const simulationTrialMessage = adminSimulation && adminSimulation.dailyQuizLimit > 0
+    ? simulationRunsRemaining === 0
+      ? "No quiz starts remain in this test session."
+      : `${simulationRunsRemaining} quiz starts remain in this test session.`
+    : null;
+
+  if (state === "restricted" && adminSimulation?.profile === "restricted") {
+    return (
+      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#060910] px-4 text-white">
+        <TechBackground />
+        <section className="relative z-10 w-full max-w-lg rounded-3xl border border-red-500/20 bg-[#0c111b] p-8 text-center shadow-2xl shadow-red-950/20">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-red-400/20 bg-red-400/10 text-red-300">
+            <ShieldCheck size={26} />
+          </div>
+          <p className="mt-5 text-xs font-bold uppercase tracking-[0.2em] text-red-300">Simulated account state</p>
+          <h1 className="mt-2 text-2xl font-bold">Access is restricted</h1>
+          <p className="mt-3 text-sm leading-6 text-slate-400">
+            This is an isolated preview of the restricted learner experience. No real account was suspended or changed.
+          </p>
+          <button
+            type="button"
+            onClick={endAdminSimulation}
+            className="mt-6 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-500"
+          >
+            Exit test and return to admin
+          </button>
+        </section>
+        <AdminAccessButton />
+      </div>
+    );
   }
 
   if (state === "pricing") {
@@ -531,14 +732,14 @@ function AppContent() {
   if (state === "progress") {
     return (
       <ProgressPage
-        quizHistory={quizHistory || []}
+        quizHistory={adminSimulation ? [] : quizHistory || []}
         onBack={handleHome}
         onStartQuiz={(cat, diff) => {
           setMode(cat as ExamCategory);
           setDifficulty(diff);
           handleStart(cat as "all" | ExamCategory, "full", diff);
         }}
-        isPro={isPro}
+        isPro={effectiveIsPro}
       />
     );
   }
@@ -550,20 +751,25 @@ function AppContent() {
         {state === "home" && (
         <HomePage
           onStart={handleStart}
+          onStartSimulation={handleStartSimulation}
           onStudyWeak={handleStudyWeak}
           onStudyTopic={handleStudyTopic}
           onStartExamTier={handleStartExamTier}
-          examUnlocked={examUnlocked}
-          examTierScores={examTierScores}
+          examUnlocked={effectiveExamUnlocked}
+          examTierScores={effectiveExamScores}
           onPricing={() => setState("pricing")}
           onProgress={() => setState("progress")}
-          quizHistory={quizHistory || []}
-          historyLoading={historyLoading}
-           isPro={isPro || isSimulationPro || isAdmin}
-           isAdmin={isAdmin}
-          isSignedIn={isSignedIn ?? false}
-           remainingTrials={getRemainingTrials(isSignedIn ?? false, isPro || isSimulationPro || isAdmin)}
-           trialStatusMessage={getTrialStatusMessage(isSignedIn ?? false, isPro || isSimulationPro || isAdmin)}
+          quizHistory={adminSimulation ? [] : quizHistory || []}
+          historyLoading={adminSimulation ? false : historyLoading}
+          isPro={effectiveIsPro}
+          isAdmin={isOwnerTesting}
+          isSignedIn={adminSimulation ? false : isSignedIn ?? false}
+          remainingTrials={simulationRunsRemaining ?? getRemainingTrials(isSignedIn ?? false, effectiveIsPro)}
+          trialStatusMessage={simulationTrialMessage ?? getTrialStatusMessage(isSignedIn ?? false, effectiveIsPro)}
+          simulationProfile={adminSimulation?.profile}
+          simulationFeatures={adminSimulation?.featureFlags}
+          simulationRunsRemaining={simulationRunsRemaining}
+          onEndSimulation={endAdminSimulation}
         />
       )}
       {state === "quiz" && (
@@ -602,8 +808,8 @@ function AppContent() {
           isExamMode={isExamMode}
           isBonusMode={isBonusMode}
           examTier={examTier}
-          examUnlocked={examUnlocked}
-          examTierScores={examTierScores}
+          examUnlocked={effectiveExamUnlocked}
+          examTierScores={effectiveExamScores}
           examFinalPct={examFinalPct}
           questionTimes={questionTimes}
           completionTimestamp={completionTimestamp}
@@ -612,6 +818,7 @@ function AppContent() {
           onProgress={() => setState("progress")}
           onNextExamTier={handleStartExamTier}
           onStartBonus={handleStartBonus}
+          canStartBonus={adminSimulation?.featureFlags.bonusQuestions ?? true}
         />
       )}
       </div>

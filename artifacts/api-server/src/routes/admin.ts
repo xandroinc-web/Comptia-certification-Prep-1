@@ -11,8 +11,50 @@ import {
 } from "@workspace/db";
 import { stripeStorage } from "../stripeStorage";
 import { getUncachableStripeClient } from "../stripeClient";
+import { CreateAdminSimulationEventBody } from "@workspace/api-zod";
 
 const router: IRouter = Router();
+
+type AdminRole = "owner" | "admin" | "quiz_tester";
+type AdminPermission =
+  | "dashboard:read"
+  | "dashboard:overview"
+  | "quiz:read"
+  | "quiz:manage"
+  | "settings:manage"
+  | "media:manage"
+  | "users:read"
+  | "users:manage"
+  | "audit:read"
+  | "simulation:run";
+
+const rolePermissions: Record<AdminRole, AdminPermission[]> = {
+  owner: [
+    "dashboard:read",
+    "dashboard:overview",
+    "quiz:read",
+    "quiz:manage",
+    "settings:manage",
+    "media:manage",
+    "users:read",
+    "users:manage",
+    "audit:read",
+    "simulation:run",
+  ],
+  admin: [
+    "dashboard:read",
+    "dashboard:overview",
+    "quiz:read",
+    "quiz:manage",
+    "settings:manage",
+    "media:manage",
+    "users:read",
+    "users:manage",
+    "audit:read",
+    "simulation:run",
+  ],
+  quiz_tester: ["dashboard:read", "quiz:read", "simulation:run"],
+};
 
 function getRequestUserId(req: Request): string | null {
   const auth = getAuth(req);
@@ -29,13 +71,35 @@ function getAdminIds(): Set<string> {
   );
 }
 
-function requireAdmin(req: Request, res: Response, next: NextFunction): void {
+function getRoleAssignments(): Record<string, AdminRole> {
+  try {
+    const parsed = JSON.parse(process.env.ADMIN_ROLE_ASSIGNMENTS ?? "{}");
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
+    return Object.fromEntries(
+      Object.entries(parsed).filter(
+        ([userId, role]) =>
+          userId.length > 0 && (role === "owner" || role === "admin" || role === "quiz_tester"),
+      ),
+    ) as Record<string, AdminRole>;
+  } catch {
+    return {};
+  }
+}
+
+function getAdminRole(userId: string): AdminRole | null {
+  if (getAdminIds().has(userId)) return "owner";
+  return getRoleAssignments()[userId] ?? null;
+}
+
+function requirePermission(permission: AdminPermission) {
+  return (req: Request, res: Response, next: NextFunction): void => {
   const userId = getRequestUserId(req);
   if (!userId) {
     res.status(401).json({ error: "Unauthorized" });
     return;
   }
-  if (!getAdminIds().has(userId)) {
+  const role = getAdminRole(userId);
+  if (!role || !rolePermissions[role].includes(permission)) {
     res.status(403).json({
       error: "Admin access is not configured for this account",
       code: "ADMIN_NOT_ALLOWED",
@@ -43,11 +107,17 @@ function requireAdmin(req: Request, res: Response, next: NextFunction): void {
     return;
   }
   (req as any).adminUserId = userId;
-  next();
+    (req as any).adminRole = role;
+    next();
+  };
 }
 
 function adminUserId(req: Request): string {
   return (req as any).adminUserId as string;
+}
+
+function adminRole(req: Request): AdminRole {
+  return (req as any).adminRole as AdminRole;
 }
 
 async function writeAudit(
@@ -102,7 +172,7 @@ router.get("/managed-questions", async (_req, res): Promise<void> => {
   }
 });
 
-router.get("/admin/access", requireAdmin, async (req, res): Promise<void> => {
+router.get("/admin/access", requirePermission("dashboard:read"), async (req, res): Promise<void> => {
   try {
     const [setting] = await db
       .select({ value: adminSettingsTable.value })
@@ -111,6 +181,8 @@ router.get("/admin/access", requireAdmin, async (req, res): Promise<void> => {
       .limit(1);
     res.json({
       isAdmin: true,
+      role: adminRole(req),
+      permissions: rolePermissions[adminRole(req)],
       freeTestSimulation: setting?.value?.freeTestSimulation === true,
     });
   } catch (error) {
@@ -143,7 +215,7 @@ function validQuestionPayload(value: any): value is {
   );
 }
 
-router.get("/admin/questions", requireAdmin, async (_req, res): Promise<void> => {
+router.get("/admin/questions", requirePermission("quiz:read"), async (_req, res): Promise<void> => {
   try {
     res.json({ data: await db.select().from(adminQuestionsTable).orderBy(desc(adminQuestionsTable.updatedAt)) });
   } catch {
@@ -151,7 +223,7 @@ router.get("/admin/questions", requireAdmin, async (_req, res): Promise<void> =>
   }
 });
 
-router.post("/admin/questions", requireAdmin, async (req, res): Promise<void> => {
+router.post("/admin/questions", requirePermission("quiz:manage"), async (req, res): Promise<void> => {
   if (!validQuestionPayload(req.body)) {
     res.status(400).json({ error: "Question, four options, and a valid answer are required" });
     return;
@@ -180,7 +252,7 @@ router.post("/admin/questions", requireAdmin, async (req, res): Promise<void> =>
   }
 });
 
-router.patch("/admin/questions/:id", requireAdmin, async (req, res): Promise<void> => {
+router.patch("/admin/questions/:id", requirePermission("quiz:manage"), async (req, res): Promise<void> => {
   const id = Number(req.params.id);
   if (!Number.isInteger(id) || !validQuestionPayload({ ...req.body, question: req.body.question ?? "existing", options: req.body.options ?? ["a", "b", "c", "d"], correctIndex: req.body.correctIndex ?? 0 })) {
     res.status(400).json({ error: "Question fields are invalid" });
@@ -214,7 +286,7 @@ router.patch("/admin/questions/:id", requireAdmin, async (req, res): Promise<voi
   }
 });
 
-router.delete("/admin/questions/:id", requireAdmin, async (req, res): Promise<void> => {
+router.delete("/admin/questions/:id", requirePermission("quiz:manage"), async (req, res): Promise<void> => {
   const id = Number(req.params.id);
   if (!Number.isInteger(id)) {
     res.status(400).json({ error: "Invalid question id" });
@@ -251,7 +323,7 @@ function serializeUser(user: any) {
   };
 }
 
-router.get("/admin/overview", requireAdmin, async (req, res): Promise<void> => {
+router.get("/admin/overview", requirePermission("dashboard:overview"), async (req, res): Promise<void> => {
   try {
     const [settings, media, auditLogs, resultCount] =
       await Promise.all([
@@ -326,7 +398,7 @@ router.get("/admin/overview", requireAdmin, async (req, res): Promise<void> => {
   }
 });
 
-router.patch("/admin/settings", requireAdmin, async (req, res): Promise<void> => {
+router.patch("/admin/settings", requirePermission("settings:manage"), async (req, res): Promise<void> => {
   const value = req.body;
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     res.status(400).json({ error: "Settings must be an object" });
@@ -351,7 +423,7 @@ router.patch("/admin/settings", requireAdmin, async (req, res): Promise<void> =>
   }
 });
 
-router.post("/admin/media", requireAdmin, async (req, res): Promise<void> => {
+router.post("/admin/media", requirePermission("media:manage"), async (req, res): Promise<void> => {
   const { kind, title, url, description, active } = req.body ?? {};
   if (
     typeof title !== "string" ||
@@ -382,7 +454,7 @@ router.post("/admin/media", requireAdmin, async (req, res): Promise<void> => {
   }
 });
 
-router.patch("/admin/media/:id", requireAdmin, async (req, res): Promise<void> => {
+router.patch("/admin/media/:id", requirePermission("media:manage"), async (req, res): Promise<void> => {
   const id = Number(req.params.id);
   if (!Number.isInteger(id)) {
     res.status(400).json({ error: "Invalid media id" });
@@ -423,7 +495,7 @@ router.patch("/admin/media/:id", requireAdmin, async (req, res): Promise<void> =
   }
 });
 
-router.delete("/admin/media/:id", requireAdmin, async (req, res): Promise<void> => {
+router.delete("/admin/media/:id", requirePermission("media:manage"), async (req, res): Promise<void> => {
   const id = Number(req.params.id);
   if (!Number.isInteger(id)) {
     res.status(400).json({ error: "Invalid media id" });
@@ -443,7 +515,7 @@ router.delete("/admin/media/:id", requireAdmin, async (req, res): Promise<void> 
   }
 });
 
-router.get("/admin/users", requireAdmin, async (req, res): Promise<void> => {
+router.get("/admin/users", requirePermission("users:read"), async (req, res): Promise<void> => {
   const rawQuery = Array.isArray(req.query.query) ? req.query.query[0] : req.query.query;
   const query = typeof rawQuery === "string" ? rawQuery.trim() : "";
   const rawLimit = Array.isArray(req.query.limit) ? req.query.limit[0] : req.query.limit;
@@ -464,7 +536,7 @@ router.get("/admin/users", requireAdmin, async (req, res): Promise<void> => {
   }
 });
 
-router.post("/admin/users", requireAdmin, async (req, res): Promise<void> => {
+router.post("/admin/users", requirePermission("users:manage"), async (req, res): Promise<void> => {
   const { email, firstName, lastName } = req.body ?? {};
   if (typeof email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
     res.status(400).json({ error: "A valid email is required" });
@@ -485,7 +557,7 @@ router.post("/admin/users", requireAdmin, async (req, res): Promise<void> => {
   }
 });
 
-router.post("/admin/users/:userId/action", requireAdmin, async (req, res): Promise<void> => {
+router.post("/admin/users/:userId/action", requirePermission("users:manage"), async (req, res): Promise<void> => {
   const userId = typeof req.params.userId === "string" ? req.params.userId : "";
   const action = req.body?.action;
   if (!userId || !["ban", "unban", "delete", "cancel_subscription"].includes(action)) {
@@ -528,7 +600,7 @@ router.post("/admin/users/:userId/action", requireAdmin, async (req, res): Promi
   }
 });
 
-router.get("/admin/audit", requireAdmin, async (req, res): Promise<void> => {
+router.get("/admin/audit", requirePermission("audit:read"), async (req, res): Promise<void> => {
   const rawLimit = Array.isArray(req.query.limit) ? req.query.limit[0] : req.query.limit;
   const limit = Math.min(Math.max(Number(rawLimit) || 50, 1), 200);
   try {
@@ -543,5 +615,32 @@ router.get("/admin/audit", requireAdmin, async (req, res): Promise<void> => {
     res.status(500).json({ error: "Failed to load audit history" });
   }
 });
+
+router.post(
+  "/admin/simulation-events",
+  requirePermission("simulation:run"),
+  async (req, res): Promise<void> => {
+    const parsed = CreateAdminSimulationEventBody.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: parsed.error.message });
+      return;
+    }
+
+    const { profile, event, dailyQuizLimit, featureFlags, quizMode, scorePercent } = parsed.data;
+    try {
+      await writeAudit(req, `simulation.${event}`, "simulation", profile, {
+        dailyQuizLimit,
+        featureFlags,
+        ...(quizMode ? { quizMode } : {}),
+        ...(scorePercent !== undefined ? { scorePercent } : {}),
+        realAccountImpersonated: false,
+      });
+      res.status(201).json({ success: true });
+    } catch (error) {
+      req.log.error({ err: error, profile, event }, "Failed to record admin simulation event");
+      res.status(500).json({ error: "Failed to record simulation event" });
+    }
+  },
+);
 
 export default router;

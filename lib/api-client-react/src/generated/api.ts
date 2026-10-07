@@ -29,6 +29,7 @@ import type {
   AdminQuestionsResponse,
   AdminSetting,
   AdminSettingsInput,
+  AdminSimulationEventInput,
   AdminUser,
   AdminUserAction,
   AdminUserInput,
@@ -836,7 +837,7 @@ export function useGetManagedQuestions<
 }
 
 /**
- * @summary Check protected admin simulation access
+ * @summary Check protected admin role and permissions
  */
 export const getGetAdminAccessUrl = () => {
   return `/api/admin/access`;
@@ -887,7 +888,7 @@ export type GetAdminAccessQueryResult = NonNullable<
 export type GetAdminAccessQueryError = ErrorType<unknown>;
 
 /**
- * @summary Check protected admin simulation access
+ * @summary Check protected admin role and permissions
  */
 
 export function useGetAdminAccess<
@@ -909,6 +910,93 @@ export function useGetAdminAccess<
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+/**
+ * @summary Record a simulated learner journey in the admin audit log
+ */
+export const getCreateAdminSimulationEventUrl = () => {
+  return `/api/admin/simulation-events`;
+};
+
+export const createAdminSimulationEvent = async (
+  adminSimulationEventInput: AdminSimulationEventInput,
+  options?: RequestInit,
+): Promise<SuccessResponse> => {
+  return customFetch<SuccessResponse>(getCreateAdminSimulationEventUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(adminSimulationEventInput),
+  });
+};
+
+export const getCreateAdminSimulationEventMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createAdminSimulationEvent>>,
+    TError,
+    { data: BodyType<AdminSimulationEventInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createAdminSimulationEvent>>,
+  TError,
+  { data: BodyType<AdminSimulationEventInput> },
+  TContext
+> => {
+  const mutationKey = ["createAdminSimulationEvent"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createAdminSimulationEvent>>,
+    { data: BodyType<AdminSimulationEventInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return createAdminSimulationEvent(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CreateAdminSimulationEventMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createAdminSimulationEvent>>
+>;
+export type CreateAdminSimulationEventMutationBody =
+  BodyType<AdminSimulationEventInput>;
+export type CreateAdminSimulationEventMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Record a simulated learner journey in the admin audit log
+ */
+export const useCreateAdminSimulationEvent = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createAdminSimulationEvent>>,
+    TError,
+    { data: BodyType<AdminSimulationEventInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createAdminSimulationEvent>>,
+  TError,
+  { data: BodyType<AdminSimulationEventInput> },
+  TContext
+> => {
+  return useMutation(getCreateAdminSimulationEventMutationOptions(options));
+};
 
 /**
  * @summary List managed questions

@@ -176,11 +176,67 @@ export const GetManagedQuestionsResponse = zod.array(
 );
 
 /**
- * @summary Check protected admin simulation access
+ * @summary Check protected admin role and permissions
  */
 export const GetAdminAccessResponse = zod.object({
   isAdmin: zod.boolean(),
   freeTestSimulation: zod.boolean(),
+  role: zod.enum(["owner", "admin", "quiz_tester"]),
+  permissions: zod.array(
+    zod.enum([
+      "dashboard:read",
+      "dashboard:overview",
+      "quiz:read",
+      "quiz:manage",
+      "settings:manage",
+      "media:manage",
+      "users:read",
+      "users:manage",
+      "audit:read",
+      "simulation:run",
+    ]),
+  ),
+});
+
+/**
+ * @summary Record a simulated learner journey in the admin audit log
+ */
+export const createAdminSimulationEventBodyDailyQuizLimitMin = 0;
+export const createAdminSimulationEventBodyDailyQuizLimitMax = 100;
+
+export const createAdminSimulationEventBodyQuizModeMax = 100;
+
+export const createAdminSimulationEventBodyScorePercentMin = 0;
+export const createAdminSimulationEventBodyScorePercentMax = 100;
+
+export const CreateAdminSimulationEventBody = zod.object({
+  profile: zod.enum(["free", "pro", "hellmode", "restricted"]),
+  event: zod.enum([
+    "session_started",
+    "quiz_started",
+    "quiz_completed",
+    "access_blocked",
+    "session_ended",
+  ]),
+  dailyQuizLimit: zod
+    .number()
+    .min(createAdminSimulationEventBodyDailyQuizLimitMin)
+    .max(createAdminSimulationEventBodyDailyQuizLimitMax),
+  quizMode: zod
+    .string()
+    .max(createAdminSimulationEventBodyQuizModeMax)
+    .optional(),
+  scorePercent: zod
+    .number()
+    .min(createAdminSimulationEventBodyScorePercentMin)
+    .max(createAdminSimulationEventBodyScorePercentMax)
+    .optional(),
+  featureFlags: zod.object({
+    timedSimulations: zod.boolean(),
+    topicStudy: zod.boolean(),
+    tierProgression: zod.boolean(),
+    bonusQuestions: zod.boolean(),
+  }),
 });
 
 /**

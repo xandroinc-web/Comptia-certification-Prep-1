@@ -159,14 +159,32 @@ paths:
     get:
       operationId: getAdminAccess
       tags: [admin]
-      summary: Check protected admin simulation access
+      summary: Check protected admin role and permissions
       responses:
         "200":
-          description: Admin access flags
+          description: Server-authorized admin role and permissions
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/AdminAccessResponse"
+  /admin/simulation-events:
+    post:
+      operationId: createAdminSimulationEvent
+      tags: [admin]
+      summary: Record a simulated learner journey in the admin audit log
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminSimulationEventInput"
+      responses:
+        "201":
+          description: Simulation event recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
   /admin/questions:
     get:
       operationId: getAdminQuestions
@@ -747,7 +765,48 @@ components:
           type: boolean
         freeTestSimulation:
           type: boolean
-      required: [isAdmin, freeTestSimulation]
+        role:
+          type: string
+          enum: [owner, admin, quiz_tester]
+        permissions:
+          type: array
+          items:
+            type: string
+            enum: [dashboard:read, dashboard:overview, quiz:read, quiz:manage, settings:manage, media:manage, users:read, users:manage, audit:read, simulation:run]
+      required: [isAdmin, freeTestSimulation, role, permissions]
+    AdminSimulationEventInput:
+      type: object
+      properties:
+        profile:
+          type: string
+          enum: [free, pro, hellmode, restricted]
+        event:
+          type: string
+          enum: [session_started, quiz_started, quiz_completed, access_blocked, session_ended]
+        dailyQuizLimit:
+          type: integer
+          minimum: 0
+          maximum: 100
+        quizMode:
+          type: string
+          maxLength: 100
+        scorePercent:
+          type: integer
+          minimum: 0
+          maximum: 100
+        featureFlags:
+          type: object
+          properties:
+            timedSimulations:
+              type: boolean
+            topicStudy:
+              type: boolean
+            tierProgression:
+              type: boolean
+            bonusQuestions:
+              type: boolean
+          required: [timedSimulations, topicStudy, tierProgression, bonusQuestions]
+      required: [profile, event, dailyQuizLimit, featureFlags]
     AdminQuestion:
       type: object
       properties:

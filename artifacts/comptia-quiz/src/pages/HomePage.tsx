@@ -9,6 +9,7 @@ import { getTopicPoolCount, getTopicsInRandomOrder } from "@/data/topic-pool";
 import { computeGamification, GamificationState } from "@/lib/gamification";
 import { ExamTier } from "@/data/exam-bank";
 import { useGetAppSettings } from "@workspace/api-client-react";
+import type { AdminSimulationFlags, AdminSimulationProfile } from "@/lib/admin-simulation";
 
 import {
   Difficulty,
@@ -37,6 +38,10 @@ interface HomePageProps {
   isSignedIn: boolean;
   remainingTrials: number;
   trialStatusMessage: string | null;
+  simulationProfile?: AdminSimulationProfile | null;
+  simulationFeatures?: AdminSimulationFlags;
+  simulationRunsRemaining?: number | null;
+  onEndSimulation?: () => void;
 }
 
 function getWeakCount(): number {
@@ -71,7 +76,7 @@ const DOMAIN_ICONS: Record<DomainTopic, React.ReactNode> = {
   "4.0 Operational Procedures": <ClipboardList size={14} />,
 };
 
-export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onStudyTopic, onStartExamTier, examUnlocked, examTierScores, onPricing, onProgress, quizHistory, historyLoading, isPro, isAdmin, isSignedIn, remainingTrials, trialStatusMessage }: HomePageProps) {
+export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onStudyTopic, onStartExamTier, examUnlocked, examTierScores, onPricing, onProgress, quizHistory, historyLoading, isPro, isAdmin, isSignedIn, remainingTrials, trialStatusMessage, simulationProfile, simulationFeatures, simulationRunsRemaining, onEndSimulation }: HomePageProps) {
   const [selected, setSelected] = useState<"all" | ExamCategory>("all");
   const [testLength, setTestLength] = useState<TestLength>("full");
   const [difficulty, setDifficulty] = useState<Difficulty>("medium");
@@ -156,6 +161,29 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
           </p>
         </div>
 
+        {simulationProfile && (
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-violet-400/30 bg-violet-400/10 px-4 py-3">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-violet-200">
+                Admin test session · {simulationProfile === "hellmode" ? "HellMode" : simulationProfile}
+              </p>
+              <p className="mt-1 text-xs text-violet-100/70">
+                Simulated access only. No real account, subscription, or quiz history is being changed.
+                {simulationRunsRemaining !== null && simulationRunsRemaining !== undefined
+                  ? ` ${simulationRunsRemaining} quiz starts remaining.`
+                  : ""}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={onEndSimulation}
+              className="rounded-lg border border-violet-300/20 px-3 py-2 text-xs font-semibold text-violet-100 transition hover:bg-violet-200/10"
+            >
+              Exit test session
+            </button>
+          </div>
+        )}
+
         {/* Trial / Pro status banner */}
         {!isPro && trialStatusMessage && (
           <div className={`rounded-xl p-4 mb-4 text-center border ${remainingTrials === 0 ? "bg-red-500/10 border-red-500/30" : "bg-sky-500/10 border-sky-500/30"}`}>
@@ -202,12 +230,16 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
           </div>
 
           {/* Simulation Mode Card */}
-          <SimulationCard
-            selected={selected}
-            isPro={isPro}
-            onStartSimulation={onStartSimulation}
-            onPricing={onPricing}
-          />
+          {(simulationFeatures?.timedSimulations ?? true) && (
+            <SimulationCard
+              selected={selected}
+              isPro={isPro}
+              onStartSimulation={onStartSimulation}
+              onPricing={onPricing}
+              isAdminSimulation={Boolean(simulationProfile)}
+              simulationRunsRemaining={simulationRunsRemaining}
+            />
+          )}
           <h1 className="text-4xl font-bold text-white tracking-tight mb-2">
             Trifecta Quiz
           </h1>
@@ -633,7 +665,7 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
         </div>
 
         {/* Topic Study Mode (A+ only) */}
-        {selected === "A+" && (
+        {selected === "A+" && (simulationFeatures?.topicStudy ?? true) && (
           <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 mb-4">
             <div className="flex items-center justify-between mb-3">
               <p className="text-gray-400 text-sm font-medium uppercase tracking-widest">
@@ -852,11 +884,15 @@ function SimulationCard({
   isPro,
   onStartSimulation,
   onPricing,
+  isAdminSimulation,
+  simulationRunsRemaining,
 }: {
   selected: "all" | ExamCategory;
   isPro: boolean;
   onStartSimulation?: (cat: ExamCategory, diff: Difficulty | "mixed") => void;
   onPricing: () => void;
+  isAdminSimulation: boolean;
+  simulationRunsRemaining?: number | null;
 }) {
   const [simDiff, setSimDiff] = useState<Difficulty | "mixed">("mixed");
 
@@ -866,8 +902,12 @@ function SimulationCard({
     selected === "A+" ? "a_plus" : selected === "Network+" ? "network_plus" : "security_plus"
   ];
 
-  const status = getSimulationStatus(selected, isPro);
-  const hasFree = hasFreeSimulationRemaining(selected);
+  const status = isAdminSimulation
+    ? { canStart: simulationRunsRemaining !== 0 }
+    : getSimulationStatus(selected, isPro);
+  const hasFree = isAdminSimulation
+    ? simulationRunsRemaining !== 0
+    : hasFreeSimulationRemaining(selected);
   const isLocked = !status.canStart;
 
   return (
@@ -884,13 +924,18 @@ function SimulationCard({
             <p className="text-white font-semibold text-sm">Simulation Mode</p>
             <p className="text-gray-500 text-xs">{config.description}</p>
           </div>
-          {!isPro && hasFree && (
+          {isAdminSimulation && (
+            <span className="ml-auto inline-flex items-center gap-1 rounded-full border border-violet-400/30 bg-violet-400/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-violet-200">
+              Test profile{simulationRunsRemaining === null || simulationRunsRemaining === undefined ? "" : ` · ${simulationRunsRemaining} left`}
+            </span>
+          )}
+          {!isAdminSimulation && !isPro && hasFree && (
             <span className="ml-auto inline-flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-2 py-0.5 text-emerald-400 text-[10px] font-bold uppercase tracking-wider">
               <Zap size={10} />
               1 Free
             </span>
           )}
-          {!isPro && !hasFree && (
+          {!isAdminSimulation && !isPro && !hasFree && (
             <span className="ml-auto inline-flex items-center gap-1 bg-red-500/10 border border-red-500/30 rounded-full px-2 py-0.5 text-red-400 text-[10px] font-bold uppercase tracking-wider">
               <Lock size={10} />
               Pro Only
@@ -936,7 +981,7 @@ function SimulationCard({
         <button
           onClick={() => {
             if (isLocked) {
-              onPricing();
+              if (!isAdminSimulation) onPricing();
               return;
             }
             onStartSimulation?.(selected, simDiff);
@@ -950,7 +995,7 @@ function SimulationCard({
           {isLocked ? (
             <span className="flex items-center justify-center gap-2">
               <Lock size={14} />
-              Upgrade to Pro for Simulations
+              {isAdminSimulation ? "Test session limit reached" : "Upgrade to Pro for Simulations"}
             </span>
           ) : (
             <span className="flex items-center justify-center gap-2">

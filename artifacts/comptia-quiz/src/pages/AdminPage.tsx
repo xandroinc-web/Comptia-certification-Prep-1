@@ -34,6 +34,7 @@ import {
   getGetAdminQuestionsQueryKey,
   getGetAdminUsersQueryKey,
   useApplyAdminUserAction,
+  useCreateAdminSimulationEvent,
   useCreateAdminMedia,
   useCreateAdminUser,
   useDeleteAdminMedia,
@@ -41,23 +42,38 @@ import {
   useCreateAdminQuestion,
   useGetAdminQuestions,
   useGetAdminOverview,
+  useGetAdminAccess,
   useGetAdminUsers,
   useUpdateAdminMedia,
   useUpdateAdminSettings,
   useUpdateAdminQuestion,
 } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
+import AdminSimulationPanel from "@/pages/AdminSimulationPanel";
+import { saveAdminSimulationConfig, type AdminSimulationConfig } from "@/lib/admin-simulation";
 
-type Section = "overview" | "testing" | "pricing" | "media" | "users" | "settings" | "audit";
+type Permission =
+  | "dashboard:read"
+  | "dashboard:overview"
+  | "quiz:read"
+  | "quiz:manage"
+  | "settings:manage"
+  | "media:manage"
+  | "users:read"
+  | "users:manage"
+  | "audit:read"
+  | "simulation:run";
+type Section = "overview" | "testing" | "simulator" | "pricing" | "media" | "users" | "settings" | "audit";
 
-const sections: { id: Section; label: string; icon: typeof Activity }[] = [
-  { id: "overview", label: "Overview", icon: Activity },
-  { id: "testing", label: "Quiz lab", icon: MonitorPlay },
-  { id: "pricing", label: "Pricing", icon: ClipboardList },
-  { id: "media", label: "Videos & links", icon: Video },
-  { id: "users", label: "Users", icon: Users },
-  { id: "settings", label: "App settings", icon: Settings },
-  { id: "audit", label: "Audit history", icon: LockKeyhole },
+const sections: { id: Section; label: string; icon: typeof Activity; permission: Permission }[] = [
+  { id: "overview", label: "Overview", icon: Activity, permission: "dashboard:overview" },
+  { id: "testing", label: "Quiz lab", icon: MonitorPlay, permission: "quiz:read" },
+  { id: "simulator", label: "Learner simulator", icon: Activity, permission: "simulation:run" },
+  { id: "pricing", label: "Pricing", icon: ClipboardList, permission: "dashboard:overview" },
+  { id: "media", label: "Videos & links", icon: Video, permission: "dashboard:overview" },
+  { id: "users", label: "Users", icon: Users, permission: "users:read" },
+  { id: "settings", label: "App settings", icon: Settings, permission: "settings:manage" },
+  { id: "audit", label: "Audit history", icon: LockKeyhole, permission: "audit:read" },
 ];
 
 const inputClass =
@@ -115,20 +131,30 @@ export default function AdminPage() {
     freeTestSimulation: false,
   });
 
-  const overview = useGetAdminOverview({
+  const adminAccess = useGetAdminAccess({
     query: {
       enabled: Boolean(isLoaded && isSignedIn),
+      retry: false,
+      queryKey: ["admin-access"],
+    },
+  });
+  const hasPermission = (permission: Permission) =>
+    adminAccess.data?.permissions.includes(permission) === true;
+  const visibleSections = sections.filter((item) => hasPermission(item.permission));
+  const overview = useGetAdminOverview({
+    query: {
+      enabled: Boolean(isLoaded && isSignedIn && hasPermission("dashboard:overview")),
       retry: false,
       queryKey: ["admin-overview"],
     },
   });
   const users = useGetAdminUsers(
     { query: search.trim() || undefined, limit: 50 },
-    { query: { enabled: Boolean(overview.data && section === "users"), retry: false, queryKey: ["admin-users", search] } },
+    { query: { enabled: Boolean(hasPermission("users:read") && section === "users"), retry: false, queryKey: ["admin-users", search] } },
   );
   const questions = useGetAdminQuestions({
     query: {
-      enabled: Boolean(overview.data && section === "testing"),
+      enabled: Boolean(hasPermission("quiz:read") && section === "testing"),
       retry: false,
       queryKey: ["admin-questions"],
     },
@@ -142,8 +168,9 @@ export default function AdminPage() {
   const createQuestion = useCreateAdminQuestion();
   const updateQuestion = useUpdateAdminQuestion();
   const deleteQuestion = useDeleteAdminQuestion();
+  const createSimulationEvent = useCreateAdminSimulationEvent();
 
-  const isAuthorized = Boolean(overview.data);
+  const isAuthorized = adminAccess.data?.isAdmin === true;
   const settingsValue = useMemo(
     () => overview.data?.settings.find((setting) => setting.key === "app")?.value,
     [overview.data?.settings],
@@ -165,6 +192,30 @@ export default function AdminPage() {
       }));
     }
   }, [settingsValue]);
+
+  useEffect(() => {
+    if (!adminAccess.data?.isAdmin) return;
+    if (visibleSections.some((item) => item.id === section)) return;
+    if (visibleSections[0]) setSection(visibleSections[0].id);
+  }, [adminAccess.data?.isAdmin, adminAccess.data?.permissions, section]);
+
+  async function startAdminSimulation(config: AdminSimulationConfig) {
+    try {
+      await createSimulationEvent.mutateAsync({
+        data: {
+          profile: config.profile,
+          event: "session_started",
+          dailyQuizLimit: config.dailyQuizLimit,
+          featureFlags: config.featureFlags,
+        },
+      });
+      saveAdminSimulationConfig(config);
+      invalidateOverview();
+      setLocation("/?adminSimulation=1");
+    } catch (error) {
+      notify(errorText(error));
+    }
+  }
 
   function invalidateOverview() {
     queryClient.invalidateQueries({ queryKey: getGetAdminOverviewQueryKey() });
@@ -302,7 +353,7 @@ export default function AdminPage() {
     }
   }
 
-  if (!isLoaded || overview.isLoading) {
+  if (!isLoaded || (isSignedIn && adminAccess.isLoading)) {
     return (
       <div className="min-h-screen bg-[#060910] px-6 py-20 text-center text-slate-400">
         <Loader2 className="mx-auto animate-spin text-red-500" />
@@ -323,7 +374,7 @@ export default function AdminPage() {
   }
 
   if (!isAuthorized) {
-    const notConfigured = (overview.error as any)?.data?.code === "ADMIN_NOT_ALLOWED";
+    const notConfigured = (adminAccess.error as any)?.data?.code === "ADMIN_NOT_ALLOWED";
     return (
       <div className="min-h-screen bg-[#060910] px-6 py-20 text-white">
         <div className="mx-auto max-w-xl rounded-3xl border border-red-500/20 bg-[#0c111b] p-8 text-center shadow-2xl shadow-red-950/20">
@@ -332,7 +383,7 @@ export default function AdminPage() {
           <p className="mt-3 text-sm leading-6 text-slate-400">
             {notConfigured
               ? "Add this Clerk user ID to the server-side ADMIN_USER_IDS environment variable, then reload this page."
-              : errorText(overview.error)}
+              : errorText(adminAccess.error)}
           </p>
           {notConfigured && (
             <div className="mt-5 rounded-xl border border-white/10 bg-black/20 p-3 text-left">
@@ -348,8 +399,8 @@ export default function AdminPage() {
     );
   }
 
-  const stats = overview.data!.stats;
-  const title = section === "overview" ? "Command center" : sections.find((item) => item.id === section)?.label;
+  const stats = overview.data?.stats;
+  const title = section === "overview" ? "Command center" : sections.find((item) => item.id === section)?.label ?? "Admin";
 
   return (
     <div className="min-h-screen bg-[#060910] text-white">
@@ -360,7 +411,7 @@ export default function AdminPage() {
             <div><p className="font-bold">CompTIA</p><p className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Owner console</p></div>
           </button>
           <nav className="space-y-1">
-            {sections.map((item) => {
+            {visibleSections.map((item) => {
               const Icon = item.icon;
               return (
                 <button key={item.id} onClick={() => setSection(item.id)} className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition ${section === item.id ? "bg-red-600/15 text-red-300" : "text-slate-400 hover:bg-white/5 hover:text-white"}`}>
@@ -382,7 +433,13 @@ export default function AdminPage() {
             </div>
             <div className="flex items-center gap-3 text-xs text-slate-500">
               <span className="hidden sm:inline">{user?.primaryEmailAddress?.emailAddress}</span>
-              <Button variant="outline" size="sm" onClick={() => overview.refetch()}><RefreshCw size={14} /> Refresh</Button>
+              <span className="rounded-full border border-white/10 px-2.5 py-1 font-semibold uppercase tracking-wider text-slate-400">
+                {adminAccess.data?.role?.replace("_", " ")}
+              </span>
+              <Button variant="outline" size="sm" onClick={() => {
+                adminAccess.refetch();
+                if (hasPermission("dashboard:overview")) overview.refetch();
+              }}><RefreshCw size={14} /> Refresh</Button>
             </div>
           </header>
 
@@ -390,12 +447,12 @@ export default function AdminPage() {
 
           {section === "overview" && (
             <div className="space-y-6">
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              {stats && <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 <StatCard label="Accounts" value={stats.users} detail="Managed by Clerk" />
                 <StatCard label="Quiz attempts" value={stats.quizResults} detail="Saved result records" />
                 <StatCard label="Pro subscribers" value={stats.activeSubscriptions} detail="Active or trialing" />
                 <StatCard label="Live media" value={stats.activeMedia} detail="Videos and links" />
-              </div>
+              </div>}
               <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
                 <div className={cardClass}>
                   <div className="flex items-center justify-between"><div><h2 className="font-semibold">Owner shortcuts</h2><p className="mt-1 text-sm text-slate-500">Safe entry points for testing the real product.</p></div><Activity className="text-red-500" size={20} /></div>
@@ -437,6 +494,14 @@ export default function AdminPage() {
                 <div className={cardClass}><div className="flex items-center justify-between"><div><h2 className="font-semibold">Managed question bank</h2><p className="mt-1 text-sm text-slate-500">{questions.data?.data.length ?? 0} admin-managed questions</p></div><ClipboardList className="text-red-400" size={20} /></div><div className="mt-5 max-h-[620px] space-y-3 overflow-y-auto">{questions.isLoading && <Loader2 className="mx-auto animate-spin text-red-400" />}{questions.data?.data.map((question) => <div key={question.id} className="rounded-xl border border-white/10 bg-black/20 p-4"><div className="flex items-start justify-between gap-3"><div><div className="flex flex-wrap gap-2 text-[10px] uppercase tracking-wider text-slate-500"><span>{question.category}</span><span>Tier {question.tier}</span><span className={question.difficulty === "hard" ? "text-red-300" : question.difficulty === "medium" ? "text-amber-300" : "text-emerald-300"}>{question.difficulty}</span><span>{question.active ? "Active" : "Hidden"}</span></div><p className="mt-2 text-sm leading-5 text-slate-200">{question.question}</p></div><div className="flex shrink-0 gap-2"><button onClick={() => editQuestion(question)} className="rounded-lg border border-white/10 px-2 py-1 text-xs text-slate-400 hover:text-white">Edit</button><button onClick={() => removeQuestion(question)} className="rounded-lg border border-red-500/20 px-2 py-1 text-xs text-red-300 hover:bg-red-500/10">Delete</button></div></div><p className="mt-2 text-xs text-slate-500">Correct: {question.options[question.correctIndex]}</p></div>)}{!questions.isLoading && !questions.data?.data.length && <EmptyState>No managed questions yet.</EmptyState>}</div></div>
               </div>
             </div>
+          )}
+
+          {section === "simulator" && (
+            <AdminSimulationPanel
+              logs={(overview.data?.auditLogs ?? []).filter((log) => log.action.startsWith("simulation."))}
+              onStart={startAdminSimulation}
+              starting={createSimulationEvent.isPending}
+            />
           )}
 
           {section === "pricing" && (

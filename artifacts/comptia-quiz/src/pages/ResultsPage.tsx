@@ -23,6 +23,7 @@ interface ResultsPageProps {
   onProgress?: () => void;
   onNextExamTier?: (tier: ExamTier) => void;
   onStartBonus?: () => void;
+  canStartBonus?: boolean;
 }
 
 const CATEGORY_COLOR: Record<string, { badge: string; bar: string }> = {
@@ -65,6 +66,7 @@ export default function ResultsPage({
   onProgress,
   onNextExamTier,
   onStartBonus,
+  canStartBonus = true,
 }: ResultsPageProps) {
   const totalCorrect = questions.filter((q, i) => answers[i] === q.correctIndex).length;
   const rawPct = Math.round((totalCorrect / questions.length) * 100);
@@ -79,7 +81,7 @@ export default function ResultsPage({
   const tierPassed = isExamMode ? rawPct >= 80 : null;
   const showBadge = isFinalTier && (examFinalPct ?? 0) >= 90;
   const showBonus = isFinalTier && (examFinalPct ?? 0) >= 95;
-  const bonusAvailable = isFinalTier && showBonus && !isBonusMode;
+  const bonusAvailable = isFinalTier && showBonus && !isBonusMode && canStartBonus;
 
   // Play unlock sounds once
   const badgePlayed = useRef(false);

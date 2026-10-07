@@ -221,9 +221,82 @@ export interface AppSettings {
   yearlyPriceLabel: string;
 }
 
+export type AdminAccessResponseRole =
+  (typeof AdminAccessResponseRole)[keyof typeof AdminAccessResponseRole];
+
+export const AdminAccessResponseRole = {
+  owner: "owner",
+  admin: "admin",
+  quiz_tester: "quiz_tester",
+} as const;
+
+export type AdminAccessResponsePermissionsItem =
+  (typeof AdminAccessResponsePermissionsItem)[keyof typeof AdminAccessResponsePermissionsItem];
+
+export const AdminAccessResponsePermissionsItem = {
+  "dashboard:read": "dashboard:read",
+  "dashboard:overview": "dashboard:overview",
+  "quiz:read": "quiz:read",
+  "quiz:manage": "quiz:manage",
+  "settings:manage": "settings:manage",
+  "media:manage": "media:manage",
+  "users:read": "users:read",
+  "users:manage": "users:manage",
+  "audit:read": "audit:read",
+  "simulation:run": "simulation:run",
+} as const;
+
 export interface AdminAccessResponse {
   isAdmin: boolean;
   freeTestSimulation: boolean;
+  role: AdminAccessResponseRole;
+  permissions: AdminAccessResponsePermissionsItem[];
+}
+
+export type AdminSimulationEventInputProfile =
+  (typeof AdminSimulationEventInputProfile)[keyof typeof AdminSimulationEventInputProfile];
+
+export const AdminSimulationEventInputProfile = {
+  free: "free",
+  pro: "pro",
+  hellmode: "hellmode",
+  restricted: "restricted",
+} as const;
+
+export type AdminSimulationEventInputEvent =
+  (typeof AdminSimulationEventInputEvent)[keyof typeof AdminSimulationEventInputEvent];
+
+export const AdminSimulationEventInputEvent = {
+  session_started: "session_started",
+  quiz_started: "quiz_started",
+  quiz_completed: "quiz_completed",
+  access_blocked: "access_blocked",
+  session_ended: "session_ended",
+} as const;
+
+export type AdminSimulationEventInputFeatureFlags = {
+  timedSimulations: boolean;
+  topicStudy: boolean;
+  tierProgression: boolean;
+  bonusQuestions: boolean;
+};
+
+export interface AdminSimulationEventInput {
+  profile: AdminSimulationEventInputProfile;
+  event: AdminSimulationEventInputEvent;
+  /**
+   * @minimum 0
+   * @maximum 100
+   */
+  dailyQuizLimit: number;
+  /** @maxLength 100 */
+  quizMode?: string;
+  /**
+   * @minimum 0
+   * @maximum 100
+   */
+  scorePercent?: number;
+  featureFlags: AdminSimulationEventInputFeatureFlags;
 }
 
 export type AdminQuestionTier =

@@ -97,8 +97,8 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
     selected === "all"
       ? getDifficultyCount(difficulty)
       : getDifficultyBreakdown(selected)[difficulty];
-  const totalQuestions = Math.min(90, selectedCount);
-  const fastCount = Math.min(45, totalQuestions);
+  const totalQuestions = Math.min(30, selectedCount);
+  const fastCount = Math.min(15, totalQuestions);
   const diffBreakdown = getDifficultyBreakdown(selected === "all" ? undefined : selected);
 
   return (

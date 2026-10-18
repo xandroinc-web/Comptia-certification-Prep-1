@@ -403,9 +403,8 @@ function AppContent() {
 
   function handleStart(selected: "all" | ExamCategory, length: "full" | "fast", diff: Difficulty) {
     if (!checkTrial(`${selected} ${length} quiz`)) return;
-    // Full mode is the 90-question practice run. Fast mode is exactly half
-    // that length; do not derive it from the 270-question bank size.
-    const questionCount = length === "fast" ? 45 : 90;
+    // Full and fast practice runs are fixed at 30 and 15 questions.
+    const questionCount = length === "fast" ? 15 : 30;
      const baseQuestions =
       selected === "all"
         ? getAllQuestions(questionCount, diff)

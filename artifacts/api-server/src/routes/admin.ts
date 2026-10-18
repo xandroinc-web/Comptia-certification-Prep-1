@@ -15,7 +15,7 @@ import { CreateAdminSimulationEventBody } from "@workspace/api-zod";
 
 const router: IRouter = Router();
 
-type AdminRole = "owner" | "admin" | "quiz_tester";
+type AdminRole = "owner";
 type AdminPermission =
   | "dashboard:read"
   | "dashboard:overview"
@@ -41,19 +41,6 @@ const rolePermissions: Record<AdminRole, AdminPermission[]> = {
     "audit:read",
     "simulation:run",
   ],
-  admin: [
-    "dashboard:read",
-    "dashboard:overview",
-    "quiz:read",
-    "quiz:manage",
-    "settings:manage",
-    "media:manage",
-    "users:read",
-    "users:manage",
-    "audit:read",
-    "simulation:run",
-  ],
-  quiz_tester: ["dashboard:read", "quiz:read", "simulation:run"],
 };
 
 function getRequestUserId(req: Request): string | null {
@@ -71,42 +58,28 @@ function getAdminIds(): Set<string> {
   );
 }
 
-function getRoleAssignments(): Record<string, AdminRole> {
-  try {
-    const parsed = JSON.parse(process.env.ADMIN_ROLE_ASSIGNMENTS ?? "{}");
-    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
-    return Object.fromEntries(
-      Object.entries(parsed).filter(
-        ([userId, role]) =>
-          userId.length > 0 && (role === "owner" || role === "admin" || role === "quiz_tester"),
-      ),
-    ) as Record<string, AdminRole>;
-  } catch {
-    return {};
-  }
-}
-
 function getAdminRole(userId: string): AdminRole | null {
-  if (getAdminIds().has(userId)) return "owner";
-  return getRoleAssignments()[userId] ?? null;
+  return getAdminIds().has(userId) ? "owner" : null;
 }
 
 function requirePermission(permission: AdminPermission) {
   return (req: Request, res: Response, next: NextFunction): void => {
-  const userId = getRequestUserId(req);
-  if (!userId) {
-    res.status(401).json({ error: "Unauthorized" });
-    return;
-  }
-  const role = getAdminRole(userId);
-  if (!role || !rolePermissions[role].includes(permission)) {
-    res.status(403).json({
-      error: "Admin access is not configured for this account",
-      code: "ADMIN_NOT_ALLOWED",
-    });
-    return;
-  }
-  (req as any).adminUserId = userId;
+    const userId = getRequestUserId(req);
+    if (!userId) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+
+    const role = getAdminRole(userId);
+    if (!role || !rolePermissions[role].includes(permission)) {
+      res.status(403).json({
+        error: "Admin access is not enabled for this Clerk user.",
+        code: "ADMIN_NOT_ALLOWED",
+      });
+      return;
+    }
+
+    (req as any).adminUserId = userId;
     (req as any).adminRole = role;
     next();
   };

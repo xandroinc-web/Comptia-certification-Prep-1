@@ -16,6 +16,7 @@ import {
   LogOut,
   MonitorPlay,
   Plus,
+  Paintbrush,
   RefreshCw,
   Save,
   Search,
@@ -51,6 +52,12 @@ import {
 import { Button } from "@/components/ui/button";
 import AdminSimulationPanel from "@/pages/AdminSimulationPanel";
 import { saveAdminSimulationConfig, type AdminSimulationConfig } from "@/lib/admin-simulation";
+import PageBuilderPanel from "@/pages/PageBuilderPanel";
+import {
+  DEFAULT_PAGE_BUILDER_SETTINGS,
+  normalizePageBuilderSettings,
+  type TierNumber,
+} from "@/lib/page-builder";
 
 type Permission =
   | "dashboard:read"
@@ -63,11 +70,12 @@ type Permission =
   | "users:manage"
   | "audit:read"
   | "simulation:run";
-type Section = "overview" | "testing" | "simulator" | "pricing" | "media" | "users" | "settings" | "audit";
+type Section = "overview" | "testing" | "builder" | "simulator" | "pricing" | "media" | "users" | "settings" | "audit";
 
 const sections: { id: Section; label: string; icon: typeof Activity; permission: Permission }[] = [
   { id: "overview", label: "Overview", icon: Activity, permission: "dashboard:overview" },
   { id: "testing", label: "Quiz lab", icon: MonitorPlay, permission: "quiz:read" },
+  { id: "builder", label: "Page builder", icon: Paintbrush, permission: "settings:manage" },
   { id: "simulator", label: "Learner simulator", icon: Activity, permission: "simulation:run" },
   { id: "pricing", label: "Pricing", icon: ClipboardList, permission: "dashboard:overview" },
   { id: "media", label: "Videos & links", icon: Video, permission: "dashboard:overview" },
@@ -108,6 +116,20 @@ function EmptyState({ children }: { children: React.ReactNode }) {
   return <div className="rounded-xl border border-dashed border-white/10 px-4 py-8 text-center text-sm text-slate-500">{children}</div>;
 }
 
+function auditChanges(metadata: unknown): Array<{ field: string; from: unknown; to: unknown }> {
+  if (!metadata || typeof metadata !== "object") return [];
+  const changes = (metadata as { changes?: unknown }).changes;
+  if (!Array.isArray(changes)) return [];
+  return changes.filter((item): item is { field: string; from: unknown; to: unknown } =>
+    Boolean(item) && typeof item === "object" && typeof (item as { field?: unknown }).field === "string",
+  );
+}
+
+function auditValue(value: unknown): string {
+  if (value === undefined || value === null || value === "") return "—";
+  return typeof value === "string" ? value : JSON.stringify(value);
+}
+
 export default function AdminPage() {
   const [, setLocation] = useLocation();
   const { user, isLoaded, isSignedIn } = useUser();
@@ -129,7 +151,10 @@ export default function AdminPage() {
     anonymousTrialLimit: 1,
     freeTrialLimit: 3,
     freeTestSimulation: false,
+    pageBuilder: DEFAULT_PAGE_BUILDER_SETTINGS,
   });
+  const [previewKey, setPreviewKey] = useState(0);
+  const [lastBuilderSavedAt, setLastBuilderSavedAt] = useState<string | null>(null);
 
   const adminAccess = useGetAdminAccess({
     query: {
@@ -171,10 +196,8 @@ export default function AdminPage() {
   const createSimulationEvent = useCreateAdminSimulationEvent();
 
   const isAuthorized = adminAccess.data?.isAdmin === true;
-  const settingsValue = useMemo(
-    () => overview.data?.settings.find((setting) => setting.key === "app")?.value,
-    [overview.data?.settings],
-  );
+  const appSettingsRecord = overview.data?.settings.find((setting) => setting.key === "app");
+  const settingsValue = useMemo(() => appSettingsRecord?.value, [appSettingsRecord?.value]);
 
   useEffect(() => {
     if (settingsValue) {
@@ -189,9 +212,15 @@ export default function AdminPage() {
         anonymousTrialLimit: Number(settingsValue.anonymousTrialLimit) || 1,
         freeTrialLimit: Number(settingsValue.freeTrialLimit) || 3,
         freeTestSimulation: settingsValue.freeTestSimulation === true,
+        pageBuilder: normalizePageBuilderSettings(settingsValue.pageBuilder),
       }));
     }
   }, [settingsValue]);
+
+  useEffect(() => {
+    const updatedAt = (appSettingsRecord as any)?.updatedAt;
+    if (typeof updatedAt === "string") setLastBuilderSavedAt(updatedAt);
+  }, [appSettingsRecord]);
 
   useEffect(() => {
     if (!adminAccess.data?.isAdmin) return;
@@ -284,8 +313,15 @@ export default function AdminPage() {
   async function saveSettings() {
     try {
       await updateSettings.mutateAsync({ data: settings });
+      try {
+        localStorage.setItem("comptia_page_builder_preview", JSON.stringify(settings.pageBuilder));
+        setPreviewKey((current) => current + 1);
+      } catch {
+        // Saving server settings must not fail because browser preview storage is unavailable.
+      }
+      setLastBuilderSavedAt(new Date().toISOString());
       invalidateOverview();
-      notify("App settings saved.");
+      notify("App settings and page builder changes saved.");
     } catch (error) {
       notify(errorText(error));
     }
@@ -496,6 +532,34 @@ export default function AdminPage() {
             </div>
           )}
 
+          {section === "builder" && (
+            <PageBuilderPanel
+              settings={settings.pageBuilder}
+              onChange={(pageBuilder) => setSettings((current) => ({ ...current, pageBuilder }))}
+              onSave={saveSettings}
+              onReset={() => setSettings((current) => ({
+                ...current,
+                pageBuilder: DEFAULT_PAGE_BUILDER_SETTINGS,
+              }))}
+              onPreview={() => {
+                try {
+                  localStorage.setItem("comptia_page_builder_preview", JSON.stringify(settings.pageBuilder));
+                  setPreviewKey((current) => current + 1);
+                } catch {
+                  notify("Preview storage is unavailable in this browser.");
+                }
+              }}
+              onTestTier={(tier: TierNumber) => setLocation(`/?adminTier=${tier}`)}
+              previewKey={previewKey}
+              isSaving={updateSettings.isPending}
+              isDirty={
+                JSON.stringify(settings.pageBuilder) !==
+                JSON.stringify(normalizePageBuilderSettings(settingsValue?.pageBuilder))
+              }
+              lastSavedAt={lastBuilderSavedAt ?? (appSettingsRecord as any)?.updatedAt ?? null}
+            />
+          )}
+
           {section === "simulator" && (
             <AdminSimulationPanel
               logs={(overview.data?.auditLogs ?? []).filter((log) => log.action.startsWith("simulation."))}
@@ -534,7 +598,60 @@ export default function AdminPage() {
           )}
 
           {section === "audit" && (
-            <div className={cardClass}><div className="flex items-center justify-between"><div><h2 className="font-semibold">Audit history</h2><p className="mt-1 text-sm text-slate-500">A server-recorded trail of admin mutations.</p></div><LockKeyhole className="text-red-400" size={20} /></div><div className="mt-5 overflow-x-auto"><table className="w-full min-w-[650px] text-left text-sm"><thead className="text-xs uppercase tracking-wider text-slate-600"><tr><th className="pb-3">Action</th><th className="pb-3">Target</th><th className="pb-3">Actor</th><th className="pb-3">When</th></tr></thead><tbody>{overview.data!.auditLogs.map((log) => <tr key={log.id} className="border-t border-white/5"><td className="py-3 text-slate-300">{log.action}</td><td className="py-3 text-slate-500">{log.targetType} {log.targetId ?? "—"}</td><td className="py-3 font-mono text-xs text-slate-600">{log.actorUserId}</td><td className="py-3 text-slate-500">{formatDate(log.createdAt)}</td></tr>)}</tbody></table>{!overview.data!.auditLogs.length && <EmptyState>No audit events yet.</EmptyState>}</div></div>
+            <div className={cardClass}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="font-semibold">Audit history</h2>
+                  <p className="mt-1 text-sm text-slate-500">Server-recorded actions with before-and-after settings details.</p>
+                </div>
+                <LockKeyhole className="text-red-400" size={20} />
+              </div>
+              <div className="mt-5 overflow-x-auto">
+                <table className="w-full min-w-[900px] text-left text-sm">
+                  <thead className="text-xs uppercase tracking-wider text-slate-600">
+                    <tr>
+                      <th className="pb-3">Action</th>
+                      <th className="pb-3">Target</th>
+                      <th className="pb-3">Changes</th>
+                      <th className="pb-3">Actor</th>
+                      <th className="pb-3">When</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {overview.data!.auditLogs.map((log) => {
+                      const changes = auditChanges(log.metadata);
+                      return (
+                        <tr key={log.id} className="border-t border-white/5 align-top">
+                          <td className="py-3 text-slate-300">{log.action}</td>
+                          <td className="py-3 text-slate-500">{log.targetType} {log.targetId ?? "—"}</td>
+                          <td className="max-w-[520px] py-3">
+                            {changes.length ? (
+                              <div className="space-y-1.5">
+                                {changes.slice(0, 8).map((change) => (
+                                  <div key={change.field} className="text-xs leading-5">
+                                    <span className="font-medium text-slate-300">{change.field}</span>
+                                    <span className="mx-1.5 text-slate-600">:</span>
+                                    <span className="break-all text-slate-500">{auditValue(change.from)}</span>
+                                    <span className="mx-1.5 text-cyan-300">→</span>
+                                    <span className="break-all text-cyan-100">{auditValue(change.to)}</span>
+                                  </div>
+                                ))}
+                                {changes.length > 8 && <p className="text-xs text-slate-600">+{changes.length - 8} more changed fields</p>}
+                              </div>
+                            ) : (
+                              <span className="text-xs text-slate-600">No field-level details</span>
+                            )}
+                          </td>
+                          <td className="py-3 font-mono text-xs text-slate-600">{log.actorUserId}</td>
+                          <td className="py-3 text-xs text-slate-500">{formatDate(log.createdAt)}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+                {!overview.data!.auditLogs.length && <EmptyState>No admin events yet.</EmptyState>}
+              </div>
+            </div>
           )}
         </main>
       </div>

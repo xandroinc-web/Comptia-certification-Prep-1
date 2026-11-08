@@ -757,7 +757,81 @@ components:
           type: string
         yearlyPriceLabel:
           type: string
-      required: [announcement, maintenanceMode, pricingHeadline, monthlyPriceLabel, yearlyPriceLabel]
+        pageBuilder:
+          $ref: "#/components/schemas/PageBuilderSettings"
+      required: [announcement, maintenanceMode, pricingHeadline, monthlyPriceLabel, yearlyPriceLabel, pageBuilder]
+    PageBuilderTierSettings:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 32
+        description:
+          type: string
+          maxLength: 80
+        questionCount:
+          type: integer
+          minimum: 1
+          maximum: 270
+        secondsPerQuestion:
+          type: integer
+          minimum: 15
+          maximum: 180
+        passingScore:
+          type: integer
+          minimum: 50
+          maximum: 100
+        color:
+          type: string
+          pattern: "^#[0-9A-Fa-f]{6}$"
+      required: [name, description, questionCount, secondsPerQuestion, passingScore, color]
+    PageBuilderSettings:
+      type: object
+      properties:
+        eyebrow:
+          type: string
+          maxLength: 48
+        title:
+          type: string
+          maxLength: 60
+        subtitle:
+          type: string
+          maxLength: 100
+        tagline:
+          type: string
+          maxLength: 120
+        disclaimerTitle:
+          type: string
+          maxLength: 48
+        disclaimerText:
+          type: string
+          maxLength: 700
+        primaryColor:
+          type: string
+          pattern: "^#[0-9A-Fa-f]{6}$"
+        accentColor:
+          type: string
+          pattern: "^#[0-9A-Fa-f]{6}$"
+        backgroundColor:
+          type: string
+          pattern: "^#[0-9A-Fa-f]{6}$"
+        panelColor:
+          type: string
+          pattern: "^#[0-9A-Fa-f]{6}$"
+        textColor:
+          type: string
+          pattern: "^#[0-9A-Fa-f]{6}$"
+        tiers:
+          type: object
+          properties:
+            "1":
+              $ref: "#/components/schemas/PageBuilderTierSettings"
+            "2":
+              $ref: "#/components/schemas/PageBuilderTierSettings"
+            "3":
+              $ref: "#/components/schemas/PageBuilderTierSettings"
+          required: ["1", "2", "3"]
+      required: [eyebrow, title, subtitle, tagline, disclaimerTitle, disclaimerText, primaryColor, accentColor, backgroundColor, panelColor, textColor, tiers]
     AdminAccessResponse:
       type: object
       properties:

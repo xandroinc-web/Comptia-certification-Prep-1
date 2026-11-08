@@ -139,12 +139,176 @@ export const GetAdminOverviewResponse = zod.object({
 /**
  * @summary Load public app settings
  */
+export const getAppSettingsResponsePageBuilderEyebrowMax = 48;
+
+export const getAppSettingsResponsePageBuilderTitleMax = 60;
+
+export const getAppSettingsResponsePageBuilderSubtitleMax = 100;
+
+export const getAppSettingsResponsePageBuilderTaglineMax = 120;
+
+export const getAppSettingsResponsePageBuilderDisclaimerTitleMax = 48;
+
+export const getAppSettingsResponsePageBuilderDisclaimerTextMax = 700;
+
+export const getAppSettingsResponsePageBuilderPrimaryColorRegExp = new RegExp(
+  "^#[0-9A-Fa-f]{6}$",
+);
+export const getAppSettingsResponsePageBuilderAccentColorRegExp = new RegExp(
+  "^#[0-9A-Fa-f]{6}$",
+);
+export const getAppSettingsResponsePageBuilderBackgroundColorRegExp =
+  new RegExp("^#[0-9A-Fa-f]{6}$");
+export const getAppSettingsResponsePageBuilderPanelColorRegExp = new RegExp(
+  "^#[0-9A-Fa-f]{6}$",
+);
+export const getAppSettingsResponsePageBuilderTextColorRegExp = new RegExp(
+  "^#[0-9A-Fa-f]{6}$",
+);
+export const getAppSettingsResponsePageBuilderTiers1NameMax = 32;
+
+export const getAppSettingsResponsePageBuilderTiers1DescriptionMax = 80;
+
+export const getAppSettingsResponsePageBuilderTiers1QuestionCountMax = 270;
+
+export const getAppSettingsResponsePageBuilderTiers1SecondsPerQuestionMin = 15;
+export const getAppSettingsResponsePageBuilderTiers1SecondsPerQuestionMax = 180;
+
+export const getAppSettingsResponsePageBuilderTiers1PassingScoreMin = 50;
+export const getAppSettingsResponsePageBuilderTiers1PassingScoreMax = 100;
+
+export const getAppSettingsResponsePageBuilderTiers1ColorRegExp = new RegExp(
+  "^#[0-9A-Fa-f]{6}$",
+);
+export const getAppSettingsResponsePageBuilderTiers2NameMax = 32;
+
+export const getAppSettingsResponsePageBuilderTiers2DescriptionMax = 80;
+
+export const getAppSettingsResponsePageBuilderTiers2QuestionCountMax = 270;
+
+export const getAppSettingsResponsePageBuilderTiers2SecondsPerQuestionMin = 15;
+export const getAppSettingsResponsePageBuilderTiers2SecondsPerQuestionMax = 180;
+
+export const getAppSettingsResponsePageBuilderTiers2PassingScoreMin = 50;
+export const getAppSettingsResponsePageBuilderTiers2PassingScoreMax = 100;
+
+export const getAppSettingsResponsePageBuilderTiers2ColorRegExp = new RegExp(
+  "^#[0-9A-Fa-f]{6}$",
+);
+export const getAppSettingsResponsePageBuilderTiers3NameMax = 32;
+
+export const getAppSettingsResponsePageBuilderTiers3DescriptionMax = 80;
+
+export const getAppSettingsResponsePageBuilderTiers3QuestionCountMax = 270;
+
+export const getAppSettingsResponsePageBuilderTiers3SecondsPerQuestionMin = 15;
+export const getAppSettingsResponsePageBuilderTiers3SecondsPerQuestionMax = 180;
+
+export const getAppSettingsResponsePageBuilderTiers3PassingScoreMin = 50;
+export const getAppSettingsResponsePageBuilderTiers3PassingScoreMax = 100;
+
+export const getAppSettingsResponsePageBuilderTiers3ColorRegExp = new RegExp(
+  "^#[0-9A-Fa-f]{6}$",
+);
+
 export const GetAppSettingsResponse = zod.object({
   announcement: zod.string(),
   maintenanceMode: zod.boolean(),
   pricingHeadline: zod.string(),
   monthlyPriceLabel: zod.string(),
   yearlyPriceLabel: zod.string(),
+  pageBuilder: zod.object({
+    eyebrow: zod.string().max(getAppSettingsResponsePageBuilderEyebrowMax),
+    title: zod.string().max(getAppSettingsResponsePageBuilderTitleMax),
+    subtitle: zod.string().max(getAppSettingsResponsePageBuilderSubtitleMax),
+    tagline: zod.string().max(getAppSettingsResponsePageBuilderTaglineMax),
+    disclaimerTitle: zod
+      .string()
+      .max(getAppSettingsResponsePageBuilderDisclaimerTitleMax),
+    disclaimerText: zod
+      .string()
+      .max(getAppSettingsResponsePageBuilderDisclaimerTextMax),
+    primaryColor: zod
+      .string()
+      .regex(getAppSettingsResponsePageBuilderPrimaryColorRegExp),
+    accentColor: zod
+      .string()
+      .regex(getAppSettingsResponsePageBuilderAccentColorRegExp),
+    backgroundColor: zod
+      .string()
+      .regex(getAppSettingsResponsePageBuilderBackgroundColorRegExp),
+    panelColor: zod
+      .string()
+      .regex(getAppSettingsResponsePageBuilderPanelColorRegExp),
+    textColor: zod
+      .string()
+      .regex(getAppSettingsResponsePageBuilderTextColorRegExp),
+    tiers: zod.object({
+      "1": zod.object({
+        name: zod.string().max(getAppSettingsResponsePageBuilderTiers1NameMax),
+        description: zod
+          .string()
+          .max(getAppSettingsResponsePageBuilderTiers1DescriptionMax),
+        questionCount: zod
+          .number()
+          .min(1)
+          .max(getAppSettingsResponsePageBuilderTiers1QuestionCountMax),
+        secondsPerQuestion: zod
+          .number()
+          .min(getAppSettingsResponsePageBuilderTiers1SecondsPerQuestionMin)
+          .max(getAppSettingsResponsePageBuilderTiers1SecondsPerQuestionMax),
+        passingScore: zod
+          .number()
+          .min(getAppSettingsResponsePageBuilderTiers1PassingScoreMin)
+          .max(getAppSettingsResponsePageBuilderTiers1PassingScoreMax),
+        color: zod
+          .string()
+          .regex(getAppSettingsResponsePageBuilderTiers1ColorRegExp),
+      }),
+      "2": zod.object({
+        name: zod.string().max(getAppSettingsResponsePageBuilderTiers2NameMax),
+        description: zod
+          .string()
+          .max(getAppSettingsResponsePageBuilderTiers2DescriptionMax),
+        questionCount: zod
+          .number()
+          .min(1)
+          .max(getAppSettingsResponsePageBuilderTiers2QuestionCountMax),
+        secondsPerQuestion: zod
+          .number()
+          .min(getAppSettingsResponsePageBuilderTiers2SecondsPerQuestionMin)
+          .max(getAppSettingsResponsePageBuilderTiers2SecondsPerQuestionMax),
+        passingScore: zod
+          .number()
+          .min(getAppSettingsResponsePageBuilderTiers2PassingScoreMin)
+          .max(getAppSettingsResponsePageBuilderTiers2PassingScoreMax),
+        color: zod
+          .string()
+          .regex(getAppSettingsResponsePageBuilderTiers2ColorRegExp),
+      }),
+      "3": zod.object({
+        name: zod.string().max(getAppSettingsResponsePageBuilderTiers3NameMax),
+        description: zod
+          .string()
+          .max(getAppSettingsResponsePageBuilderTiers3DescriptionMax),
+        questionCount: zod
+          .number()
+          .min(1)
+          .max(getAppSettingsResponsePageBuilderTiers3QuestionCountMax),
+        secondsPerQuestion: zod
+          .number()
+          .min(getAppSettingsResponsePageBuilderTiers3SecondsPerQuestionMin)
+          .max(getAppSettingsResponsePageBuilderTiers3SecondsPerQuestionMax),
+        passingScore: zod
+          .number()
+          .min(getAppSettingsResponsePageBuilderTiers3PassingScoreMin)
+          .max(getAppSettingsResponsePageBuilderTiers3PassingScoreMax),
+        color: zod
+          .string()
+          .regex(getAppSettingsResponsePageBuilderTiers3ColorRegExp),
+      }),
+    }),
+  }),
 });
 
 /**

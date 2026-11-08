@@ -5,6 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { PageBuilderSettings } from "./pageBuilderSettings";
 
 export interface AppSettings {
   announcement: string;
@@ -12,4 +13,5 @@ export interface AppSettings {
   pricingHeadline: string;
   monthlyPriceLabel: string;
   yearlyPriceLabel: string;
+  pageBuilder: PageBuilderSettings;
 }

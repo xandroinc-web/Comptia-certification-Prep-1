@@ -11,9 +11,110 @@ import {
 } from "@workspace/db";
 import { stripeStorage } from "../stripeStorage";
 import { getUncachableStripeClient } from "../stripeClient";
-import { CreateAdminSimulationEventBody } from "@workspace/api-zod";
+import { CreateAdminSimulationEventBody, GetAppSettingsResponse } from "@workspace/api-zod";
 
 const router: IRouter = Router();
+
+const defaultPageBuilderSettings = {
+  eyebrow: "CompTIA Certification Prep",
+  title: "Trifecta Quiz",
+  subtitle: "A+, Network+, and Security+ practice questions",
+  tagline: "Build confidence by mastering what you know with certainty",
+  disclaimerTitle: "Practice Disclaimer",
+  disclaimerText:
+    "This is a practice tool for CompTIA exam prep. The 100–900 scoring scale and 750 passing score are simulations based on CompTIA's real scoring model, but your actual exam results may differ. Questions are curated from the full question bank and are timed to mimic exam pressure.",
+  primaryColor: "#dc2626",
+  accentColor: "#06b6d4",
+  backgroundColor: "#070b14",
+  panelColor: "#111827",
+  textColor: "#f3f4f6",
+  tiers: {
+    "1": { name: "Mild", description: "Foundational troubleshooting", questionCount: 270, secondsPerQuestion: 75, passingScore: 80, color: "#22c55e" },
+    "2": { name: "Medium", description: "Applied exam scenarios", questionCount: 270, secondsPerQuestion: 60, passingScore: 80, color: "#f59e0b" },
+    "3": { name: "HellMode", description: "Forensic logs and advanced troubleshooting", questionCount: 270, secondsPerQuestion: 45, passingScore: 80, color: "#ef4444" },
+  },
+};
+
+function safeBuilderText(value: unknown, fallback: string, maxLength: number): string {
+  return typeof value === "string" ? value.trim().slice(0, maxLength) || fallback : fallback;
+}
+
+function safeBuilderColor(value: unknown, fallback: string): string {
+  return typeof value === "string" && /^#[\da-f]{6}$/i.test(value) ? value : fallback;
+}
+
+function safeBuilderNumber(value: unknown, fallback: number, min: number, max: number): number {
+  const numeric = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(numeric) ? Math.max(min, Math.min(max, Math.round(numeric))) : fallback;
+}
+
+function sanitizePageBuilderSettings(value: unknown) {
+  const input = value && typeof value === "object" ? value as Record<string, any> : {};
+  const incomingTiers = input.tiers && typeof input.tiers === "object" ? input.tiers : {};
+  const tiers = {} as typeof defaultPageBuilderSettings.tiers;
+
+  for (const tier of ["1", "2", "3"] as const) {
+    const fallback = defaultPageBuilderSettings.tiers[tier];
+    const incoming = incomingTiers[tier] && typeof incomingTiers[tier] === "object" ? incomingTiers[tier] : {};
+    tiers[tier] = {
+      name: safeBuilderText(incoming.name, fallback.name, 32),
+      description: safeBuilderText(incoming.description, fallback.description, 80),
+      questionCount: safeBuilderNumber(incoming.questionCount, fallback.questionCount, 1, 270),
+      secondsPerQuestion: tier === "3" ? 45 : safeBuilderNumber(incoming.secondsPerQuestion, fallback.secondsPerQuestion, 15, 180),
+      passingScore: safeBuilderNumber(incoming.passingScore, fallback.passingScore, 50, 100),
+      color: safeBuilderColor(incoming.color, fallback.color),
+    };
+  }
+
+  return {
+    eyebrow: safeBuilderText(input.eyebrow, defaultPageBuilderSettings.eyebrow, 48),
+    title: safeBuilderText(input.title, defaultPageBuilderSettings.title, 60),
+    subtitle: safeBuilderText(input.subtitle, defaultPageBuilderSettings.subtitle, 100),
+    tagline: safeBuilderText(input.tagline, defaultPageBuilderSettings.tagline, 120),
+    disclaimerTitle: safeBuilderText(input.disclaimerTitle, defaultPageBuilderSettings.disclaimerTitle, 48),
+    disclaimerText: safeBuilderText(input.disclaimerText, defaultPageBuilderSettings.disclaimerText, 700),
+    primaryColor: safeBuilderColor(input.primaryColor, defaultPageBuilderSettings.primaryColor),
+    accentColor: safeBuilderColor(input.accentColor, defaultPageBuilderSettings.accentColor),
+    backgroundColor: safeBuilderColor(input.backgroundColor, defaultPageBuilderSettings.backgroundColor),
+    panelColor: safeBuilderColor(input.panelColor, defaultPageBuilderSettings.panelColor),
+    textColor: safeBuilderColor(input.textColor, defaultPageBuilderSettings.textColor),
+    tiers,
+  };
+}
+
+function changeValueForAudit(value: unknown): unknown {
+  if (typeof value === "string") return value.length > 160 ? `${value.slice(0, 157)}…` : value;
+  if (value === null || typeof value === "number" || typeof value === "boolean") return value;
+  return Array.isArray(value) ? `[${value.length} items]` : "[configuration]";
+}
+
+function collectSettingsChanges(previous: unknown, next: unknown, prefix = ""): Array<{ field: string; from: unknown; to: unknown }> {
+  const previousObject = previous && typeof previous === "object" && !Array.isArray(previous)
+    ? previous as Record<string, unknown>
+    : {};
+  const nextObject = next && typeof next === "object" && !Array.isArray(next)
+    ? next as Record<string, unknown>
+    : {};
+  const keys = new Set([...Object.keys(previousObject), ...Object.keys(nextObject)]);
+  const changes: Array<{ field: string; from: unknown; to: unknown }> = [];
+
+  for (const key of keys) {
+    const field = prefix ? `${prefix}.${key}` : key;
+    const before = previousObject[key];
+    const after = nextObject[key];
+    if (
+      before && after &&
+      typeof before === "object" && typeof after === "object" &&
+      !Array.isArray(before) && !Array.isArray(after)
+    ) {
+      changes.push(...collectSettingsChanges(before, after, field));
+    } else if (JSON.stringify(before) !== JSON.stringify(after)) {
+      changes.push({ field, from: changeValueForAudit(before), to: changeValueForAudit(after) });
+    }
+    if (changes.length >= 40) break;
+  }
+  return changes;
+}
 
 type AdminRole = "owner";
 type AdminPermission =
@@ -117,18 +218,26 @@ router.get("/app-settings", async (req, res): Promise<void> => {
       .where(eq(adminSettingsTable.key, "app"))
       .limit(1);
     const value = setting?.value ?? {};
-    res.json({
+    res.json(GetAppSettingsResponse.parse({
       announcement: typeof value.announcement === "string" ? value.announcement : "",
       maintenanceMode: value.maintenanceMode === true,
       pricingHeadline: typeof value.pricingHeadline === "string" ? value.pricingHeadline : "Upgrade to Pro",
       monthlyPriceLabel: typeof value.monthlyPriceLabel === "string" ? value.monthlyPriceLabel : "",
       yearlyPriceLabel: typeof value.yearlyPriceLabel === "string" ? value.yearlyPriceLabel : "",
-    });
+      pageBuilder: sanitizePageBuilderSettings(value.pageBuilder),
+    }));
   } catch (error) {
     // Public settings are an enhancement; keep the quiz available if the
     // optional admin tables have not been provisioned yet.
     req.log.warn({ err: error }, "Unable to load public app settings");
-    res.json({ announcement: "", maintenanceMode: false });
+    res.json(GetAppSettingsResponse.parse({
+      announcement: "",
+      maintenanceMode: false,
+      pricingHeadline: "Upgrade to Pro",
+      monthlyPriceLabel: "",
+      yearlyPriceLabel: "",
+      pageBuilder: defaultPageBuilderSettings,
+    }));
   }
 });
 
@@ -378,16 +487,25 @@ router.patch("/admin/settings", requirePermission("settings:manage"), async (req
     return;
   }
   try {
+    const [currentSetting] = await db
+      .select({ value: adminSettingsTable.value })
+      .from(adminSettingsTable)
+      .where(eq(adminSettingsTable.key, "app"))
+      .limit(1);
+    const nextValue = { ...value };
+    if (Object.prototype.hasOwnProperty.call(nextValue, "pageBuilder")) {
+      nextValue.pageBuilder = sanitizePageBuilderSettings(nextValue.pageBuilder);
+    }
     const [setting] = await db
       .insert(adminSettingsTable)
-      .values({ key: "app", value, updatedBy: adminUserId(req) })
+      .values({ key: "app", value: nextValue, updatedBy: adminUserId(req) })
       .onConflictDoUpdate({
         target: adminSettingsTable.key,
-        set: { value, updatedBy: adminUserId(req), updatedAt: new Date() },
+        set: { value: nextValue, updatedBy: adminUserId(req), updatedAt: new Date() },
       })
       .returning();
     await writeAudit(req, "settings.updated", "settings", "app", {
-      keys: Object.keys(value),
+      changes: collectSettingsChanges(currentSetting?.value ?? {}, nextValue),
     });
     res.json(setting);
   } catch (error) {

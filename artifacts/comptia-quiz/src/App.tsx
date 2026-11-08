@@ -19,12 +19,13 @@ import { getMixedTopicQuestions } from "@/data/topic-pool";
 import type { DomainTopic } from "@/data/topics";
 import { generateSimulation, recordSimulationUsed, getSimulationStatus } from "@/data/simulation";
 import type { SimulationQuestion } from "@/data/simulation";
-import { getTierAsQuestions, getTierTimeLimitSeconds, getBonusAsQuestions, ExamTier } from "@/data/exam-bank";
+import { getTierAsQuestions, getBonusAsQuestions, ExamTier } from "@/data/exam-bank";
 import {
   useGetQuizResults,
   useCreateQuizResult,
   useGetSubscription,
   useGetAdminAccess,
+  useGetAppSettings,
   useGetManagedQuestions,
   useCreateAdminSimulationEvent,
 } from "@workspace/api-client-react";
@@ -50,6 +51,7 @@ import {
   recordAdminSimulationRun,
   type AdminSimulationConfig,
 } from "@/lib/admin-simulation";
+import { normalizePageBuilderSettings } from "@/lib/page-builder";
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -57,7 +59,6 @@ type AppState = "home" | "quiz" | "passfail" | "results" | "pricing" | "progress
 
 type QuizMode = "all" | ExamCategory | { topic: DomainTopic };
 
-const EXAM_TIER_PASS_PCT = 80;
 const EXAM_BADGE_PCT = 90;
 const EXAM_BONUS_PCT = 95;
 
@@ -287,9 +288,11 @@ function AppContent() {
   const adminAccessQuery = useGetAdminAccess({
     query: { enabled: shouldFetch, retry: false, queryKey: ["admin-access"] },
   });
+  const { data: publicSettings } = useGetAppSettings();
   const adminAccess = adminAccessQuery.data;
   const isSimulationPro = adminAccess?.freeTestSimulation === true;
   const isAdmin = adminAccess?.isAdmin === true;
+  const pageBuilder = normalizePageBuilderSettings(publicSettings?.pageBuilder);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -585,8 +588,10 @@ function AppContent() {
     if (!isOwnerTesting && !effectiveExamUnlocked[tier]) return;
     if (!checkTrial(`Exam Tier ${tier}`)) return;
     const managedTierQuestions = managedQuestions.filter((question) => question.adminTier === tier);
-    const qs = scrambleOptions([...getTierAsQuestions(tier), ...managedTierQuestions]).slice(0, 270);
-    const limit = getTierTimeLimitSeconds(tier);
+    const tierSettings = pageBuilder.tiers[String(tier) as "1" | "2" | "3"];
+    const qs = scrambleOptions([...managedTierQuestions, ...getTierAsQuestions(tier)])
+      .slice(0, tierSettings.questionCount);
+    const limit = qs.length * tierSettings.secondsPerQuestion;
     const tierDifficulty: Difficulty = tier === 1 ? "easy" : tier === 2 ? "medium" : "hard";
     setMode(`Exam Tier ${tier}`);
     setDifficulty(tierDifficulty);
@@ -613,17 +618,19 @@ function AppContent() {
     const currentTier = examTier as ExamTier;
     const totalCorrect = activeQuestions.filter((q, i) => answers[i] === q.correctIndex).length;
     const rawPct = Math.round((totalCorrect / activeQuestions.length) * 100);
+    const scorePct = currentTier === 3 ? weightedScore(activeQuestions, answers) : rawPct;
 
     setExamTierAnswers((prev) => ({ ...prev, [currentTier]: answers }));
     setExamTierTimes((prev) => ({ ...prev, [currentTier]: qTimes }));
-    const nextScores = { ...effectiveExamScores, [currentTier]: rawPct };
+    const nextScores = { ...effectiveExamScores, [currentTier]: scorePct };
     if (adminSimulation) setSimulationExamScores(nextScores);
     else {
       setExamTierScores(nextScores);
       saveExamProgress(effectiveExamUnlocked, nextScores);
     }
 
-    const passed = rawPct >= EXAM_TIER_PASS_PCT;
+    const passThreshold = pageBuilder.tiers[String(currentTier) as "1" | "2" | "3"].passingScore;
+    const passed = scorePct >= passThreshold;
     const nextTier = (currentTier + 1) as ExamTier;
 
     if (
@@ -651,7 +658,7 @@ function AppContent() {
       setExamFinalPct(avg);
     }
     if (adminSimulation) {
-      logAdminSimulationEvent("quiz_completed", `Exam Tier ${currentTier}`, rawPct);
+      logAdminSimulationEvent("quiz_completed", `Exam Tier ${currentTier}`, scorePct);
     }
 
     setState("results");
@@ -781,6 +788,11 @@ function AppContent() {
           timeLimitSeconds={timeLimit}
           onFinish={isBonusMode ? handleBonusFinish : isExamMode ? handleExamFinish : handleFinish}
           onHome={handleHome}
+          tierSecondsPerQuestion={
+            examTier
+              ? pageBuilder.tiers[String(examTier) as "1" | "2" | "3"].secondsPerQuestion
+              : undefined
+          }
         />
       )}
       {state === "passfail" && (

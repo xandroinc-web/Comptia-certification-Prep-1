@@ -213,12 +213,69 @@ export interface SuccessResponse {
   success: boolean;
 }
 
+export interface PageBuilderTierSettings {
+  /** @maxLength 32 */
+  name: string;
+  /** @maxLength 80 */
+  description: string;
+  /**
+   * @minimum 1
+   * @maximum 270
+   */
+  questionCount: number;
+  /**
+   * @minimum 15
+   * @maximum 180
+   */
+  secondsPerQuestion: number;
+  /**
+   * @minimum 50
+   * @maximum 100
+   */
+  passingScore: number;
+  /** @pattern ^#[0-9A-Fa-f]{6}$ */
+  color: string;
+}
+
+export type PageBuilderSettingsTiers = {
+  "1": PageBuilderTierSettings;
+  "2": PageBuilderTierSettings;
+  "3": PageBuilderTierSettings;
+};
+
+export interface PageBuilderSettings {
+  /** @maxLength 48 */
+  eyebrow: string;
+  /** @maxLength 60 */
+  title: string;
+  /** @maxLength 100 */
+  subtitle: string;
+  /** @maxLength 120 */
+  tagline: string;
+  /** @maxLength 48 */
+  disclaimerTitle: string;
+  /** @maxLength 700 */
+  disclaimerText: string;
+  /** @pattern ^#[0-9A-Fa-f]{6}$ */
+  primaryColor: string;
+  /** @pattern ^#[0-9A-Fa-f]{6}$ */
+  accentColor: string;
+  /** @pattern ^#[0-9A-Fa-f]{6}$ */
+  backgroundColor: string;
+  /** @pattern ^#[0-9A-Fa-f]{6}$ */
+  panelColor: string;
+  /** @pattern ^#[0-9A-Fa-f]{6}$ */
+  textColor: string;
+  tiers: PageBuilderSettingsTiers;
+}
+
 export interface AppSettings {
   announcement: string;
   maintenanceMode: boolean;
   pricingHeadline: string;
   monthlyPriceLabel: string;
   yearlyPriceLabel: string;
+  pageBuilder: PageBuilderSettings;
 }
 
 export type AdminAccessResponseRole =

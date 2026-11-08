@@ -9,6 +9,7 @@ interface QuizPageProps {
   difficulty: Difficulty;
   isWeakMode?: boolean;
   isExamMode?: boolean;
+  tierSecondsPerQuestion?: number;
   timeLimitSeconds: number;
   onFinish: (answers: (number | null)[], questionTimes: number[]) => void;
   onHome: () => void;
@@ -28,7 +29,7 @@ function formatTimer(totalSeconds: number): string {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-export default function QuizPage({ questions, mode, difficulty, isWeakMode, isExamMode, timeLimitSeconds, onFinish, onHome }: QuizPageProps) {
+export default function QuizPage({ questions, mode, difficulty, isWeakMode, isExamMode, tierSecondsPerQuestion, timeLimitSeconds, onFinish, onHome }: QuizPageProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<(number | null)[]>(Array(questions.length).fill(null));
   const [showWarning, setShowWarning] = useState(false);
@@ -231,7 +232,7 @@ export default function QuizPage({ questions, mode, difficulty, isWeakMode, isEx
                 <span aria-hidden="true">☠</span>
                 HellMode — no free points
               </span>
-              <span className="text-red-300/60 text-xs">45 seconds per question</span>
+              <span className="text-red-300/60 text-xs">{tierSecondsPerQuestion ?? SECONDS_PER_QUESTION.hard} seconds per question</span>
             </div>
           )}
 

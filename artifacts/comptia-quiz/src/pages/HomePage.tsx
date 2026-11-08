@@ -10,6 +10,7 @@ import { computeGamification, GamificationState } from "@/lib/gamification";
 import { ExamTier } from "@/data/exam-bank";
 import { useGetAppSettings } from "@workspace/api-client-react";
 import type { AdminSimulationFlags, AdminSimulationProfile } from "@/lib/admin-simulation";
+import { normalizePageBuilderSettings, type PageBuilderSettings } from "@/lib/page-builder";
 
 import {
   Difficulty,
@@ -51,6 +52,16 @@ function getWeakCount(): number {
   } catch { return 0; }
 }
 
+function loadBuilderPreview(isAdmin: boolean): PageBuilderSettings | null {
+  if (!isAdmin || typeof window === "undefined") return null;
+  if (new URLSearchParams(window.location.search).get("pageBuilderPreview") !== "1") return null;
+  try {
+    return normalizePageBuilderSettings(JSON.parse(localStorage.getItem("comptia_page_builder_preview") || "null"));
+  } catch {
+    return null;
+  }
+}
+
 function formatDate(iso: string): string {
   try {
     return new Date(iso).toLocaleDateString(undefined, {
@@ -81,6 +92,7 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
   const [testLength, setTestLength] = useState<TestLength>("full");
   const [difficulty, setDifficulty] = useState<Difficulty>("medium");
   const [weakCount, setWeakCount] = useState(0);
+  const [previewSettings] = useState(() => loadBuilderPreview(isAdmin));
   const [, setLocation] = useLocation();
   const { user, isLoaded } = useUser();
   const { signOut } = useClerk();
@@ -88,6 +100,16 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
   const gamification = useMemo(() => computeGamification(quizHistory), [quizHistory]);
   const randomTopics = useMemo(() => getTopicsInRandomOrder(), []);
   const { data: appSettings } = useGetAppSettings();
+  const pageBuilder = normalizePageBuilderSettings(previewSettings ?? appSettings?.pageBuilder);
+  const homeThemeStyle = {
+    "--home-primary": pageBuilder.primaryColor,
+    "--home-accent": pageBuilder.accentColor,
+    "--home-background": pageBuilder.backgroundColor,
+    "--home-panel": pageBuilder.panelColor,
+    "--home-text": pageBuilder.textColor,
+    backgroundColor: pageBuilder.backgroundColor,
+    color: pageBuilder.textColor,
+  } as React.CSSProperties;
 
   useEffect(() => {
     setWeakCount(getWeakCount());
@@ -102,7 +124,7 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
   const diffBreakdown = getDifficultyBreakdown(selected === "all" ? undefined : selected);
 
   return (
-    <div className="min-h-screen flex flex-col items-center p-4">
+    <div className="home-page-theme min-h-screen flex flex-col items-center p-4" style={homeThemeStyle}>
       <div className="w-full max-w-lg">
         {/* Auth bar */}
         <div className="flex items-center justify-end gap-3 mb-4 mt-2">
@@ -152,12 +174,10 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
             <svg className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
             </svg>
-            <span className="text-amber-400 text-xs font-bold uppercase tracking-wider">Practice Disclaimer</span>
+            <span className="text-amber-400 text-xs font-bold uppercase tracking-wider">{pageBuilder.disclaimerTitle}</span>
           </div>
           <p className="text-gray-300 text-sm leading-relaxed">
-            This is a <span className="text-amber-300 font-semibold">practice tool</span> for CompTIA exam prep.
-            The 100–900 scoring scale and 750 passing score are simulations based on CompTIA's real scoring model, but your actual exam results may differ.
-            Questions are curated from the full 270-question bank and are timed at <span className="text-amber-300 font-semibold">60 seconds per question</span> to mimic exam pressure.
+            {pageBuilder.disclaimerText}
           </p>
         </div>
 
@@ -206,7 +226,7 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
           <div className="flex items-center justify-center gap-3 mb-6 flex-wrap">
             <div className="inline-flex items-center gap-2 bg-red-600/10 border border-red-600/30 rounded-full px-4 py-1.5 text-red-400 text-sm font-medium">
               <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              CompTIA Certification Prep
+              {pageBuilder.eyebrow}
             </div>
             {isPro ? (
               <div className="inline-flex items-center gap-1.5 bg-red-500/10 border border-red-500/30 rounded-full px-3 py-1 text-red-400 text-xs font-bold uppercase tracking-wider">
@@ -241,13 +261,13 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
             />
           )}
           <h1 className="text-4xl font-bold text-white tracking-tight mb-2">
-            Trifecta Quiz
+            {pageBuilder.title}
           </h1>
           <p className="text-gray-400 text-base">
-            A+, Network+, and Security+ practice questions
+            {pageBuilder.subtitle}
           </p>
           <p className="text-sky-300/80 text-sm mt-1.5 italic">
-            Build confidence by mastering what you know with certainty
+            {pageBuilder.tagline}
           </p>
            {appSettings?.announcement && (
              <div className="mt-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-2.5 text-left text-xs text-red-200">
@@ -345,7 +365,7 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
             </span>
           </div>
           <p className="text-gray-500 text-sm mb-4">
-            Locked progression: 270 questions per tier (Mild → Medium → HellMode). Pass each tier to unlock the next. HellMode uses hard-weighted scoring, reverse-recall prompts, and a 45-second clock. Score 90%+ for a Winner's Circle badge and 95%+ to unlock 10 bonus questions.
+            Locked progression: {pageBuilder.tiers["1"].name} → {pageBuilder.tiers["2"].name} → {pageBuilder.tiers["3"].name}. Pass each tier at its configured threshold. {pageBuilder.tiers["3"].name} uses hard-weighted troubleshooting, log-analysis, and command-line scenarios with a fixed 45-second clock. Score 90%+ for a Winner's Circle badge and 95%+ to unlock 10 bonus questions.
           </p>
           {isAdmin && (
             <div className="mb-4 rounded-lg border border-red-500/20 bg-red-500/5 px-3 py-2 text-xs text-red-300">
@@ -358,10 +378,12 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
               const canStartTier = isAdmin || unlocked;
               const score = examTierScores[tier];
               const completed = score > 0;
-              const passed = score >= 80;
+              const tierSettings = pageBuilder.tiers[String(tier) as "1" | "2" | "3"];
+              const passed = score >= tierSettings.passingScore;
               return (
                 <div
                   key={tier}
+                  style={{ borderColor: tierSettings.color }}
                   className={`rounded-xl border p-3 text-center ${
                     canStartTier
                       ? completed
@@ -374,12 +396,16 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
                 >
                   <p className="text-white font-bold text-sm mb-1">
                     Tier {tier}
-                    {tier === 1 && " (Mild)"}
-                    {tier === 2 && " (Medium)"}
-                    {tier === 3 && " (HellMode)"}
+                    {` (${pageBuilder.tiers[String(tier) as "1" | "2" | "3"].name})`}
                   </p>
-                  <p className={`text-xs mb-2 ${tier === 3 ? "text-red-400/80 font-semibold" : "text-gray-500"}`}>
-                    {tier === 3 ? "270 questions · 45s each · hard-scored" : "270 questions"}
+                  <p
+                    className={`text-xs mb-1 ${tier === 3 ? "font-semibold" : "text-gray-500"}`}
+                    style={tier === 3 ? { color: pageBuilder.tiers["3"].color } : undefined}
+                  >
+                    {pageBuilder.tiers[String(tier) as "1" | "2" | "3"].questionCount} questions · {pageBuilder.tiers[String(tier) as "1" | "2" | "3"].secondsPerQuestion}s each · pass {pageBuilder.tiers[String(tier) as "1" | "2" | "3"].passingScore}%
+                  </p>
+                  <p className="mb-2 min-h-8 text-[10px] leading-4 text-gray-500">
+                    {pageBuilder.tiers[String(tier) as "1" | "2" | "3"].description}
                   </p>
                   {completed && (
                     <p className={`text-xs font-bold ${passed ? "text-emerald-400" : "text-red-400"}`}>

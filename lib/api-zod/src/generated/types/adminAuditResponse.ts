@@ -5,7 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { AdminAuditLog } from "./adminAuditLog";
+import type { AdminAuditLog } from "./adminAuditLog.js";
 
 export interface AdminAuditResponse {
   data: AdminAuditLog[];

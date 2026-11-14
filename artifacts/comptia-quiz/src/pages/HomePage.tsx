@@ -1,24 +1,24 @@
 import { useState, useEffect, useMemo } from "react";
-import { Show, useUser, useClerk } from "@clerk/react";
+import { useAuth, displayNameFor, avatarUrlFor } from "../lib/auth";
 import { useLocation } from "wouter";
 import { QuizResult } from "@workspace/api-client-react";
-import { Sparkles, BookOpen, Monitor, Wifi, HardDrive, Cloud, Wrench, Shield, Bug, ClipboardList, Trophy, Flame, Star, Timer, Lock, Zap } from "lucide-react";
-import { ExamCategory, EXAMS, EXAM_DESCRIPTIONS, EXAM_COUNTS } from "@/data/questions";
+import { Sparkles, BookOpen, Monitor, Wifi, HardDrive, Cloud, Wrench, Shield, Bug, ClipboardList, Trophy, Flame, Timer, Lock, Zap } from "lucide-react";
+import { EXAMS, EXAM_DESCRIPTIONS, EXAM_COUNTS } from "@/lib/bank-meta";
+import type { ExamCategory } from "@/lib/scoring";
 import { ALL_DOMAINS, DomainTopic, getDomainColor, DOMAIN_METADATA } from "@/data/topics";
 import { getTopicPoolCount, getTopicsInRandomOrder } from "@/data/topic-pool";
 import { computeGamification, GamificationState } from "@/lib/gamification";
-import { ExamTier } from "@/data/exam-bank";
+import type { ExamTier } from "@/data/exam-bank";
 import { useGetAppSettings } from "@workspace/api-client-react";
 import type { AdminSimulationFlags, AdminSimulationProfile } from "@/lib/admin-simulation";
 import { normalizePageBuilderSettings, type PageBuilderSettings } from "@/lib/page-builder";
 
 import {
-  Difficulty,
+  type Difficulty,
   DIFFICULTY_LABELS,
   DIFFICULTY_COLORS,
-  getDifficultyBreakdown,
-  getDifficultyCount,
-} from "@/data/questions";
+} from "@/lib/scoring";
+import { getDifficultyBreakdown, getDifficultyCount } from "@/lib/bank-meta";
 
 type TestLength = "full" | "fast";
 
@@ -37,6 +37,8 @@ interface HomePageProps {
   isPro: boolean;
   isAdmin: boolean;
   isSignedIn: boolean;
+  /** Unexpired full-test attempts per exam (from the entitlements cache). */
+  testAttempts?: Record<string, { remaining: number; expiresAt: string | null }>;
   remainingTrials: number;
   trialStatusMessage: string | null;
   simulationProfile?: AdminSimulationProfile | null;
@@ -87,15 +89,14 @@ const DOMAIN_ICONS: Record<DomainTopic, React.ReactNode> = {
   "4.0 Operational Procedures": <ClipboardList size={14} />,
 };
 
-export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onStudyTopic, onStartExamTier, examUnlocked, examTierScores, onPricing, onProgress, quizHistory, historyLoading, isPro, isAdmin, isSignedIn, remainingTrials, trialStatusMessage, simulationProfile, simulationFeatures, simulationRunsRemaining, onEndSimulation }: HomePageProps) {
+export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onStudyTopic, onStartExamTier, examUnlocked, examTierScores, onPricing, onProgress, quizHistory, historyLoading, isPro, isAdmin, isSignedIn, testAttempts, remainingTrials, trialStatusMessage, simulationProfile, simulationFeatures, simulationRunsRemaining, onEndSimulation }: HomePageProps) {
   const [selected, setSelected] = useState<"all" | ExamCategory>("all");
   const [testLength, setTestLength] = useState<TestLength>("full");
   const [difficulty, setDifficulty] = useState<Difficulty>("medium");
   const [weakCount, setWeakCount] = useState(0);
   const [previewSettings] = useState(() => loadBuilderPreview(isAdmin));
   const [, setLocation] = useLocation();
-  const { user, isLoaded } = useUser();
-  const { signOut } = useClerk();
+  const { user, isLoaded, signOut } = useAuth();
 
   const gamification = useMemo(() => computeGamification(quizHistory), [quizHistory]);
   const randomTopics = useMemo(() => getTopicsInRandomOrder(), []);
@@ -128,44 +129,44 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
       <div className="w-full max-w-lg">
         {/* Auth bar */}
         <div className="flex items-center justify-end gap-3 mb-4 mt-2">
-          <Show when="signed-in">
-            {isLoaded && user && (
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2">
-                  {user.imageUrl ? (
-                    <img src={user.imageUrl} alt="" className="w-7 h-7 rounded-full" />
-                  ) : (
-                    <div className="w-7 h-7 rounded-full bg-red-600 flex items-center justify-center text-white text-xs font-bold">
-                      {user.firstName?.[0] || user.emailAddresses[0]?.emailAddress?.[0]?.toUpperCase() || "U"}
-                    </div>
-                  )}
-                  <span className="text-gray-300 text-sm font-medium">
-                    {user.firstName || user.emailAddresses[0]?.emailAddress || "User"}
-                  </span>
-                </div>
-                <button
-                  onClick={() => signOut({ redirectUrl: "/" })}
-                  className="text-gray-500 hover:text-gray-300 text-xs font-medium transition-colors"
-                >
-                  Sign out
-                </button>
+          {isSignedIn && isLoaded && user && (
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                {avatarUrlFor(user) ? (
+                  <img src={avatarUrlFor(user) as string} alt="" className="w-7 h-7 rounded-full" />
+                ) : (
+                  <div className="w-7 h-7 rounded-full bg-red-600 flex items-center justify-center text-white text-xs font-bold">
+                    {displayNameFor(user)[0]?.toUpperCase() || "U"}
+                  </div>
+                )}
+                <span className="text-gray-300 text-sm font-medium">
+                  {displayNameFor(user)}
+                </span>
               </div>
-            )}
-          </Show>
-          <Show when="signed-out">
-            <button
-              onClick={() => setLocation("/sign-in")}
-              className="text-gray-400 hover:text-white text-sm font-medium transition-colors"
-            >
-              Sign in
-            </button>
-            <button
-              onClick={() => setLocation("/sign-up")}
-              className="bg-red-600 hover:bg-red-500 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
-            >
-              Sign up
-            </button>
-          </Show>
+              <button
+                onClick={() => void signOut()}
+                className="text-gray-500 hover:text-gray-300 text-xs font-medium transition-colors"
+              >
+                Sign out
+              </button>
+            </div>
+          )}
+          {!isSignedIn && (
+            <>
+              <button
+                onClick={() => setLocation("/sign-in")}
+                className="text-gray-400 hover:text-white text-sm font-medium transition-colors"
+              >
+                Sign in
+              </button>
+              <button
+                onClick={() => setLocation("/sign-up")}
+                className="bg-red-600 hover:bg-red-500 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
+              >
+                Sign up
+              </button>
+            </>
+          )}
         </div>
 
         {/* Disclaimer */}
@@ -215,7 +216,7 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
                 onClick={onPricing}
                 className="mt-2 text-xs font-bold uppercase tracking-wider text-white bg-red-600 hover:bg-red-500 px-3 py-1.5 rounded-lg transition-colors"
               >
-                Upgrade to Pro
+                Get Practice Membership
               </button>
             )}
           </div>
@@ -253,7 +254,8 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
           {(simulationFeatures?.timedSimulations ?? true) && (
             <SimulationCard
               selected={selected}
-              isPro={isPro}
+              isAdmin={isAdmin}
+              testAttempts={testAttempts}
               onStartSimulation={onStartSimulation}
               onPricing={onPricing}
               isAdminSimulation={Boolean(simulationProfile)}
@@ -309,6 +311,55 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
           )}
         </div>
 
+        {/* Simulation disclaimer — this is practice, not the real exam */}
+        <div className="rounded-2xl border-2 border-amber-500/60 bg-amber-500/10 p-5 mb-4 text-center">
+          <p className="text-amber-300 font-bold text-base leading-relaxed">
+            This is NOT the real CompTIA exam. Trifecta Quiz is a practice
+            simulation built to mirror the real exam — same style, same
+            timing, same pressure — so you walk into the real test ready to
+            pass it the first time.
+          </p>
+        </div>
+
+        {/* Why CompTIA matters */}
+        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-5 mb-4">
+          <h2 className="text-white text-lg font-bold mb-4">
+            Why CompTIA matters
+          </h2>
+          <div className="space-y-4">
+            <div>
+              <p className="text-white font-semibold text-sm">
+                CompTIA is the standard employers ask for.
+              </p>
+              <p className="text-gray-400 text-sm mt-0.5">
+                A+, Network+ and Security+ are the certifications hiring
+                managers look for. They prove you can do the job, not just
+                talk about it.
+              </p>
+            </div>
+            <div>
+              <p className="text-white font-semibold text-sm">
+                Certified gets you hired.
+              </p>
+              <p className="text-gray-400 text-sm mt-0.5">
+                Certified candidates get past the HR filter, get interviews
+                faster, and earn more than uncertified applicants with the
+                same skills.
+              </p>
+            </div>
+            <div>
+              <p className="text-white font-semibold text-sm">
+                Why practice with this simulation.
+              </p>
+              <p className="text-gray-400 text-sm mt-0.5">
+                Real-exam format, timed, scored 100–900 with a 750 pass
+                mark, tiers up to HellMode, and fireworks when you pass — so
+                the real exam feels like something you have already done.
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Progress Snapshot */}
         {quizHistory.length > 0 && (
           <div className="bg-gray-900 border border-gray-800 rounded-2xl p-5 mb-4">
@@ -361,7 +412,7 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
             <p className="text-gray-400 text-sm font-medium uppercase tracking-widest">3-Tier CompTIA Exam</p>
             <span className="inline-flex items-center gap-1 bg-red-500/10 border border-red-500/30 rounded-full px-2 py-0.5 text-red-400 text-[10px] font-bold uppercase tracking-wider">
               <Flame size={12} />
-              810 Questions
+              {EXAM_COUNTS.all} Questions
             </span>
           </div>
           <p className="text-gray-500 text-sm mb-4">
@@ -436,8 +487,8 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
         </div>
 
         {/* Quiz History (signed-in only) */}
-        <Show when="signed-in">
-          {historyLoading ? (
+        {isSignedIn && (
+          historyLoading ? (
             <div className="bg-gray-900 border border-gray-800 rounded-2xl p-5 mb-4 animate-pulse">
               <div className="h-4 bg-gray-800 rounded w-1/3 mb-3" />
               <div className="h-10 bg-gray-800 rounded" />
@@ -476,137 +527,17 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
             <div className="bg-gray-900 border border-gray-800 rounded-2xl p-5 mb-4 text-center">
               <p className="text-gray-400 text-sm">No quiz history yet. Take your first quiz to start tracking progress!</p>
             </div>
-          )}
-        </Show>
+          )
+        )}
 
-        <Show when="signed-out">
+        {!isSignedIn && (
           <div className="bg-gray-900 border border-gray-800 rounded-2xl p-5 mb-4 text-center">
             <p className="text-gray-400 text-sm">
               <button onClick={() => setLocation("/sign-in")} className="text-red-400 hover:text-red-300 font-semibold underline">Sign in</button>
               {" "}to save your quiz results and track your progress over time.
             </p>
           </div>
-        </Show>
-
-        {/* Testimonials */}
-        <div className="mb-8">
-          <p className="text-gray-500 text-sm font-medium uppercase tracking-widest mb-4 text-center">
-            What Ontario IT Pros Say
-          </p>
-          <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
-            {[
-              {
-                name: "Sarah K.",
-                location: "Toronto, ON",
-                role: "IT Support Specialist",
-                text: "Passed my A+ on the first try after using this for 3 weeks. The topic breakdown showed me I was weak on networking — studied that domain hard and nailed it.",
-                exam: "A+",
-                score: 785,
-              },
-              {
-                name: "Marcus T.",
-                location: "Ottawa, ON",
-                role: "Junior Sysadmin",
-                text: "The gamification kept me coming back daily. Hit a 7-day streak and the badges made studying feel like a game instead of a chore. Network+ certified now!",
-                exam: "Network+",
-                score: 812,
-              },
-              {
-                name: "Priya R.",
-                location: "Mississauga, ON",
-                role: "Cybersecurity Analyst",
-                text: "Topic mode is a game-changer. I drilled the Security domain every night for two weeks. The per-topic analytics told me exactly when I was ready for the real exam.",
-                exam: "Security+",
-                score: 798,
-              },
-              {
-                name: "James L.",
-                location: "Hamilton, ON",
-                role: "Desktop Technician",
-                text: "As someone who gets test anxiety, the timed simulations here built my confidence. 90 questions, 90 minutes — when I sat for the real A+ it felt like just another practice run.",
-                exam: "A+",
-                score: 756,
-              },
-              {
-                name: "Amanda C.",
-                location: "London, ON",
-                role: "NOC Technician",
-                text: "Got the Pro tier and it was worth every penny. Unlimited retakes on weak areas helped me turn my 60% networking score into 88% in two weeks. Just passed Network+.",
-                exam: "Network+",
-                score: 805,
-              },
-              {
-                name: "David O.",
-                location: "Kitchener, ON",
-                role: "Field Service Tech",
-                text: "The flagging system during quizzes is brilliant. I flagged every unsure question, reviewed them after, and never missed the same concept twice. A+ certified!",
-                exam: "A+",
-                score: 778,
-              },
-              {
-                name: "Fatima S.",
-                location: "Brampton, ON",
-                role: "Help Desk Lead",
-                text: "Tried three other CompTIA apps before this one. Nothing else tracks per-domain mastery like this. The 'Road to Certification' bar kept me motivated through Core 2.",
-                exam: "A+",
-                score: 790,
-              },
-              {
-                name: "Ryan B.",
-                location: "Windsor, ON",
-                role: "IT Consultant",
-                text: "Completed all three certs in 8 months. The adaptive recommendations knew exactly when to push me to harder questions. This app doesn't just quiz you — it coaches you.",
-                exam: "Security+",
-                score: 845,
-              },
-              {
-                name: "Jessica M.",
-                location: "Markham, ON",
-                role: "Junior Network Engineer",
-                text: "The dark theme with red accents might seem like a small thing, but studying at 11 PM with an easy-on-the-eyes UI actually made a difference. Passed Network+ with an 802.",
-                exam: "Network+",
-                score: 802,
-              },
-              {
-                name: "Tyler N.",
-                location: "Barrie, ON",
-                role: "SOC Analyst",
-                text: "Going for the trifecta and this was the only app that properly covers all three exams with the same depth. The weak area tracking is scary accurate — it knew my blind spots before I did.",
-                exam: "Security+",
-                score: 821,
-              },
-            ].map((t, i) => (
-              <div
-                key={i}
-                className="min-w-[280px] max-w-[280px] bg-gray-900 border border-gray-800 rounded-2xl p-5 snap-start flex-shrink-0"
-              >
-                <div className="flex items-center gap-0.5 mb-3">
-                  {[1, 2, 3, 4, 5].map((s) => (
-                    <Star key={s} size={12} className="text-amber-400 fill-amber-400" />
-                  ))}
-                </div>
-                <p className="text-gray-300 text-sm leading-relaxed mb-4">
-                  “{t.text}”
-                </p>
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-red-600/20 flex items-center justify-center text-red-400 text-sm font-bold">
-                    {t.name.split(" ")[0][0]}
-                  </div>
-                  <div>
-                    <p className="text-white text-sm font-medium">{t.name}</p>
-                    <p className="text-gray-500 text-xs">{t.role} • {t.location}</p>
-                  </div>
-                </div>
-                <div className="mt-3 flex items-center gap-2">
-                  <span className="text-emerald-400 text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
-                    {t.exam} Pass
-                  </span>
-                  <span className="text-gray-500 text-[10px]">{t.score} score</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        )}
 
         {/* Mode selection */}
         <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 mb-4">
@@ -833,7 +764,7 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
               : "bg-red-600 hover:bg-red-500 active:bg-red-700 text-white shadow-red-900/30"
           }`}
         >
-          {remainingTrials === 0 ? "Trial limit reached — Upgrade to Pro" : `Start ${difficulty !== "medium" ? DIFFICULTY_LABELS[difficulty] + " " : ""}${testLength === "fast" ? "Fast" : "Full"} Quiz`}
+          {remainingTrials === 0 ? "Trial limit reached — Get Practice Membership" : `Start ${difficulty !== "medium" ? DIFFICULTY_LABELS[difficulty] + " " : ""}${testLength === "fast" ? "Fast" : "Full"} Quiz`}
         </button>
 
         {weakCount > 0 && (
@@ -867,7 +798,7 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
             className="w-full mt-4 py-3 rounded-xl border border-red-500/40 bg-gradient-to-r from-red-600/20 to-red-500/10 text-red-300 hover:from-red-600/30 hover:to-red-500/20 font-semibold text-sm transition-all flex items-center justify-center gap-2"
           >
             <Sparkles size={16} />
-            Upgrade to Pro — unlimited quizzes, analytics & more
+            Get Practice Membership — unlimited practice, all tiers & more
           </button>
         )}
 
@@ -878,7 +809,7 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
           {isPro ? (
             <span className="inline-flex items-center gap-1 bg-red-500/10 border border-red-500/20 rounded-full px-2 py-0.5 text-red-400/70 text-[10px] font-bold uppercase tracking-wider">
               <Sparkles size={10} />
-              Pro
+              Member
             </span>
           ) : (
             <span className="inline-flex items-center gap-1 bg-sky-500/10 border border-sky-500/20 rounded-full px-2 py-0.5 text-sky-400/70 text-[10px] font-bold uppercase tracking-wider">
@@ -903,18 +834,20 @@ import {
   hasFreeSimulationRemaining,
   SIMULATION_CONFIGS,
   type SimulationConfig,
-} from "@/data/simulation";
+} from "@/lib/bank-meta";
 
 function SimulationCard({
   selected,
-  isPro,
+  isAdmin,
+  testAttempts,
   onStartSimulation,
   onPricing,
   isAdminSimulation,
   simulationRunsRemaining,
 }: {
   selected: "all" | ExamCategory;
-  isPro: boolean;
+  isAdmin: boolean;
+  testAttempts?: Record<string, { remaining: number; expiresAt: string | null }>;
   onStartSimulation?: (cat: ExamCategory, diff: Difficulty | "mixed") => void;
   onPricing: () => void;
   isAdminSimulation: boolean;
@@ -928,13 +861,17 @@ function SimulationCard({
     selected === "A+" ? "a_plus" : selected === "Network+" ? "network_plus" : "security_plus"
   ];
 
+  const attemptsLeft = testAttempts?.[selected]?.remaining ?? 0;
   const status = isAdminSimulation
     ? { canStart: simulationRunsRemaining !== 0 }
-    : getSimulationStatus(selected, isPro);
+    : getSimulationStatus(selected, isAdmin, testAttempts);
   const hasFree = isAdminSimulation
     ? simulationRunsRemaining !== 0
     : hasFreeSimulationRemaining(selected);
   const isLocked = !status.canStart;
+  // Full-bank sims (90 questions) are for admins and paid attempts;
+  // the free taste serves the easy+medium half-sim.
+  const canStartFullSim = isAdmin || attemptsLeft > 0;
 
   return (
     <div className="bg-gradient-to-br from-gray-900/90 to-gray-900/60 border border-red-500/30 rounded-2xl p-5 mb-6 relative overflow-hidden">
@@ -948,23 +885,33 @@ function SimulationCard({
           </div>
           <div>
             <p className="text-white font-semibold text-sm">Simulation Mode</p>
-            <p className="text-gray-500 text-xs">{config.description}</p>
+            <p className="text-gray-500 text-xs">
+              {isAdminSimulation || canStartFullSim
+                ? config.description
+                : config.freeDescription}
+            </p>
           </div>
           {isAdminSimulation && (
             <span className="ml-auto inline-flex items-center gap-1 rounded-full border border-violet-400/30 bg-violet-400/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-violet-200">
               Test profile{simulationRunsRemaining === null || simulationRunsRemaining === undefined ? "" : ` · ${simulationRunsRemaining} left`}
             </span>
           )}
-          {!isAdminSimulation && !isPro && hasFree && (
+          {!isAdminSimulation && attemptsLeft > 0 && (
+            <span className="ml-auto inline-flex items-center gap-1 bg-amber-500/10 border border-amber-500/30 rounded-full px-2 py-0.5 text-amber-400 text-[10px] font-bold uppercase tracking-wider">
+              <Timer size={10} />
+              {attemptsLeft} attempt{attemptsLeft > 1 ? "s" : ""} left
+            </span>
+          )}
+          {!isAdminSimulation && attemptsLeft === 0 && hasFree && (
             <span className="ml-auto inline-flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-2 py-0.5 text-emerald-400 text-[10px] font-bold uppercase tracking-wider">
               <Zap size={10} />
               1 Free
             </span>
           )}
-          {!isAdminSimulation && !isPro && !hasFree && (
+          {!isAdminSimulation && attemptsLeft === 0 && !hasFree && (
             <span className="ml-auto inline-flex items-center gap-1 bg-red-500/10 border border-red-500/30 rounded-full px-2 py-0.5 text-red-400 text-[10px] font-bold uppercase tracking-wider">
               <Lock size={10} />
-              Pro Only
+              Full Test
             </span>
           )}
         </div>
@@ -972,7 +919,7 @@ function SimulationCard({
         {/* Difficulty selector for simulation */}
         <div className="flex rounded-lg bg-gray-800/80 p-1 gap-1 mb-3">
           {(["mixed", "easy", "medium", "hard"] as const).map((d) => {
-            const isHardLocked = d === "hard" && !isPro && !hasFree;
+            const isHardLocked = d === "hard" && !isAdmin && attemptsLeft === 0 && !hasFree;
             return (
               <button
                 key={d}
@@ -1021,13 +968,13 @@ function SimulationCard({
           {isLocked ? (
             <span className="flex items-center justify-center gap-2">
               <Lock size={14} />
-              {isAdminSimulation ? "Test session limit reached" : "Upgrade to Pro for Simulations"}
+              {isAdminSimulation ? "Test session limit reached" : "Get a Full Test — one attempt"}
             </span>
           ) : (
             <span className="flex items-center justify-center gap-2">
               <Timer size={14} />
               Start {selected} Simulation
-              {!isPro && hasFree && (
+              {attemptsLeft === 0 && hasFree && (
                 <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded">FREE</span>
               )}
             </span>

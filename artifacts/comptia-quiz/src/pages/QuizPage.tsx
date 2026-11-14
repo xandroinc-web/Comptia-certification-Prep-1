@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
-import { Question, ExamCategory, Difficulty, getTimeLimitSeconds, SECONDS_PER_QUESTION, DIFFICULTY_LABELS } from "@/data/questions";
+import { type Question, type ExamCategory, type Difficulty, getTimeLimitSeconds, SECONDS_PER_QUESTION, DIFFICULTY_LABELS } from "@/lib/scoring";
 import { DOMAIN_METADATA, getDomainColor } from "@/data/topics";
-import { playWinnerSound, playHeartbreakSound } from "@/lib/sound-effects";
+import { playWinnerSound, playHeartbreakSound, unlockAudioContext } from "@/lib/sound-effects";
+import { checkAnswer, type CheckAnswerResult } from "@/lib/quiz-api";
 
 interface QuizPageProps {
   questions: Question[];
@@ -13,6 +14,32 @@ interface QuizPageProps {
   timeLimitSeconds: number;
   onFinish: (answers: (number | null)[], questionTimes: number[]) => void;
   onHome: () => void;
+  /** Resume support: answers + starting index restored from a saved
+   *  session (server session for signed-in users, localStorage for
+   *  anonymous users). Applied once when the question set mounts. */
+  initialAnswers?: (number | null)[];
+  initialIndex?: number;
+  /** Called with the full answers array after every answer, so the
+   *  parent can persist the in-progress session (debounced). */
+  onAnswer?: (answers: (number | null)[]) => void;
+  /** True when the served questions carry no answer key (the normal
+   *  server path: PublicQuestion has no correctIndex/explanation).
+   *  Correctness feedback, sounds and correct-answer highlighting are
+   *  disabled — answers are recorded and grading happens server-side
+   *  at submit. */
+  hideAnswers?: boolean;
+  /** Server question-set id, echoed on the check-answer call so the
+   *  server reproduces the served (shuffled) option order. */
+  questionSetId?: string | null;
+  /** Real server question ids, aligned by index with `questions`
+   *  (client question ids are hashes of these). */
+  serverQuestionIds?: string[];
+  /** True for practice/learning modes (fast, full, tier, drills,
+   *  topic): after each answer the server is asked for that one
+   *  question's verdict and the red/green + explanation feedback is
+   *  shown. False for exam mode (simulation): no mid-quiz feedback,
+   *  grading happens at submit. */
+  instantFeedback?: boolean;
 }
 
 const CATEGORY_COLOR: Record<string, string> = {
@@ -29,11 +56,28 @@ function formatTimer(totalSeconds: number): string {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-export default function QuizPage({ questions, mode, difficulty, isWeakMode, isExamMode, tierSecondsPerQuestion, timeLimitSeconds, onFinish, onHome }: QuizPageProps) {
+export default function QuizPage({ questions, mode, difficulty, isWeakMode, isExamMode, tierSecondsPerQuestion, timeLimitSeconds, onFinish, onHome, initialAnswers, initialIndex, onAnswer, hideAnswers, questionSetId, serverQuestionIds, instantFeedback }: QuizPageProps) {
+  const answersKnown = !hideAnswers;
+  // Resume payload, consumed once by the reset effect below.
+  const initialAnswersRef = useRef<(number | null)[] | null>(initialAnswers ?? null);
+  const initialIndexRef = useRef<number>(initialIndex ?? 0);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const currentIndexRef = useRef(0);
   const [answers, setAnswers] = useState<(number | null)[]>(Array(questions.length).fill(null));
   const [showWarning, setShowWarning] = useState(false);
   const [slideDir, setSlideDir] = useState<"left" | "right">("right");
+  // Server-driven immediate feedback, keyed by question index (so
+  // navigating back to an answered question re-shows its verdict).
+  // Filled only by the check-answer response for that question — the
+  // answer key for unanswered questions is never held client-side.
+  const [feedback, setFeedback] = useState<Record<number, CheckAnswerResult>>({});
+  const [feedbackPending, setFeedbackPending] = useState(false);
+
+  // Keep the ref in sync so async check-answer callbacks can tell
+  // whether the user is still on the question they answered.
+  useEffect(() => {
+    currentIndexRef.current = currentIndex;
+  }, [currentIndex]);
 
   // Timer
   const [secondsLeft, setSecondsLeft] = useState(timeLimitSeconds);
@@ -47,15 +91,26 @@ export default function QuizPage({ questions, mode, difficulty, isWeakMode, isEx
   const feedbackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    setCurrentIndex(0);
-    setAnswers(Array(questions.length).fill(null));
-    answersRef.current = Array(questions.length).fill(null);
+    const saved = initialAnswersRef.current;
+    if (saved && saved.length === questions.length) {
+      // Resuming a saved session: restore answers + position once.
+      setCurrentIndex(initialIndexRef.current);
+      setAnswers(saved);
+      answersRef.current = [...saved];
+      initialAnswersRef.current = null;
+    } else {
+      setCurrentIndex(0);
+      setAnswers(Array(questions.length).fill(null));
+      answersRef.current = Array(questions.length).fill(null);
+    }
     setShowWarning(false);
     setSecondsLeft(timeLimitSeconds);
     setIsExpired(false);
     setQuestionTimes(Array(questions.length).fill(0));
     questionTimesRef.current = Array(questions.length).fill(0);
     questionStartTime.current = Date.now();
+    setFeedback({});
+    setFeedbackPending(false);
     if (feedbackTimer.current) clearTimeout(feedbackTimer.current);
   }, [questions, timeLimitSeconds]);
 
@@ -101,7 +156,19 @@ export default function QuizPage({ questions, mode, difficulty, isWeakMode, isEx
   const isLast = currentIndex === questions.length - 1;
   const selectedAnswer = answers[currentIndex];
   const hasAnswered = selectedAnswer !== null;
-  const isCorrect = hasAnswered && selectedAnswer === current.correctIndex;
+  // Feedback for the current question: either the local answer key
+  // (answersKnown path) or the server's check-answer verdict for this
+  // question (practice modes). Until a verdict arrives, nothing is
+  // "correct" mid-quiz — grading happens at submit.
+  const serverFeedback = feedback[currentIndex] ?? null;
+  const hasFeedback = answersKnown || serverFeedback !== null;
+  const effectiveCorrectIndex = answersKnown
+    ? current.correctIndex
+    : serverFeedback?.correctIndex ?? -1;
+  const effectiveExplanation = answersKnown
+    ? current.explanation
+    : serverFeedback?.explanation ?? "";
+  const isCorrect = hasAnswered && hasFeedback && effectiveCorrectIndex >= 0 && selectedAnswer === effectiveCorrectIndex;
   const progress = ((currentIndex + 1) / questions.length) * 100;
 
   const timerWarn = secondsLeft <= 60;
@@ -111,8 +178,21 @@ export default function QuizPage({ questions, mode, difficulty, isWeakMode, isEx
   const reinforcement = isCorrect
     ? ["Nice!", "Solid!", "Correct!", "Great recall!", "That's it!", "Winner's circle!"][currentIndex % 6]
     : null;
-  const correction = !isCorrect && hasAnswered
-    ? `The correct answer is ${String.fromCharCode(65 + current.correctIndex)}. ${current.options[current.correctIndex]}. ${current.explanation}`
+  // Show the explanation once, without duplicating the answer: many
+  // explanations already state it ("The correct answer is: ..."), so
+  // only prepend "The correct answer is X. ..." when the explanation
+  // does not already contain the answer.
+  const correction = hasFeedback && !isCorrect && hasAnswered && effectiveCorrectIndex >= 0
+    ? (() => {
+        const letter = String.fromCharCode(65 + effectiveCorrectIndex);
+        const answerText = current.options[effectiveCorrectIndex];
+        const explanation = effectiveExplanation.trim();
+        const statesAnswer =
+          /the correct answer is/i.test(explanation) || (answerText !== undefined && explanation.includes(answerText));
+        return statesAnswer
+          ? explanation
+          : `The correct answer is ${letter}. ${answerText}. ${explanation}`;
+      })()
     : null;
 
   function recordQuestionTime(idx: number) {
@@ -143,23 +223,77 @@ export default function QuizPage({ questions, mode, difficulty, isWeakMode, isEx
 
   function selectAnswer(index: number) {
     if (hasAnswered) return; // lock after first click
+    // Unlock audio in the gesture: the server-driven feedback plays
+    // its sound from a fetch callback, and a fresh AudioContext built
+    // outside a gesture starts suspended (silent).
+    unlockAudioContext();
     const updated = [...answers];
     updated[currentIndex] = index;
     answersRef.current = updated;
     setAnswers(updated);
     setShowWarning(false);
-    // Gamification SFX
-    if (index === current.correctIndex) {
-      playWinnerSound();
-    } else {
-      playHeartbreakSound();
+    onAnswer?.(updated);
+    if (answersKnown) {
+      // Local answer key (admin simulation / local practice): the
+      // existing immediate feedback.
+      if (index === current.correctIndex) {
+        playWinnerSound();
+      } else {
+        playHeartbreakSound();
+      }
+      // Auto-advance after delay so user sees feedback
+      const feedbackDelay = difficulty === "hard" ? 2800 : 2200;
+      feedbackTimer.current = setTimeout(() => {
+        feedbackTimer.current = null;
+        advance();
+      }, feedbackDelay);
+      return;
     }
-    // Auto-advance after delay so user sees feedback
-    const feedbackDelay = difficulty === "hard" ? 2800 : 2200;
+    if (instantFeedback && questionSetId && serverQuestionIds?.[currentIndex]) {
+      // Practice modes: ask the server for THIS question's verdict
+      // only (the answer key never ships to the client). The red/green
+      // highlighting, explanation banner and sound fire from the
+      // response, at the same moment.
+      const qid = serverQuestionIds[currentIndex];
+      const idx = currentIndex;
+      setFeedbackPending(true);
+      void checkAnswer({ questionSetId, questionId: qid, selectedIndex: index })
+        .then((result) => {
+          setFeedback((prev) => ({ ...prev, [idx]: result }));
+          setFeedbackPending(false);
+          if (result.correct) {
+            playWinnerSound();
+          } else {
+            playHeartbreakSound();
+          }
+          // Only auto-advance if the user is still on this question
+          // (a timer expiry may have finished the quiz meanwhile).
+          if (currentIndexRef.current !== idx) return;
+          const feedbackDelay = difficulty === "hard" ? 2800 : 2200;
+          feedbackTimer.current = setTimeout(() => {
+            feedbackTimer.current = null;
+            advance();
+          }, feedbackDelay);
+        })
+        .catch(() => {
+          // Feedback unavailable (network / server error): don't
+          // strand the user — record the answer and move on. Grading
+          // still happens server-side at submit.
+          setFeedbackPending(false);
+          feedbackTimer.current = setTimeout(() => {
+            feedbackTimer.current = null;
+            advance();
+          }, 600);
+        });
+      return;
+    }
+    // No immediate feedback (simulation/exam): record the answer and
+    // move on. No correctness sound or feedback — grading is
+    // server-side at submit.
     feedbackTimer.current = setTimeout(() => {
       feedbackTimer.current = null;
       advance();
-    }, feedbackDelay);
+    }, 600);
   }
 
   function handleDotClick(i: number) {
@@ -286,13 +420,13 @@ export default function QuizPage({ questions, mode, difficulty, isWeakMode, isEx
             {current.options.map((option, i) => {
               const letter = String.fromCharCode(65 + i);
               const isSelected = selectedAnswer === i;
-              const isCorrectChoice = i === current.correctIndex;
+              const isCorrectChoice = i === effectiveCorrectIndex;
 
               let btnClass = "border-gray-700 bg-gray-900 text-gray-300 hover:border-gray-500 hover:bg-gray-800";
               let letterClass = "bg-gray-800 text-gray-400 border border-gray-700";
               let icon = null;
 
-              if (hasAnswered) {
+              if (hasAnswered && hasFeedback) {
                 if (isCorrectChoice) {
                   btnClass = "border-emerald-500 bg-emerald-500/10 text-white";
                   letterClass = "bg-emerald-500 text-white";
@@ -337,8 +471,12 @@ export default function QuizPage({ questions, mode, difficulty, isWeakMode, isEx
             })}
           </div>
 
-          {/* Immediate feedback banner with gamification */}
-          {hasAnswered && (
+          {/* Immediate feedback banner with gamification.
+              Shown once a verdict is known — the local answer key, or
+              the server's check-answer response for practice modes.
+              Simulation/exam mode shows nothing mid-quiz; grading
+              happens at submit. */}
+          {hasAnswered && hasFeedback && (
             <div className={`mb-5 rounded-xl p-4 border text-center transition-all ${
               isCorrect
                 ? "bg-emerald-500/10 border-emerald-500/30"
@@ -383,7 +521,7 @@ export default function QuizPage({ questions, mode, difficulty, isWeakMode, isEx
                   recordQuestionTime(currentIndex);
                   onFinish(answers, questionTimes);
                 }}
-                disabled={!hasAnswered}
+                disabled={!hasAnswered || feedbackPending}
                 className="flex-1 bg-red-600 hover:bg-red-500 active:bg-red-700 text-white font-semibold py-3 rounded-xl transition-colors shadow-lg shadow-red-900/30 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Submit & Grade
@@ -391,7 +529,7 @@ export default function QuizPage({ questions, mode, difficulty, isWeakMode, isEx
             ) : (
               <button
                 onClick={() => advance()}
-                disabled={!hasAnswered}
+                disabled={!hasAnswered || feedbackPending}
                 className="flex-1 bg-gray-700 hover:bg-gray-600 active:bg-gray-800 text-white font-semibold py-3 rounded-xl transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Next

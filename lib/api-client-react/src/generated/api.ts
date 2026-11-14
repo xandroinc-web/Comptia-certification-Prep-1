@@ -1674,7 +1674,7 @@ export const useDeleteAdminMedia = <
 };
 
 /**
- * @summary List users through Clerk
+ * @summary List users through Supabase Auth
  */
 export const getGetAdminUsersUrl = (params?: GetAdminUsersParams) => {
   const normalizedParams = new URLSearchParams();
@@ -1741,7 +1741,7 @@ export type GetAdminUsersQueryResult = NonNullable<
 export type GetAdminUsersQueryError = ErrorType<unknown>;
 
 /**
- * @summary List users through Clerk
+ * @summary List users through Supabase Auth
  */
 
 export function useGetAdminUsers<
@@ -1768,7 +1768,7 @@ export function useGetAdminUsers<
 }
 
 /**
- * @summary Create a user through Clerk
+ * @summary Create a user through Supabase Auth
  */
 export const getCreateAdminUserUrl = () => {
   return `/api/admin/users`;
@@ -1831,7 +1831,7 @@ export type CreateAdminUserMutationBody = BodyType<AdminUserInput>;
 export type CreateAdminUserMutationError = ErrorType<unknown>;
 
 /**
- * @summary Create a user through Clerk
+ * @summary Create a user through Supabase Auth
  */
 export const useCreateAdminUser = <
   TError = ErrorType<unknown>,

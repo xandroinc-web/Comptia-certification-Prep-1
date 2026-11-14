@@ -5,11 +5,11 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { AdminAuditLog } from "./adminAuditLog";
-import type { AdminMedia } from "./adminMedia";
-import type { AdminOverviewProductsItem } from "./adminOverviewProductsItem";
-import type { AdminSetting } from "./adminSetting";
-import type { AdminStats } from "./adminStats";
+import type { AdminAuditLog } from "./adminAuditLog.js";
+import type { AdminMedia } from "./adminMedia.js";
+import type { AdminOverviewProductsItem } from "./adminOverviewProductsItem.js";
+import type { AdminSetting } from "./adminSetting.js";
+import type { AdminStats } from "./adminStats.js";
 
 export interface AdminOverview {
   stats: AdminStats;

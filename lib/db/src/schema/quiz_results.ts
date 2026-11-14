@@ -7,6 +7,10 @@ export const quizResultsTable = pgTable("quiz_results", {
   userId: text("user_id").notNull(),
   category: text("category").notNull(),
   mode: text("mode").notNull(),
+  // Tier exam number (1 | 2 | 3) when the result came from a tier exam;
+  // null for fast/full/simulation/topic results. Added for P0-3/P0-4 so
+  // tier unlocks can be verified server-side from past results.
+  tier: integer("tier"),
   score: integer("score").notNull(),
   totalQuestions: integer("total_questions").notNull(),
   correctCount: integer("correct_count").notNull(),

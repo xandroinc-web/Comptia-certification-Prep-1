@@ -5,8 +5,8 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { AdminAccessResponsePermissionsItem } from "./adminAccessResponsePermissionsItem";
-import type { AdminAccessResponseRole } from "./adminAccessResponseRole";
+import type { AdminAccessResponsePermissionsItem } from "./adminAccessResponsePermissionsItem.js";
+import type { AdminAccessResponseRole } from "./adminAccessResponseRole.js";
 
 export interface AdminAccessResponse {
   isAdmin: boolean;

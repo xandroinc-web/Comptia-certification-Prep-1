@@ -573,7 +573,7 @@ export const DeleteAdminMediaResponse = zod.object({
 });
 
 /**
- * @summary List users through Clerk
+ * @summary List users through Supabase Auth
  */
 export const getAdminUsersQueryLimitMax = 100;
 
@@ -600,7 +600,7 @@ export const GetAdminUsersResponse = zod.object({
 });
 
 /**
- * @summary Create a user through Clerk
+ * @summary Create a user through Supabase Auth
  */
 export const CreateAdminUserBody = zod.object({
   email: zod.string().email(),

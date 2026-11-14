@@ -4,21 +4,31 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
     <title>CompTIA Trifecta Quiz</title>
-    <meta name="description" content="CompTIA Trifecta Quiz — built on Replit. Update this description to reflect the app." />
+    <meta name="description" content="CompTIA Trifecta Quiz — 810 exam-style practice questions for A+, Network+, and Security+, with timed exams, simulations, and HellMode." />
     <meta name="robots" content="index, follow" />
     <meta property="og:title" content="CompTIA Trifecta Quiz" />
-    <meta property="og:description" content="CompTIA Trifecta Quiz — built on Replit. Update this description to reflect the app." />
+    <meta property="og:description" content="CompTIA Trifecta Quiz — 810 exam-style practice questions for A+, Network+, and Security+, with timed exams, simulations, and HellMode." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="CompTIA Trifecta Quiz" />
-    <meta name="twitter:description" content="CompTIA Trifecta Quiz — built on Replit. Update this description to reflect the app." />
+    <meta name="twitter:description" content="CompTIA Trifecta Quiz — 810 exam-style practice questions for A+, Network+, and Security+, with timed exams, simulations, and HellMode." />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Static loading shell: shown until React + Clerk mount, so
+           /sign-in never sits on a blank page while Clerk initialises. -->
+      <div style="min-height:100dvh;display:flex;align-items:center;justify-content:center;background:#060910;color:#94a3b8;font-family:system-ui,-apple-system,sans-serif">
+        <div style="text-align:center">
+          <div style="width:32px;height:32px;margin:0 auto 12px;border-radius:50%;border:2px solid #334155;border-top-color:#ef4444;animation:trifecta-spin 0.8s linear infinite"></div>
+          <p style="font-size:14px;margin:0">Loading Trifecta Quiz…</p>
+        </div>
+      </div>
+      <style>@keyframes trifecta-spin{to{transform:rotate(360deg)}}</style>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

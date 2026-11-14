@@ -1,51 +1,27 @@
+/**
+ * Vite config.
+ *
+ * PORT / BASE_PATH default (3000 / "/") instead of throwing, so
+ * `vite build` works on Vercel without those vars set. The dev server
+ * still honours them from the environment / .env.local when present.
+ * Dev proxies /api to the api-server on localhost:8081 (its PORT in
+ * artifacts/api-server/.env.local); in production the two are
+ * same-origin via the Vercel rewrites in the root vercel.json.
+ *
+ * No Replit plugins: the cartographer / dev-banner /
+ * runtime-error-modal imports were Replit-only and are removed.
+ */
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
-import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
-const rawPort = process.env.PORT;
-
-if (!rawPort) {
-  throw new Error(
-    "PORT environment variable is required but was not provided.",
-  );
-}
-
-const port = Number(rawPort);
-
-if (Number.isNaN(port) || port <= 0) {
-  throw new Error(`Invalid PORT value: "${rawPort}"`);
-}
-
-const basePath = process.env.BASE_PATH;
-
-if (!basePath) {
-  throw new Error(
-    "BASE_PATH environment variable is required but was not provided.",
-  );
-}
+const port = Number(process.env.PORT ?? "3000") || 3000;
+const basePath = process.env.BASE_PATH ?? "/";
 
 export default defineConfig({
   base: basePath,
-  plugins: [
-    react(),
-    tailwindcss({ optimize: false }),
-    runtimeErrorOverlay(),
-    ...(process.env.NODE_ENV !== "production" &&
-    process.env.REPL_ID !== undefined
-      ? [
-          await import("@replit/vite-plugin-cartographer").then((m) =>
-            m.cartographer({
-              root: path.resolve(import.meta.dirname, ".."),
-            }),
-          ),
-          await import("@replit/vite-plugin-dev-banner").then((m) =>
-            m.devBanner(),
-          ),
-        ]
-      : []),
-  ],
+  plugins: [react(), tailwindcss({ optimize: false })],
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "src"),
@@ -63,6 +39,9 @@ export default defineConfig({
     strictPort: true,
     host: "0.0.0.0",
     allowedHosts: true,
+    proxy: {
+      "/api": "http://localhost:8081",
+    },
     fs: {
       strict: true,
     },

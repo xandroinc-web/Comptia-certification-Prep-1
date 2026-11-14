@@ -1,27 +1,13 @@
 import { Router, type IRouter } from "express";
-import type { Request, Response, NextFunction } from "express";
-import { getAuth } from "@clerk/express";
-import { stripeService } from "../stripeService";
-import { stripeStorage } from "../stripeStorage";
+import type { Request, Response } from "express";
+import { requireAuth, getUserId } from "../lib/entitlements.js";
+import { getUserEmail } from "../lib/supabase.js";
+import { stripeService } from "../stripeService.js";
+import { stripeStorage } from "../stripeStorage.js";
 import { db } from "@workspace/db";
 import { sql } from "drizzle-orm";
 
 const router: IRouter = Router();
-
-function requireAuth(req: Request, res: Response, next: NextFunction): void {
-  const auth = getAuth(req);
-  const userId = (auth as any)?.userId || (auth as any)?.sessionClaims?.userId;
-  if (!userId || typeof userId !== "string") {
-    res.status(401).json({ error: "Unauthorized" });
-    return;
-  }
-  (req as any).userId = userId;
-  next();
-}
-
-function getUserId(req: Request): string {
-  return (req as any).userId as string;
-}
 
 // GET /api/products-with-prices - list available products
 router.get("/products-with-prices", async (_req, res) => {
@@ -36,6 +22,7 @@ router.get("/products-with-prices", async (_req, res) => {
           name: row.product_name,
           description: row.product_description,
           active: row.product_active,
+          metadata: row.product_metadata ?? {},
           prices: [],
         });
       }
@@ -46,6 +33,10 @@ router.get("/products-with-prices", async (_req, res) => {
           currency: row.currency,
           recurring: row.recurring,
           active: row.price_active,
+          // Price metadata carries the one-time grant mapping
+          // (grant=single/bundle, exam for single)
+          // — the client needs it to tell the three $19 Single prices apart.
+          metadata: row.price_metadata ?? {},
         });
       }
     }
@@ -76,7 +67,26 @@ router.post("/checkout", requireAuth, async (req, res) => {
     if (result.rows.length > 0 && (result.rows[0] as any).stripe_customer_id) {
       customerId = (result.rows[0] as any).stripe_customer_id;
     } else {
-      const customer = await stripeService.createCustomer(`${userId}@example.com`, userId);
+      // Use the Supabase user's real email for receipts/invoices. Never
+      // invent one: if Supabase Auth has no email for this user, fail the
+      // checkout instead of creating a customer receipts can't reach.
+      let email: string | undefined;
+      try {
+        email = (await getUserEmail(userId)) ?? undefined;
+      } catch (supabaseError) {
+        console.error("Checkout error: could not load Supabase user for email:", supabaseError);
+        res.status(500).json({ error: "Could not verify your account email. Please try again." });
+        return;
+      }
+      if (!email) {
+        res.status(400).json({
+          error:
+            "No email address is on file for your account, so a Stripe customer cannot be created. " +
+            "Add an email address to your account and try again.",
+        });
+        return;
+      }
+      const customer = await stripeService.createCustomer(email, userId);
       customerId = customer.id;
       await db.execute(
         sql`INSERT INTO stripe_customers (clerk_user_id, stripe_customer_id) VALUES (${userId}, ${customerId})`
@@ -92,7 +102,7 @@ router.post("/checkout", requireAuth, async (req, res) => {
     const successUrl = `${protocol}://${host}${basePath}/checkout/success?session_id={CHECKOUT_SESSION_ID}`;
     const cancelUrl = `${protocol}://${host}${basePath}/checkout/cancel`;
 
-    const session = await stripeService.createCheckoutSession(customerId, priceId, successUrl, cancelUrl);
+    const session = await stripeService.createCheckoutSession(customerId, priceId, successUrl, cancelUrl, userId);
 
     res.json({ url: session.url });
   } catch (err: any) {

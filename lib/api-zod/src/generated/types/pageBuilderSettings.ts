@@ -5,7 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { PageBuilderSettingsTiers } from "./pageBuilderSettingsTiers";
+import type { PageBuilderSettingsTiers } from "./pageBuilderSettingsTiers.js";
 
 export interface PageBuilderSettings {
   /** @maxLength 48 */

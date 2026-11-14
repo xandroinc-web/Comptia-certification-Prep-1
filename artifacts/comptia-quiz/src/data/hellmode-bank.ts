@@ -1,4 +1,4 @@
-import type { ExamCategory, Question } from "./questions";
+import type { ExamCategory, Question } from "./questions.js";
 
 type Case = { evidence: string; answer: number };
 type Family = {

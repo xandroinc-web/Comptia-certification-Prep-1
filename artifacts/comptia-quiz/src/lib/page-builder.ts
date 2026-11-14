@@ -1,3 +1,5 @@
+import { COMPTIA_PASS_RAW_PCT } from "./scoring";
+
 export type TierNumber = 1 | 2 | 3;
 
 export interface EditableTierSettings {
@@ -43,7 +45,7 @@ export const DEFAULT_PAGE_BUILDER_SETTINGS: PageBuilderSettings = {
       description: "Foundational troubleshooting",
       questionCount: 270,
       secondsPerQuestion: 75,
-      passingScore: 80,
+      passingScore: COMPTIA_PASS_RAW_PCT,
       color: "#22c55e",
     },
     "2": {
@@ -51,7 +53,7 @@ export const DEFAULT_PAGE_BUILDER_SETTINGS: PageBuilderSettings = {
       description: "Applied exam scenarios",
       questionCount: 270,
       secondsPerQuestion: 60,
-      passingScore: 80,
+      passingScore: COMPTIA_PASS_RAW_PCT,
       color: "#f59e0b",
     },
     "3": {
@@ -59,7 +61,7 @@ export const DEFAULT_PAGE_BUILDER_SETTINGS: PageBuilderSettings = {
       description: "Forensic logs and advanced troubleshooting",
       questionCount: 270,
       secondsPerQuestion: 45,
-      passingScore: 80,
+      passingScore: COMPTIA_PASS_RAW_PCT,
       color: "#ef4444",
     },
   },

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useUser } from "@clerk/react";
+import { useAuth } from "../lib/auth";
 import { useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -132,7 +132,7 @@ function auditValue(value: unknown): string {
 
 export default function AdminPage() {
   const [, setLocation] = useLocation();
-  const { user, isLoaded, isSignedIn } = useUser();
+  const { user, isLoaded, isSignedIn } = useAuth();
   const queryClient = useQueryClient();
   const [section, setSection] = useState<Section>("overview");
   const [message, setMessage] = useState("");
@@ -144,7 +144,7 @@ export default function AdminPage() {
   const [settings, setSettings] = useState({
     announcement: "",
     maintenanceMode: false,
-    pricingHeadline: "Upgrade to Pro",
+    pricingHeadline: "Taste. Train. Prove.",
     monthlyPriceLabel: "",
     yearlyPriceLabel: "",
     defaultTimeLimitSeconds: 60,
@@ -205,7 +205,7 @@ export default function AdminPage() {
         ...current,
         announcement: typeof settingsValue.announcement === "string" ? settingsValue.announcement : "",
         maintenanceMode: settingsValue.maintenanceMode === true,
-        pricingHeadline: typeof settingsValue.pricingHeadline === "string" ? settingsValue.pricingHeadline : "Upgrade to Pro",
+        pricingHeadline: typeof settingsValue.pricingHeadline === "string" ? settingsValue.pricingHeadline : "Taste. Train. Prove.",
         monthlyPriceLabel: typeof settingsValue.monthlyPriceLabel === "string" ? settingsValue.monthlyPriceLabel : "",
         yearlyPriceLabel: typeof settingsValue.yearlyPriceLabel === "string" ? settingsValue.yearlyPriceLabel : "",
         defaultTimeLimitSeconds: Number(settingsValue.defaultTimeLimitSeconds) || 60,
@@ -366,7 +366,7 @@ export default function AdminPage() {
       await createUser.mutateAsync({ data: newUser });
       setNewUser({ email: "", firstName: "", lastName: "" });
       invalidateOverview();
-      notify("User created in Clerk.");
+      notify("User created in Supabase Auth.");
     } catch (error) {
       notify(errorText(error));
     }
@@ -418,12 +418,12 @@ export default function AdminPage() {
           <h1 className="mt-5 text-2xl font-bold">{notConfigured ? "Owner access is not enabled" : "Admin panel unavailable"}</h1>
           <p className="mt-3 text-sm leading-6 text-slate-400">
             {notConfigured
-              ? "Add this Clerk user ID to the server-side ADMIN_USER_IDS environment variable, then reload this page."
+              ? "Add this Supabase user ID to the server-side ADMIN_USER_IDS environment variable, then reload this page."
               : errorText(adminAccess.error)}
           </p>
           {notConfigured && (
             <div className="mt-5 rounded-xl border border-white/10 bg-black/20 p-3 text-left">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-500">Your Clerk user ID</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-500">Your Supabase user ID</p>
               <code className="mt-2 block break-all text-sm text-red-300">{user?.id}</code>
             </div>
           )}
@@ -468,7 +468,7 @@ export default function AdminPage() {
               <div><p className="text-xs font-semibold uppercase tracking-[0.2em] text-red-400">Admin / {section}</p><h1 className="mt-1 text-2xl font-bold">{title}</h1></div>
             </div>
             <div className="flex items-center gap-3 text-xs text-slate-500">
-              <span className="hidden sm:inline">{user?.primaryEmailAddress?.emailAddress}</span>
+              <span className="hidden sm:inline">{user?.email}</span>
               <span className="rounded-full border border-white/10 px-2.5 py-1 font-semibold uppercase tracking-wider text-slate-400">
                 {adminAccess.data?.role?.replace("_", " ")}
               </span>
@@ -484,7 +484,7 @@ export default function AdminPage() {
           {section === "overview" && (
             <div className="space-y-6">
               {stats && <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <StatCard label="Accounts" value={stats.users} detail="Managed by Clerk" />
+                <StatCard label="Accounts" value={stats.users} detail="Managed by Supabase Auth" />
                 <StatCard label="Quiz attempts" value={stats.quizResults} detail="Saved result records" />
                 <StatCard label="Pro subscribers" value={stats.activeSubscriptions} detail="Active or trialing" />
                 <StatCard label="Live media" value={stats.activeMedia} detail="Videos and links" />
@@ -513,7 +513,7 @@ export default function AdminPage() {
             <div className="space-y-6">
               <div className="grid gap-6 xl:grid-cols-2">
                  <div className={cardClass}><h2 className="font-semibold">Quiz lab</h2><p className="mt-2 text-sm leading-6 text-slate-400">Test the production learner flows with owner-only tier shortcuts. These launch the same timed quiz experience while leaving normal learner locks unchanged.</p><div className="mt-5 space-y-3">{[["Full practice", "/", "Mixed difficulty and timed flow"], ["/progress", "/progress", "Saved scores and weak areas"], ["/pricing", "/pricing", "Stripe products and subscription CTA"]].map(([label, path, detail]) => <button key={path} onClick={() => setLocation(path)} className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-black/20 p-4 text-left hover:border-red-500/40"><span><span className="block text-sm font-medium">{label}</span><span className="mt-1 block text-xs text-slate-500">{detail}</span></span><ExternalLink size={16} className="text-red-400" /></button>)}{([1, 2, 3] as const).map((tier) => <button key={tier} onClick={() => setLocation(`/?adminTier=${tier}`)} className="flex w-full items-center justify-between rounded-xl border border-red-500/20 bg-red-500/5 p-4 text-left hover:border-red-500/50"><span><span className="block text-sm font-medium text-red-100">Test Tier {tier}{tier === 1 ? " · Mild" : tier === 2 ? " · Medium" : " · HellMode"}</span><span className="mt-1 block text-xs text-red-300/70">{tier === 3 ? "Extremely hard · 270 questions · 45s each" : "Owner bypass · 270 questions"}</span></span><Flame size={16} className={tier === 3 ? "text-red-400" : "text-red-300/70"} /></button>)}</div></div>
-                 <div className={cardClass}><h2 className="font-semibold">Guardrails</h2><div className="mt-5 space-y-4 text-sm text-slate-400"><p className="flex gap-3"><Check className="shrink-0 text-emerald-400" size={17} /> Learner tier locks and trial limits remain unchanged; owner shortcuts bypass them only for this admin account.</p><p className="flex gap-3"><Check className="shrink-0 text-emerald-400" size={17} /> Admin API access is server-authorized, not route-hidden.</p><p className="flex gap-3"><Check className="shrink-0 text-emerald-400" size={17} /> Every content and account action is written to audit history.</p><p className="flex gap-3"><Check className="shrink-0 text-emerald-400" size={17} /> Clerk credentials never enter the browser.</p></div></div>
+                 <div className={cardClass}><h2 className="font-semibold">Guardrails</h2><div className="mt-5 space-y-4 text-sm text-slate-400"><p className="flex gap-3"><Check className="shrink-0 text-emerald-400" size={17} /> Learner tier locks and trial limits remain unchanged; owner shortcuts bypass them only for this admin account.</p><p className="flex gap-3"><Check className="shrink-0 text-emerald-400" size={17} /> Admin API access is server-authorized, not route-hidden.</p><p className="flex gap-3"><Check className="shrink-0 text-emerald-400" size={17} /> Every content and account action is written to audit history.</p><p className="flex gap-3"><Check className="shrink-0 text-emerald-400" size={17} /> Service-role keys never enter the browser.</p></div></div>
               </div>
               <div className="grid gap-6 xl:grid-cols-[0.85fr_1.15fr]">
                 <form className={cardClass} onSubmit={saveQuestion}>
@@ -585,7 +585,7 @@ export default function AdminPage() {
           {section === "users" && (
             <div className="space-y-6">
               <div className="grid gap-6 xl:grid-cols-[0.8fr_1.2fr]">
-                <form className={cardClass} onSubmit={addUser}><h2 className="font-semibold">Add user</h2><p className="mt-2 text-sm text-slate-500">Creates the account in Clerk. The user completes sign-in setup through the normal auth flow.</p><div className="mt-5 space-y-3"><input required type="email" className={inputClass} placeholder="Email address" value={newUser.email} onChange={(e) => setNewUser({ ...newUser, email: e.target.value })} /><input className={inputClass} placeholder="First name" value={newUser.firstName} onChange={(e) => setNewUser({ ...newUser, firstName: e.target.value })} /><input className={inputClass} placeholder="Last name" value={newUser.lastName} onChange={(e) => setNewUser({ ...newUser, lastName: e.target.value })} /><Button disabled={createUser.isPending} className="bg-red-600 hover:bg-red-500"><UserPlus size={16} /> Create user</Button></div></form>
+                <form className={cardClass} onSubmit={addUser}><h2 className="font-semibold">Add user</h2><p className="mt-2 text-sm text-slate-500">Creates the account in Supabase Auth. The user sets their password via the "Forgot password?" link on the sign-in page.</p><div className="mt-5 space-y-3"><input required type="email" className={inputClass} placeholder="Email address" value={newUser.email} onChange={(e) => setNewUser({ ...newUser, email: e.target.value })} /><input className={inputClass} placeholder="First name" value={newUser.firstName} onChange={(e) => setNewUser({ ...newUser, firstName: e.target.value })} /><input className={inputClass} placeholder="Last name" value={newUser.lastName} onChange={(e) => setNewUser({ ...newUser, lastName: e.target.value })} /><Button disabled={createUser.isPending} className="bg-red-600 hover:bg-red-500"><UserPlus size={16} /> Create user</Button></div></form>
                 <div className={cardClass}><div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="font-semibold">Account directory</h2><p className="mt-1 text-sm text-slate-500">{users.data?.totalCount ?? 0} matching accounts</p></div><div className="relative"><Search size={15} className="absolute left-3 top-2.5 text-slate-500" /><input className={`${inputClass} w-64 pl-9`} placeholder="Search email or name" value={search} onChange={(e) => setSearch(e.target.value)} /></div></div><div className="mt-5 space-y-3">{users.isLoading && <div className="py-8 text-center text-sm text-slate-500"><Loader2 className="mx-auto animate-spin" size={18} /></div>}{users.data?.data.map((target) => <div key={target.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 p-4"><div><div className="flex items-center gap-2"><p className="text-sm font-medium">{[target.firstName, target.lastName].filter(Boolean).join(" ") || "Unnamed user"}</p>{target.banned && <span className="rounded bg-red-500/10 px-2 py-0.5 text-[10px] text-red-300">Blocked</span>}</div><p className="mt-1 text-xs text-slate-500">{target.email ?? target.id}</p></div><div className="flex flex-wrap gap-2"><button onClick={() => applyUserAction(target, target.banned ? "unban" : "ban")} className="rounded-lg border border-white/10 px-2.5 py-1.5 text-xs text-slate-400 hover:border-red-500/40 hover:text-white">{target.banned ? <><Check size={13} className="mr-1 inline" />Unblock</> : <><Ban size={13} className="mr-1 inline" />Block</>}</button><button onClick={() => applyUserAction(target, "cancel_subscription")} className="rounded-lg border border-white/10 px-2.5 py-1.5 text-xs text-slate-400 hover:border-amber-500/40 hover:text-white">Cancel Pro</button><button onClick={() => applyUserAction(target, "delete")} className="rounded-lg border border-red-500/20 px-2.5 py-1.5 text-xs text-red-300 hover:bg-red-500/10"><Trash2 size={13} className="mr-1 inline" />Delete</button></div></div>)}{!users.isLoading && !users.data?.data.length && <EmptyState>No users found.</EmptyState>}</div></div>
               </div>
             </div>

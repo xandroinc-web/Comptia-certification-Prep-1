@@ -1,5 +1,5 @@
 import { QuizResult } from "@workspace/api-client-react";
-import { ExamCategory, questions } from "@/data/questions";
+import type { ExamCategory } from "@/lib/scoring";
 import { analyzeProgress } from "./analytics";
 
 export interface Badge {

@@ -1,6 +1,23 @@
 import { QuizResult } from "@workspace/api-client-react";
-import { ExamCategory, Difficulty, questions, DomainTopic } from "@/data/questions";
+import type { ExamCategory, Difficulty } from "@/lib/scoring";
+import type { DomainTopic } from "@/data/topics";
 import { DOMAIN_METADATA, getDomainColor } from "@/data/topics";
+
+/**
+ * Optional per-question metadata for resolving weak-question ids to
+ * their category/topic/text. The browser no longer ships the question
+ * bank (P0-4), so callers that have server-provided metadata pass it
+ * in; when omitted, weak-question detail is skipped gracefully and
+ * everything else (scores, streaks, categories, recommendations)
+ * still works from the QuizResult rows alone.
+ */
+export interface QuestionMeta {
+  category: ExamCategory;
+  topic?: DomainTopic;
+  question: string;
+}
+
+export type QuestionMetaLookup = Map<number | string, QuestionMeta>;
 
 export interface SubjectMastery {
   category: ExamCategory;
@@ -91,7 +108,7 @@ export function getMasteryBarColor(m: SubjectMastery["mastery"]): string {
   }
 }
 
-export function analyzeProgress(history: QuizResult[]): OverallProgress {
+export function analyzeProgress(history: QuizResult[], questionMeta?: QuestionMetaLookup): OverallProgress {
   if (history.length === 0) {
     return {
       totalQuizzes: 0,
@@ -194,8 +211,8 @@ export function analyzeProgress(history: QuizResult[]): OverallProgress {
       topicData[topic].totalQuestions += h.totalQuestions;
       topicData[topic].correctQuestions += h.correctCount;
       h.weakAreaIds.forEach((id) => {
-        const q = questions.find((q) => q.id === id);
-        if (q && q.topic === topic) topicData[topic].weakIds.add(id);
+        const meta = questionMeta?.get(id);
+        if (meta && meta.topic === topic) topicData[topic].weakIds.add(id);
       });
       topicData[topic].lastTaken = h.completedAt;
     }
@@ -218,8 +235,8 @@ export function analyzeProgress(history: QuizResult[]): OverallProgress {
       catData[c].totalQuestions += h.totalQuestions;
       catData[c].correctQuestions += h.correctCount;
       h.weakAreaIds.forEach((id) => {
-        const q = questions.find((q) => q.id === id);
-        if (q && q.category === c) catData[c].weakIds.add(id);
+        const meta = questionMeta?.get(id);
+        if (meta && meta.category === c) catData[c].weakIds.add(id);
       });
       catData[c].lastTaken = h.completedAt;
     }
@@ -280,10 +297,10 @@ export function analyzeProgress(history: QuizResult[]): OverallProgress {
   const weakAreaCounts: Record<number, { id: number; category: ExamCategory; question: string; failCount: number }> = {};
   for (const h of sorted) {
     for (const id of h.weakAreaIds) {
-      const q = questions.find((q) => q.id === id);
-      if (q) {
+      const meta = questionMeta?.get(id);
+      if (meta) {
         if (!weakAreaCounts[id]) {
-          weakAreaCounts[id] = { id, category: q.category, question: q.question, failCount: 0 };
+          weakAreaCounts[id] = { id, category: meta.category, question: meta.question, failCount: 0 };
         }
         weakAreaCounts[id].failCount++;
       }

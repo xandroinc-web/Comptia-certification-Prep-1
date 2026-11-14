@@ -5,8 +5,8 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { AdminQuestionDifficulty } from "./adminQuestionDifficulty";
-import type { AdminQuestionTier } from "./adminQuestionTier";
+import type { AdminQuestionDifficulty } from "./adminQuestionDifficulty.js";
+import type { AdminQuestionTier } from "./adminQuestionTier.js";
 
 export interface AdminQuestion {
   id: number;

@@ -320,7 +320,7 @@ paths:
     get:
       operationId: getAdminUsers
       tags: [admin]
-      summary: List users through Clerk
+      summary: List users through Supabase Auth
       parameters:
         - name: query
           in: query
@@ -342,7 +342,7 @@ paths:
     post:
       operationId: createAdminUser
       tags: [admin]
-      summary: Create a user through Clerk
+      summary: Create a user through Supabase Auth
       requestBody:
         required: true
         content:

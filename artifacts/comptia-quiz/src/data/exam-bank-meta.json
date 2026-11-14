@@ -269,16 +269,8 @@
       "explanation": "\"APU\" stands for \"Audio Processing Unit\" (Network+)."
     },
     {
-      "id": 68,
-      "explanation": "\"SSO\" stands for \"Single Sign-on\" (Network+)."
-    },
-    {
       "id": 69,
       "explanation": "\"MX\" stands for \"Mail Exchange\" (Security+)."
-    },
-    {
-      "id": 70,
-      "explanation": "\"IMAP\" stands for \"Internet Mail Access Protocol\" (A+ Core 2)."
     },
     {
       "id": 71,
@@ -301,10 +293,6 @@
       "explanation": "\"VLAN\" stands for \"Virtual Local Area Network\" (Network+)."
     },
     {
-      "id": 76,
-      "explanation": "\"MOU\" stands for \"Memorandum of Understanding\" (Security+)."
-    },
-    {
       "id": 77,
       "explanation": "\"COOP\" stands for \"Continuity of Operation Planning\" (Security+)."
     },
@@ -315,10 +303,6 @@
     {
       "id": 79,
       "explanation": "\"DRP\" stands for \"Disaster Recovery Plan\" (Security+)."
-    },
-    {
-      "id": 80,
-      "explanation": "\"HTTPS\" stands for \"Hypertext Transfer Protocol Secure\" (Security+)."
     },
     {
       "id": 81,
@@ -353,24 +337,8 @@
       "explanation": "\"WAP\" stands for \"Wireless Access Point\" (A+ Core 2)."
     },
     {
-      "id": 89,
-      "explanation": "\"MX\" stands for \"Mail Exchange\" (A+ Core 1)."
-    },
-    {
-      "id": 90,
-      "explanation": "\"DIMM\" stands for \"Dual In-line Memory Module\" (A+ Core 2)."
-    },
-    {
       "id": 91,
       "explanation": "\"ONT\" stands for \"Optical Network Terminal\" (A+ Core 2)."
-    },
-    {
-      "id": 92,
-      "explanation": "\"TOTP\" stands for \"Time-based One-time Password\" (A+ Core 1)."
-    },
-    {
-      "id": 93,
-      "explanation": "\"APIPA\" stands for \"Automatic Private Internet Protocol Addressing\" (Network+)."
     },
     {
       "id": 94,
@@ -387,10 +355,6 @@
     {
       "id": 97,
       "explanation": "\"AV\" stands for \"Antivirus\" (Security+)."
-    },
-    {
-      "id": 98,
-      "explanation": "\"ST\" stands for \"Straight Tip\" (A+ Core 2)."
     },
     {
       "id": 99,
@@ -411,10 +375,6 @@
     {
       "id": 103,
       "explanation": "\"DSL\" stands for \"Digital Subscriber Line\" (Security+)."
-    },
-    {
-      "id": 104,
-      "explanation": "\"MAN\" stands for \"Metropolitan Area Network\" (A+ Core 1)."
     },
     {
       "id": 105,
@@ -545,10 +505,6 @@
       "explanation": "\"CHAP\" stands for \"Challenge Handshake Authentication Protocol\" (Security+)."
     },
     {
-      "id": 137,
-      "explanation": "\"POST\" stands for \"Power-on Self-test\" (A+ Core 2)."
-    },
-    {
       "id": 138,
       "explanation": "\"SDLM\" stands for \"Software Development Lifecycle Methodology\" (Security+)."
     },
@@ -559,10 +515,6 @@
     {
       "id": 140,
       "explanation": "\"ECDSA\" stands for \"Elliptic Curve Digital Signature Algorithm\" (Security+)."
-    },
-    {
-      "id": 141,
-      "explanation": "\"RDP\" stands for \"Remote Desktop Protocol\" (Network+)."
     },
     {
       "id": 142,
@@ -589,10 +541,6 @@
       "explanation": "\"SSH\" stands for \"Secure Shell\" (A+ Core 2)."
     },
     {
-      "id": 148,
-      "explanation": "\"EDR\" stands for \"Endpoint Detection and Response\" (A+ Core 2)."
-    },
-    {
       "id": 149,
       "explanation": "\"SD\" stands for \"Secure Digital\" (A+ Core 1)."
     },
@@ -607,10 +555,6 @@
     {
       "id": 152,
       "explanation": "\"SDK\" stands for \"Software Development Kit\" (Security+)."
-    },
-    {
-      "id": 153,
-      "explanation": "\"XDR\" stands for \"Extended Detection and Response\" (Security+)."
     },
     {
       "id": 154,
@@ -641,10 +585,6 @@
       "explanation": "\"WWAN\" stands for \"Wireless Wide Area Network\" (A+ Core 1)."
     },
     {
-      "id": 161,
-      "explanation": "\"PIV\" stands for \"Personal Identity Verification\" (Security+)."
-    },
-    {
       "id": 162,
       "explanation": "\"DDR\" stands for \"Double Data Rate\" (A+ Core 2)."
     },
@@ -673,14 +613,6 @@
       "explanation": "Internet Mail Access Protocol (IMAP) uses port 143 (source: A+ Core 1)."
     },
     {
-      "id": 169,
-      "explanation": "Post Office Protocol 3 (POP3) uses port 110 (source: Security+)."
-    },
-    {
-      "id": 170,
-      "explanation": "Post Office Protocol 3 (POP3) uses port 110 (source: A+ Core 2)."
-    },
-    {
       "id": 171,
       "explanation": "Server Message Block (SMB)/Common Internet File System (CIFS) uses port 445 (source: Security+)."
     },
@@ -689,36 +621,12 @@
       "explanation": "Lightweight Directory Access Protocol (LDAP) uses port 389 (source: Security+)."
     },
     {
-      "id": 173,
-      "explanation": "Server Message Block (SMB)/Common Internet File System (CIFS) uses port 445 (source: A+ Core 1)."
-    },
-    {
       "id": 174,
       "explanation": "Remote Desktop Protocol (RDP) uses port 3389 (source: A+ Core 1)."
     },
     {
-      "id": 175,
-      "explanation": "Internet Mail Access Protocol (IMAP) uses port 143 (source: A+ Core 2)."
-    },
-    {
       "id": 176,
       "explanation": "Dynamic Host Configuration Protocol (DHCP) uses port 67/68 (source: Security+)."
-    },
-    {
-      "id": 177,
-      "explanation": "Remote Desktop Protocol (RDP) uses port 3389 (source: Security+)."
-    },
-    {
-      "id": 178,
-      "explanation": "Server Message Block (SMB)/Common Internet File System (CIFS) uses port 445 (source: A+ Core 2)."
-    },
-    {
-      "id": 179,
-      "explanation": "Remote Desktop Protocol (RDP) uses port 3389 (source: A+ Core 2)."
-    },
-    {
-      "id": 180,
-      "explanation": "Domain Name System (DNS) uses port 53 (source: A+ Core 1)."
     },
     {
       "id": 181,
@@ -741,104 +649,12 @@
       "explanation": "Telnet uses port 23 (source: A+ Core 2)."
     },
     {
-      "id": 186,
-      "explanation": "Telnet uses port 23 (source: A+ Core 1)."
-    },
-    {
-      "id": 187,
-      "explanation": "Hypertext Transfer Protocol (HTTP) uses port 80 (source: A+ Core 1)."
-    },
-    {
       "id": 188,
       "explanation": "File Transfer Protocol (FTP) uses port 20-21 (source: A+ Core 1)."
     },
     {
-      "id": 189,
-      "explanation": "Hypertext Transfer Protocol Secure (HTTPS) uses port 443 (source: A+ Core 1)."
-    },
-    {
-      "id": 190,
-      "explanation": "File Transfer Protocol (FTP) uses port 20-21 (source: Security+)."
-    },
-    {
-      "id": 191,
-      "explanation": "Secure Shell (SSH) uses port 22 (source: Security+)."
-    },
-    {
-      "id": 192,
-      "explanation": "Domain Name System (DNS) uses port 53 (source: Security+)."
-    },
-    {
-      "id": 193,
-      "explanation": "Lightweight Directory Access Protocol (LDAP) uses port 389 (source: A+ Core 2)."
-    },
-    {
-      "id": 194,
-      "explanation": "Secure Shell (SSH) uses port 22 (source: A+ Core 1)."
-    },
-    {
-      "id": 195,
-      "explanation": "File Transfer Protocol (FTP) uses port 20-21 (source: A+ Core 2)."
-    },
-    {
-      "id": 196,
-      "explanation": "Telnet uses port 23 (source: Network+)."
-    },
-    {
-      "id": 197,
-      "explanation": "Telnet uses port 23 (source: Security+)."
-    },
-    {
-      "id": 198,
-      "explanation": "Domain Name System (DNS) uses port 53 (source: A+ Core 2)."
-    },
-    {
-      "id": 199,
-      "explanation": "Lightweight Directory Access Protocol (LDAP) uses port 389 (source: A+ Core 1)."
-    },
-    {
-      "id": 200,
-      "explanation": "Simple Mail Transfer Protocol (SMTP) uses port 25 (source: A+ Core 1)."
-    },
-    {
-      "id": 201,
-      "explanation": "Simple Mail Transfer Protocol (SMTP) uses port 25 (source: A+ Core 2)."
-    },
-    {
       "id": 202,
       "explanation": "Network Basic Input/Output System (NetBIOS)/NetBIOS over TCP/IP (NetBT) uses port 137-139 (source: Security+)."
-    },
-    {
-      "id": 203,
-      "explanation": "Network Basic Input/Output System (NetBIOS)/NetBIOS over TCP/IP (NetBT) uses port 137-139 (source: A+ Core 2)."
-    },
-    {
-      "id": 204,
-      "explanation": "Hypertext Transfer Protocol (HTTP) uses port 80 (source: Security+)."
-    },
-    {
-      "id": 205,
-      "explanation": "Dynamic Host Configuration Protocol (DHCP) uses port 67/68 (source: A+ Core 1)."
-    },
-    {
-      "id": 206,
-      "explanation": "Network Basic Input/Output System (NetBIOS)/NetBIOS over TCP/IP (NetBT) uses port 137-139 (source: A+ Core 1)."
-    },
-    {
-      "id": 207,
-      "explanation": "Dynamic Host Configuration Protocol (DHCP) uses port 67/68 (source: A+ Core 2)."
-    },
-    {
-      "id": 208,
-      "explanation": "Internet Mail Access Protocol (IMAP) uses port 143 (source: Security+)."
-    },
-    {
-      "id": 209,
-      "explanation": "Secure Shell (SSH) uses port 22 (source: A+ Core 2)."
-    },
-    {
-      "id": 210,
-      "explanation": "Hypertext Transfer Protocol Secure (HTTPS) uses port 443 (source: Security+)."
     },
     {
       "id": 211,
@@ -1079,6 +895,190 @@
     {
       "id": 270,
       "explanation": "\"Partition − Tokenization\" is a Security+ concept related to Partition − Tokenization."
+    },
+    {
+      "id": 811,
+      "explanation": "Layer 3 (Network) handles logical addressing using IP and routes packets between different networks via routers."
+    },
+    {
+      "id": 812,
+      "explanation": "The PSU converts AC from the wall into the DC voltages (+3.3V, +5V, +12V) required by internal components."
+    },
+    {
+      "id": 813,
+      "explanation": "A MitM attack positions the attacker between two parties, allowing them to eavesdrop, intercept, or alter messages in real time."
+    },
+    {
+      "id": 814,
+      "explanation": "The CIA Triad — Confidentiality, Integrity, and Availability — is the foundational model of information security."
+    },
+    {
+      "id": 815,
+      "explanation": "Laptops use SO-DIMM, which is physically smaller than DIMM modules used in desktops."
+    },
+    {
+      "id": 816,
+      "explanation": "RAID 1 mirrors data across two drives. It offers redundancy but no performance gain from striping."
+    },
+    {
+      "id": 817,
+      "explanation": "A BIOS reset during a power outage can change the boot order. Verifying and correcting the boot order is the quickest first step."
+    },
+    {
+      "id": 818,
+      "explanation": "Class C networks default to a /24 subnet mask (255.255.255.0), providing up to 254 usable host addresses."
+    },
+    {
+      "id": 819,
+      "explanation": "VGA transmits only analog video. HDMI and DisplayPort carry both audio and video; DVI-D is digital-only."
+    },
+    {
+      "id": 820,
+      "explanation": "Thermal paste fills microscopic surface imperfections, eliminating air gaps that act as insulators and dramatically improving heat conduction."
+    },
+    {
+      "id": 821,
+      "explanation": "SATA uses a 7-pin data cable for data transfer and a separate 15-pin power cable for power delivery."
+    },
+    {
+      "id": 822,
+      "explanation": "DHCP (port 67/68) automatically assigns IP addresses, subnet masks, default gateways, and DNS server addresses to clients."
+    },
+    {
+      "id": 823,
+      "explanation": "Device Manager (devmgmt.msc) shows all installed hardware and flags driver errors with a yellow exclamation mark or a red X."
+    },
+    {
+      "id": 824,
+      "explanation": "Spear phishing is a targeted phishing attack directed at a specific individual, often using personalized information."
+    },
+    {
+      "id": 825,
+      "explanation": "RSA is an asymmetric algorithm using a public/private key pair. AES and 3DES are symmetric; SHA-256 is a hash function."
+    },
+    {
+      "id": 826,
+      "explanation": "A firewall is a preventive control because it blocks unauthorized traffic BEFORE it reaches a target system."
+    },
+    {
+      "id": 827,
+      "explanation": "Modern CPUs use an 8-pin EPS/ATX12V connector for dedicated CPU power, while the motherboard itself uses the 24-pin ATX connector."
+    },
+    {
+      "id": 828,
+      "explanation": "Low or depleted toner in the cartridge is the most common cause of faded output. Shaking the cartridge can temporarily redistribute remaining toner."
+    },
+    {
+      "id": 829,
+      "explanation": "LGA sockets have pins on the motherboard socket; the CPU has flat contact pads. Intel desktop CPUs (e.g., LGA1700) use this."
+    },
+    {
+      "id": 830,
+      "explanation": "MFA requires at least two of three factor types — something you know, have, or are — making compromise significantly harder."
+    },
+    {
+      "id": 831,
+      "explanation": "bootrec.exe with /fixmbr and /fixboot, run from WinRE, repairs the MBR and boot sector."
+    },
+    {
+      "id": 832,
+      "explanation": "GPT supports volumes larger than 2 TB and allows up to 128 primary partitions on Windows with UEFI."
+    },
+    {
+      "id": 833,
+      "explanation": "NTFS supports large volumes, file-level permissions, EFS encryption, journaling, and compression."
+    },
+    {
+      "id": 834,
+      "explanation": "USB 3.2 Gen 2 runs at 10 Gbps. Gen 1 is 5 Gbps, and USB4 can reach 40 Gbps."
+    },
+    {
+      "id": 835,
+      "explanation": "An anti-static wrist strap continuously drains static charge from the body to ground, preventing ESD damage."
+    },
+    {
+      "id": 836,
+      "explanation": "Dual-channel mode requires RAM in matching (same-colored) slots — typically A1+B1 or A2+B2 per the motherboard manual."
+    },
+    {
+      "id": 837,
+      "explanation": "FIDO2 hardware security keys provide phishing-resistant MFA — the physical key is required alongside credentials."
+    },
+    {
+      "id": 838,
+      "explanation": "A Trojan masquerades as useful software to trick users into installing it, then performs unauthorized actions."
+    },
+    {
+      "id": 839,
+      "explanation": "A pen test simulates real-world attacks to find and validate vulnerabilities for proactive remediation."
+    },
+    {
+      "id": 840,
+      "explanation": "TPM is a dedicated security chip storing cryptographic keys and certificates. Windows 11 requires TPM 2.0; it enables BitLocker."
+    },
+    {
+      "id": 841,
+      "explanation": "SFC (System File Checker) scans protected files and replaces corrupt or missing files from a cached copy."
+    },
+    {
+      "id": 842,
+      "explanation": "Lithium-ion batteries have limited cycle life. If the adapter is confirmed working and the battery won't charge, replace the battery."
+    },
+    {
+      "id": 843,
+      "explanation": "VLANs logically segment a switched network into separate broadcast domains without requiring additional physical hardware."
+    },
+    {
+      "id": 844,
+      "explanation": "SSH uses port 22 and provides encrypted terminal access, replacing insecure Telnet."
+    },
+    {
+      "id": 845,
+      "explanation": "UEFI replaces legacy BIOS and adds GPT support, Secure Boot, large drive support, and a graphical setup interface."
+    },
+    {
+      "id": 846,
+      "explanation": "Hyper-V is Windows' built-in hypervisor. Type-1 and Type-2 hypervisors allow multiple virtual machines on one host."
+    },
+    {
+      "id": 847,
+      "explanation": "Ghosting is typically caused by a worn fuser assembly that fails to fully discharge the toner drum, leaving residual images."
+    },
+    {
+      "id": 848,
+      "explanation": "POST beep codes related to RAM indicate memory errors, often from improperly seated or incompatible RAM modules."
+    },
+    {
+      "id": 849,
+      "explanation": "diskmgmt.msc opens Disk Management for creating, deleting, formatting, and managing disk partitions."
+    },
+    {
+      "id": 850,
+      "explanation": "Least privilege limits user rights to only what is needed for their role, minimizing damage from errors or attacks."
+    },
+    {
+      "id": 851,
+      "explanation": "With a discrete GPU, the monitor must connect to its port, not the motherboard's integrated video output."
+    },
+    {
+      "id": 852,
+      "explanation": "Event Viewer (eventvwr.msc) consolidates Application, Security, and System logs for diagnosing crashes and errors."
+    },
+    {
+      "id": 853,
+      "explanation": "NVMe M.2 uses PCIe (~3.5 GB/s+); SATA M.2 uses the SATA interface (~550 MB/s). The spec sheet indicates the protocol."
+    },
+    {
+      "id": 854,
+      "explanation": "A zero-day is a security flaw unknown to the vendor with no patch, making it especially dangerous."
+    },
+    {
+      "id": 855,
+      "explanation": "Cracked glass produces sharp fragments. Safety glasses protect eyes and cut-resistant gloves protect hands."
+    },
+    {
+      "id": 856,
+      "explanation": "SQL injection inserts malicious SQL into input fields, manipulating queries to extract data or bypass authentication."
     }
   ],
   "tier2": [
@@ -1523,10 +1523,6 @@
       "explanation": "\"TOTP\" stands for \"Time-based One-time Password\" (A+ Core 1)."
     },
     {
-      "id": 381,
-      "explanation": "\"PAM\" stands for \"Pluggable Authentication Modules\" (Security+)."
-    },
-    {
       "id": 382,
       "explanation": "\"MMC\" stands for \"Microsoft Management Console\" (A+ Core 2)."
     },
@@ -1759,10 +1755,6 @@
       "explanation": "Telnet uses port 23 (source: A+ Core 2)."
     },
     {
-      "id": 440,
-      "explanation": "Telnet uses port 23 (source: A+ Core 1)."
-    },
-    {
       "id": 441,
       "explanation": "Server Message Block (SMB)/Common Internet File System (CIFS) uses port 445 (source: A+ Core 1)."
     },
@@ -1779,22 +1771,6 @@
       "explanation": "Internet Mail Access Protocol (IMAP) uses port 143 (source: A+ Core 2)."
     },
     {
-      "id": 445,
-      "explanation": "Lightweight Directory Access Protocol (LDAP) uses port 389 (source: A+ Core 1)."
-    },
-    {
-      "id": 446,
-      "explanation": "Domain Name System (DNS) uses port 53 (source: A+ Core 1)."
-    },
-    {
-      "id": 447,
-      "explanation": "Domain Name System (DNS) uses port 53 (source: A+ Core 2)."
-    },
-    {
-      "id": 448,
-      "explanation": "Post Office Protocol 3 (POP3) uses port 110 (source: A+ Core 2)."
-    },
-    {
       "id": 449,
       "explanation": "Syslog uses port 514 (source: Network+)."
     },
@@ -1807,120 +1783,16 @@
       "explanation": "Structured Query Language (SQL) Server uses port 1433 (source: Network+)."
     },
     {
-      "id": 452,
-      "explanation": "Lightweight Directory Access Protocol (LDAP) uses port 389 (source: A+ Core 2)."
-    },
-    {
-      "id": 453,
-      "explanation": "Remote Desktop Protocol (RDP) uses port 3389 (source: A+ Core 1)."
-    },
-    {
-      "id": 454,
-      "explanation": "Server Message Block (SMB)/Common Internet File System (CIFS) uses port 445 (source: A+ Core 2)."
-    },
-    {
       "id": 455,
       "explanation": "Hypertext Transfer Protocol (HTTP) uses port 80 (source: Security+)."
-    },
-    {
-      "id": 456,
-      "explanation": "Hypertext Transfer Protocol Secure (HTTPS) uses port 443 (source: A+ Core 1)."
-    },
-    {
-      "id": 457,
-      "explanation": "Simple Mail Transfer Protocol (SMTP) uses port 25 (source: A+ Core 1)."
     },
     {
       "id": 458,
       "explanation": "File Transfer Protocol (FTP) uses port 20-21 (source: A+ Core 1)."
     },
     {
-      "id": 459,
-      "explanation": "Hypertext Transfer Protocol Secure (HTTPS) uses port 443 (source: A+ Core 2)."
-    },
-    {
-      "id": 460,
-      "explanation": "Telnet uses port 23 (source: Network+)."
-    },
-    {
-      "id": 461,
-      "explanation": "Hypertext Transfer Protocol (HTTP) uses port 80 (source: A+ Core 1)."
-    },
-    {
-      "id": 462,
-      "explanation": "Network Basic Input/Output System (NetBIOS)/NetBIOS over TCP/IP (NetBT) uses port 137-139 (source: Security+)."
-    },
-    {
-      "id": 463,
-      "explanation": "Domain Name System (DNS) uses port 53 (source: Network+)."
-    },
-    {
-      "id": 464,
-      "explanation": "Secure Shell (SSH) uses port 22 (source: Security+)."
-    },
-    {
-      "id": 465,
-      "explanation": "File Transfer Protocol (FTP) uses port 20-21 (source: Security+)."
-    },
-    {
-      "id": 466,
-      "explanation": "Internet Mail Access Protocol (IMAP) uses port 143 (source: Security+)."
-    },
-    {
-      "id": 467,
-      "explanation": "Internet Mail Access Protocol (IMAP) uses port 143 (source: A+ Core 1)."
-    },
-    {
-      "id": 468,
-      "explanation": "File Transfer Protocol (FTP) uses port 20-21 (source: A+ Core 2)."
-    },
-    {
-      "id": 469,
-      "explanation": "Server Message Block (SMB)/Common Internet File System (CIFS) uses port 445 (source: Security+)."
-    },
-    {
-      "id": 470,
-      "explanation": "Secure Shell (SSH) uses port 22 (source: A+ Core 1)."
-    },
-    {
-      "id": 471,
-      "explanation": "Dynamic Host Configuration Protocol (DHCP) uses port 67/68 (source: A+ Core 2)."
-    },
-    {
-      "id": 472,
-      "explanation": "Telnet uses port 23 (source: Security+)."
-    },
-    {
-      "id": 473,
-      "explanation": "Secure Shell (SSH) uses port 22 (source: Network+)."
-    },
-    {
-      "id": 474,
-      "explanation": "Dynamic Host Configuration Protocol (DHCP) uses port 67/68 (source: Security+)."
-    },
-    {
-      "id": 475,
-      "explanation": "Hypertext Transfer Protocol (HTTP) uses port 80 (source: A+ Core 2)."
-    },
-    {
-      "id": 476,
-      "explanation": "Network Basic Input/Output System (NetBIOS)/NetBIOS over TCP/IP (NetBT) uses port 137-139 (source: A+ Core 2)."
-    },
-    {
-      "id": 477,
-      "explanation": "Post Office Protocol 3 (POP3) uses port 110 (source: Security+)."
-    },
-    {
       "id": 478,
       "explanation": "Server Message Block (SMB) uses port 445 (source: Network+)."
-    },
-    {
-      "id": 479,
-      "explanation": "Simple Mail Transfer Protocol (SMTP) uses port 25 (source: A+ Core 2)."
-    },
-    {
-      "id": 480,
-      "explanation": "Remote Desktop Protocol (RDP) uses port 3389 (source: A+ Core 2)."
     },
     {
       "id": 481,
@@ -2161,6 +2033,134 @@
     {
       "id": 540,
       "explanation": "\"Microsoft Management • Additional tools\" is a A+ Core 2 concept related to Microsoft Management • Additional tools."
+    },
+    {
+      "id": 857,
+      "explanation": "Vishing (voice phishing) uses phone calls. Pretexting creates a fabricated scenario — vishing often uses pretexting."
+    },
+    {
+      "id": 858,
+      "explanation": "System Restore reverts system files, drivers, and registry to a restore point while leaving personal files untouched."
+    },
+    {
+      "id": 859,
+      "explanation": "Swollen or leaking capacitors indicate failure. They cannot be safely or reliably replaced in the field; the motherboard should be replaced."
+    },
+    {
+      "id": 860,
+      "explanation": "BitLocker encrypts entire volumes at the disk level. EFS encrypts individual files. BitLocker protects against physical theft of the drive."
+    },
+    {
+      "id": 861,
+      "explanation": "Device Manager reveals whether the trackpad is disabled, missing a driver, or reporting an error. This is the logical next diagnostic step."
+    },
+    {
+      "id": 862,
+      "explanation": "NVMe SSDs connect via PCIe lanes — most commonly through an M.2 slot on the motherboard or as a PCIe add-in card (AIC)."
+    },
+    {
+      "id": 863,
+      "explanation": "NVMe uses PCIe lanes and achieves speeds of 3,500+ MB/s, while SATA III maxes out at ~550 MB/s. Speed is the primary advantage."
+    },
+    {
+      "id": 864,
+      "explanation": "Many USB expansion cards require a supplemental power connection (Molex or SATA) to supply sufficient current for connected peripherals."
+    },
+    {
+      "id": 865,
+      "explanation": "Task Manager (Ctrl+Shift+Esc) shows running processes, resource usage, startup items, and lets you end unresponsive tasks."
+    },
+    {
+      "id": 866,
+      "explanation": "Windows 10 Home 64-bit officially supports up to 128 GB of RAM. Pro and Enterprise support even more (up to 2 TB on some editions)."
+    },
+    {
+      "id": 867,
+      "explanation": "100% disk usage is commonly caused by failing HDD sectors, Windows Search indexing, antivirus scans, or background updates hammering the disk."
+    },
+    {
+      "id": 868,
+      "explanation": "The front panel header is a small block of pins where power switch, reset, HDD LED, and power LED connectors plug in. It is documented in the motherboard manual."
+    },
+    {
+      "id": 869,
+      "explanation": "RIP uses hop count as its sole metric and treats any destination more than 15 hops away as unreachable."
+    },
+    {
+      "id": 870,
+      "explanation": "CRITICAL_PROCESS_DIED indicates a core Windows process terminated unexpectedly. Common causes are corrupt system files, failing RAM, or a dying boot drive."
+    },
+    {
+      "id": 871,
+      "explanation": "An IDS passively monitors and alerts (detect-only). An IPS actively blocks malicious traffic in-line."
+    },
+    {
+      "id": 872,
+      "explanation": "NAT translates private (RFC 1918) IP addresses to public IPs, allowing multiple internal hosts to share a single public IP."
+    },
+    {
+      "id": 873,
+      "explanation": "Salting appends a random value to each password before hashing, ensuring identical passwords produce different hashes and defeating rainbow tables."
+    },
+    {
+      "id": 874,
+      "explanation": "SIEM (Security Information and Event Management) aggregates logs, correlates events, and generates alerts for security incidents."
+    },
+    {
+      "id": 875,
+      "explanation": "The incident response process: Preparation → Identification/Detection → Containment → Eradication → Recovery → Lessons Learned."
+    },
+    {
+      "id": 876,
+      "explanation": "The CMOS battery (CR2032) keeps the BIOS/UEFI configuration and real-time clock powered when the computer is unplugged. A dead CMOS battery causes lost BIOS settings."
+    },
+    {
+      "id": 877,
+      "explanation": "Feature Updates are the major biannual releases that add new functionality. Quality Updates are the monthly cumulative security patches."
+    },
+    {
+      "id": 878,
+      "explanation": "Risk transference shifts financial impact to a third party (insurance company) without eliminating the risk."
+    },
+    {
+      "id": 879,
+      "explanation": "Task Manager's Startup tab shows all programs configured to start with Windows and allows you to enable or disable them."
+    },
+    {
+      "id": 880,
+      "explanation": "ping tests basic IP connectivity using ICMP echo requests. tracert traces the route; nslookup queries DNS; ipconfig shows adapter configuration."
+    },
+    {
+      "id": 881,
+      "explanation": "DLP monitors, detects, and blocks unauthorized transmission of sensitive data on endpoints and across the network."
+    },
+    {
+      "id": 882,
+      "explanation": "802.11ac introduced MU-MIMO, operates only on 5 GHz, and achieves theoretical speeds up to ~3.5 Gbps."
+    },
+    {
+      "id": 883,
+      "explanation": "A honeypot is a decoy system that attracts attackers, observes their techniques, and gathers threat intelligence."
+    },
+    {
+      "id": 884,
+      "explanation": "Type 1 (bare metal) hypervisors like Hyper-V, ESXi, and Xen run directly on hardware. Type 2 (hosted) like VMware Workstation run on top of a host OS."
+    },
+    {
+      "id": 885,
+      "explanation": "Display Settings allows you to choose between 'Duplicate' (mirror) and 'Extend' (independent desktop across multiple monitors)."
+    },
+    {
+      "id": 886,
+      "explanation": "DNS cache poisoning injects fraudulent DNS records, redirecting users to attacker-controlled servers."
+    },
+    {
+      "id": 887,
+      "explanation": "Mechanical hard drives with spinning platters and moving read/write heads can produce grinding or clicking noises when failing. SSDs are silent."
+    },
+    {
+      "id": 888,
+      "explanation": "Restart-Computer is the PowerShell cmdlet for rebooting a local or remote system. shutdown /s is CMD syntax for shutdown (not restart)."
     }
   ],
   "tier3": [
@@ -2327,10 +2327,6 @@
     {
       "id": 581,
       "explanation": "\"HMAC\" stands for \"Hashed Message Authentication Code\" (Security+)."
-    },
-    {
-      "id": 582,
-      "explanation": "\"MAC\" stands for \"Media Access Control\" (Security+)."
     },
     {
       "id": 583,
@@ -2821,10 +2817,6 @@
       "explanation": "Telnet uses port 23 (source: A+ Core 1)."
     },
     {
-      "id": 705,
-      "explanation": "Telnet uses port 23 (source: Security+)."
-    },
-    {
       "id": 706,
       "explanation": "Syslog uses port 514 (source: Network+)."
     },
@@ -2845,10 +2837,6 @@
       "explanation": "Simple Mail Transfer Protocol (SMTP) uses port 25 (source: A+ Core 2)."
     },
     {
-      "id": 711,
-      "explanation": "Secure Shell (SSH) uses port 22 (source: A+ Core 2)."
-    },
-    {
       "id": 712,
       "explanation": "Structured Query Language (SQL) Server uses port 1433 (source: Network+)."
     },
@@ -2861,10 +2849,6 @@
       "explanation": "Hypertext Transfer Protocol (HTTP) uses port 80 (source: Security+)."
     },
     {
-      "id": 715,
-      "explanation": "Dynamic Host Configuration Protocol (DHCP) uses port 67/68 (source: A+ Core 2)."
-    },
-    {
       "id": 716,
       "explanation": "Server Message Block (SMB)/Common Internet File System (CIFS) uses port 445 (source: A+ Core 2)."
     },
@@ -2873,136 +2857,20 @@
       "explanation": "File Transfer Protocol (FTP) uses port 20-21 (source: Security+)."
     },
     {
-      "id": 718,
-      "explanation": "Hypertext Transfer Protocol Secure (HTTPS) uses port 443 (source: Security+)."
-    },
-    {
-      "id": 719,
-      "explanation": "Secure Shell (SSH) uses port 22 (source: Network+)."
-    },
-    {
-      "id": 720,
-      "explanation": "Secure Shell (SSH) uses port 22 (source: Security+)."
-    },
-    {
-      "id": 721,
-      "explanation": "Hypertext Transfer Protocol (HTTP) uses port 80 (source: A+ Core 1)."
-    },
-    {
-      "id": 722,
-      "explanation": "Network Basic Input/Output System (NetBIOS)/NetBIOS over TCP/IP (NetBT) uses port 137-139 (source: A+ Core 2)."
-    },
-    {
       "id": 723,
       "explanation": "Post Office Protocol 3 (POP3) uses port 110 (source: A+ Core 2)."
-    },
-    {
-      "id": 724,
-      "explanation": "Simple Mail Transfer Protocol (SMTP) uses port 25 (source: A+ Core 1)."
-    },
-    {
-      "id": 725,
-      "explanation": "Server Message Block (SMB) uses port 445 (source: Network+)."
     },
     {
       "id": 726,
       "explanation": "Domain Name System (DNS) uses port 53 (source: A+ Core 1)."
     },
     {
-      "id": 727,
-      "explanation": "Domain Name System (DNS) uses port 53 (source: Security+)."
-    },
-    {
-      "id": 728,
-      "explanation": "Network Basic Input/Output System (NetBIOS)/NetBIOS over TCP/IP (NetBT) uses port 137-139 (source: A+ Core 1)."
-    },
-    {
-      "id": 729,
-      "explanation": "Domain Name System (DNS) uses port 53 (source: A+ Core 2)."
-    },
-    {
-      "id": 730,
-      "explanation": "Remote Desktop Protocol (RDP) uses port 3389 (source: Security+)."
-    },
-    {
-      "id": 731,
-      "explanation": "File Transfer Protocol (FTP) uses port 20-21 (source: A+ Core 1)."
-    },
-    {
-      "id": 732,
-      "explanation": "File Transfer Protocol (FTP) uses port 20-21 (source: A+ Core 2)."
-    },
-    {
-      "id": 733,
-      "explanation": "Remote Desktop Protocol (RDP) uses port 3389 (source: A+ Core 1)."
-    },
-    {
       "id": 734,
       "explanation": "Internet Mail Access Protocol (IMAP) uses port 143 (source: A+ Core 2)."
     },
     {
-      "id": 735,
-      "explanation": "Domain Name System (DNS) uses port 53 (source: Network+)."
-    },
-    {
-      "id": 736,
-      "explanation": "Post Office Protocol 3 (POP3) uses port 110 (source: A+ Core 1)."
-    },
-    {
-      "id": 737,
-      "explanation": "Telnet uses port 23 (source: A+ Core 2)."
-    },
-    {
-      "id": 738,
-      "explanation": "Server Message Block (SMB)/Common Internet File System (CIFS) uses port 445 (source: Security+)."
-    },
-    {
       "id": 739,
       "explanation": "Lightweight Directory Access Protocol (LDAP) uses port 389 (source: A+ Core 2)."
-    },
-    {
-      "id": 740,
-      "explanation": "Lightweight Directory Access Protocol (LDAP) uses port 389 (source: A+ Core 1)."
-    },
-    {
-      "id": 741,
-      "explanation": "Telnet uses port 23 (source: Network+)."
-    },
-    {
-      "id": 742,
-      "explanation": "Hypertext Transfer Protocol (HTTP) uses port 80 (source: A+ Core 2)."
-    },
-    {
-      "id": 743,
-      "explanation": "Post Office Protocol 3 (POP3) uses port 110 (source: Security+)."
-    },
-    {
-      "id": 744,
-      "explanation": "Server Message Block (SMB)/Common Internet File System (CIFS) uses port 445 (source: A+ Core 1)."
-    },
-    {
-      "id": 745,
-      "explanation": "Dynamic Host Configuration Protocol (DHCP) uses port 67/68 (source: Security+)."
-    },
-    {
-      "id": 746,
-      "explanation": "Lightweight Directory Access Protocol (LDAP) uses port 389 (source: Security+)."
-    },
-    {
-      "id": 747,
-      "explanation": "Simple Mail Transfer Protocol (SMTP) uses port 25 (source: Security+)."
-    },
-    {
-      "id": 748,
-      "explanation": "Internet Mail Access Protocol (IMAP) uses port 143 (source: A+ Core 1)."
-    },
-    {
-      "id": 749,
-      "explanation": "Hypertext Transfer Protocol Secure (HTTPS) uses port 443 (source: A+ Core 1)."
-    },
-    {
-      "id": 750,
-      "explanation": "Internet Mail Access Protocol (IMAP) uses port 143 (source: Security+)."
     },
     {
       "id": 751,
@@ -3243,6 +3111,138 @@
     {
       "id": 810,
       "explanation": "\"Layer 3 - Network • Layer 7 - Application\" is a Network+ concept related to Layer 3 - Network • Layer 7 - Application."
+    },
+    {
+      "id": 889,
+      "explanation": "XSS injects client-side scripts into web pages served to other users, enabling session hijacking and credential theft."
+    },
+    {
+      "id": 890,
+      "explanation": "A CA is the trusted entity that issues, signs, and revokes digital certificates, binding a public key to a verified identity."
+    },
+    {
+      "id": 891,
+      "explanation": "POST checks essential hardware — CPU, RAM, GPU, storage — during startup. Beep codes or error messages indicate which component failed POST."
+    },
+    {
+      "id": 892,
+      "explanation": "Incorrect keyboard layouts (e.g., AZERTY instead of QWERTY) cause wrong characters. This can be changed in Windows Settings > Time & Language > Language."
+    },
+    {
+      "id": 893,
+      "explanation": "A buffer overflow writes beyond a buffer's bounds, overwriting adjacent memory — exploited to execute shellcode or alter program flow."
+    },
+    {
+      "id": 894,
+      "explanation": "HTTPS uses port 443. HTTP uses port 80."
+    },
+    {
+      "id": 895,
+      "explanation": "An air gap physically isolates a system from all external connections, making remote attacks impossible."
+    },
+    {
+      "id": 896,
+      "explanation": "Worms self-replicate across networks without attaching to host files. Viruses require host files; Trojans require user execution; spyware monitors activity."
+    },
+    {
+      "id": 897,
+      "explanation": "High idle memory usage is often caused by background services, startup programs, or memory leaks from poorly coded applications."
+    },
+    {
+      "id": 898,
+      "explanation": "Disk Management (diskmgmt.msc) handles partition creation, formatting, drive letter assignment, and volume extension/shrinking."
+    },
+    {
+      "id": 899,
+      "explanation": "STP prevents switching loops by placing redundant ports in a blocking state while maintaining a loop-free path."
+    },
+    {
+      "id": 900,
+      "explanation": "A rootkit operates at the kernel or hypervisor level, hiding files, processes, and network connections for stealthy persistent access."
+    },
+    {
+      "id": 901,
+      "explanation": "Proper spacing (air gaps) between components inside the case ensures adequate airflow, which is critical for thermal management and preventing overheating."
+    },
+    {
+      "id": 902,
+      "explanation": "System Restore rolls back system files, drivers, and registry to a known-good restore point, often resolving issues caused by updates."
+    },
+    {
+      "id": 903,
+      "explanation": "MITRE ATT&CK is a knowledge base of adversary TTPs based on real-world observations, used for threat modeling and detection."
+    },
+    {
+      "id": 904,
+      "explanation": "USB-C and USB 3.x ports are the modern standard for connecting external storage devices with high throughput and power delivery."
+    },
+    {
+      "id": 905,
+      "explanation": "The chipset (PCH) manages data flow between the CPU, memory, storage, USB, PCIe, and other I/O. It is the motherboard's traffic controller."
+    },
+    {
+      "id": 906,
+      "explanation": "Disk cloning software creates an exact replica of the source drive, including the boot sector and hidden partitions, ensuring the new drive is fully bootable."
+    },
+    {
+      "id": 907,
+      "explanation": "1000BASE-T requires Cat 5e or better UTP cabling, which supports all four wire pairs at up to 100 m."
+    },
+    {
+      "id": 908,
+      "explanation": "Task Manager's Performance tab shows real-time network usage. The Processes tab also shows network usage per application."
+    },
+    {
+      "id": 909,
+      "explanation": "A UPS provides battery backup during short power outages, giving the user time to save work and perform a clean shutdown to prevent data loss."
+    },
+    {
+      "id": 910,
+      "explanation": "Smishing (SMS phishing) uses text messages to trick victims into clicking malicious links or providing sensitive information."
+    },
+    {
+      "id": 911,
+      "explanation": "The BIOS/UEFI boot order must be configured so the USB drive is checked before the internal hard drive. This is done in the Boot menu of the firmware setup."
+    },
+    {
+      "id": 912,
+      "explanation": "An A record maps a domain name to a 32-bit IPv4 address. AAAA records map to 128-bit IPv6 addresses."
+    },
+    {
+      "id": 913,
+      "explanation": "Each Windows user account has an independent profile containing personal files, desktop settings, and application data, keeping users isolated from each other."
+    },
+    {
+      "id": 914,
+      "explanation": "RBAC grants permissions based on predefined roles (e.g., 'HR Manager'). Users are assigned to roles, simplifying permission management."
+    },
+    {
+      "id": 915,
+      "explanation": "The Northbridge historically managed high-speed pathways (CPU-RAM-GPU). In modern CPUs, these functions are integrated directly into the processor die."
+    },
+    {
+      "id": 916,
+      "explanation": "SHA-256 is a secure hash function from the SHA-2 family producing a 256-bit digest. MD5 and SHA-1 are considered broken for security purposes."
+    },
+    {
+      "id": 917,
+      "explanation": "DDoS uses multiple compromised systems (botnets) to flood a target with traffic, exhausting resources and denying service to legitimate users."
+    },
+    {
+      "id": 918,
+      "explanation": "A digital signature uses the sender's private key to sign a hash of the message. The recipient verifies with the sender's public key, confirming identity and integrity."
+    },
+    {
+      "id": 919,
+      "explanation": "Proper case ventilation with intake fans at the front/bottom and exhaust fans at the top/rear creates airflow that removes hot air and draws in cool air."
+    },
+    {
+      "id": 920,
+      "explanation": "ipconfig /release drops the current DHCP-assigned IP. ipconfig /renew sends a new DHCP Discover to obtain a fresh IP address from the server."
+    },
+    {
+      "id": 921,
+      "explanation": "Zero trust assumes breach and verifies every access request, regardless of whether the user is inside or outside the network perimeter."
     }
   ],
   "bonus": [

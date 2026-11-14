@@ -5,7 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { AdminMediaUpdateKind } from "./adminMediaUpdateKind";
+import type { AdminMediaUpdateKind } from "./adminMediaUpdateKind.js";
 
 export interface AdminMediaUpdate {
   kind?: AdminMediaUpdateKind;

@@ -49,7 +49,7 @@ export function Scene3() {
           animate={phase >= 3 ? { opacity: 1 } : { opacity: 0 }}
           transition={{ duration: 0.6 }}
         >
-          Secure Clerk authentication. Database-backed quiz history. Never lose your stats.
+          Secure Supabase authentication. Database-backed quiz history. Never lose your stats.
         </motion.p>
         
         <motion.div 

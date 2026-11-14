@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { Question, ExamCategory, Difficulty, comptiaScaledScore, isCompTiaPass, COMPTIA_PASS_SCORE, weightedScore, DIFFICULTY_LABELS } from "@/data/questions";
+import { type Question, type ExamCategory, type Difficulty, comptiaScaledScore, isCompTiaPass, COMPTIA_PASS_SCORE, weightedScore, DIFFICULTY_LABELS } from "@/lib/scoring";
 import { DOMAIN_METADATA } from "@/data/topics";
 import { playPassSound, playFailSound } from "@/lib/sound-effects";
+import Confetti from "@/components/Confetti";
 
 interface PassFailPageProps {
   questions: Question[];
@@ -75,6 +76,7 @@ export default function PassFailPage({ questions, answers, mode, difficulty, isW
       />
 
       {/* Burst particles */}
+      {passed && <Confetti />}
       {phase === "burst" && (
         <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
           {particles.map((p) => (

@@ -1,17 +1,8 @@
-import rawBank from "./exam-bank.json";
-import rawMeta from "./exam-bank-meta.json";
-import { questions, scrambleOptions } from "./questions";
-import type { Question } from "./questions";
-import { getHellModeQuestionBank } from "./hellmode-bank";
-
-function shuffleArray<T>(arr: T[]): T[] {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
+import rawBank from "./exam-bank.json" with { type: "json" };
+import rawMeta from "./exam-bank-meta.json" with { type: "json" };
+import type { Question, ExamCategory } from "../lib/scoring.js";
+import { shuffleArray, scrambleOptions } from "../lib/scoring.js";
+import { getHellModeQuestionBank } from "./hellmode-bank.js";
 
 function categoryFromQuestion(text: string): "A+" | "Network+" | "Security+" | null {
   if (/security\+/i.test(text)) return "Security+";
@@ -31,6 +22,9 @@ export interface ExamQuestion {
   q: string;
   opts: string[];
   ans: string;
+  /** Exam the question belongs to. Written into exam-bank.json by the
+   *  P0-1 merge (derived from the meta explanation / question text). */
+  exam?: ExamCategory;
   explanation?: string;
 }
 
@@ -56,6 +50,7 @@ const curatedHellModeExamQuestions: ExamQuestion[] = curatedHellModeQuestions.ma
   q: question.question,
   opts: question.options,
   ans: question.options[question.correctIndex],
+  exam: question.category,
   explanation: question.explanation,
 }));
 
@@ -71,11 +66,42 @@ const metaMap: Record<ExamTier, { id: number | string; explanation: string }[]> 
   3: meta.tier3,
 };
 
-// Global distractor pool drawn from all correct answers in the exam bank.
-const allCorrectAnswers = Array.from(
-  new Set([...bank.tier1, ...bank.tier2, ...bank.tier3, ...bank.bonus].map((eq) => eq.ans)),
-).filter(Boolean);
+// Exam per question id, derived from the meta explanations (e.g.
+// `"SAN" stands for "Storage Area Network" (Network+)`). Fallback for
+// any bank entry that does not carry its own `exam` field.
+const EXAM_TAG_RE = /A\+ Core [12]|Network\+|Security\+|N10-\d+|SY0-\d+|220-1\d{3}|A\+/;
+function examFromTag(tag: string): ExamCategory {
+  if (tag.startsWith("A+") || tag.startsWith("220")) return "A+";
+  if (tag.startsWith("N10")) return "Network+";
+  if (tag.startsWith("SY0")) return "Security+";
+  return tag as ExamCategory;
+}
 
+const examById = new Map<number | string, ExamCategory>();
+for (const tier of ["tier1", "tier2", "tier3", "bonus"] as const) {
+  for (const entry of meta[tier] ?? []) {
+    const match = EXAM_TAG_RE.exec(entry.explanation);
+    if (match) examById.set(entry.id, examFromTag(match[0]));
+  }
+}
+
+/** The exam a bank entry belongs to: its own `exam` field first, then the
+ *  meta-explanation tag, then an explicit mention in the question text,
+ *  then a keyword heuristic. Never a hardcoded default. */
+export function examForBankEntry(eq: ExamQuestion): ExamCategory {
+  if (eq.exam) return eq.exam;
+  const fromMeta = examById.get(eq.id);
+  if (fromMeta) return fromMeta;
+  const fromText = categoryFromQuestion(eq.q);
+  if (fromText) return fromText;
+  // Last resort only — every entry in the merged bank carries an exam, so
+  // this should be unreachable for bank data.
+  return "A+";
+}
+
+// Per-exam option pools (a question's own options live here too). Used
+// ONLY to fill genuinely missing options and to replace duplicated
+// options — never to rewrite a question's own distractors.
 const optionPools: Record<"A+" | "Network+" | "Security+", string[]> = {
   "A+": [],
   "Network+": [],
@@ -83,28 +109,8 @@ const optionPools: Record<"A+" | "Network+" | "Security+", string[]> = {
 };
 
 for (const eq of [...bank.tier1, ...bank.tier2, ...bank.tier3, ...bank.bonus]) {
-  const category = categoryFromQuestion(eq.q);
-  if (!category) continue;
+  const category = examForBankEntry(eq);
   optionPools[category].push(...eq.opts);
-}
-
-function isDefinitionQuestion(q: Question): boolean {
-  const questionText = q.question.toLowerCase();
-  const correctText = q.options[q.correctIndex].toLowerCase();
-  if (questionText.includes(correctText)) return true;
-  const words = correctText.split(/\s+/).filter((w) => w.length > 3);
-  if (words.length > 0) {
-    const matches = words.filter((w) => questionText.includes(w)).length;
-    if (matches / words.length >= 0.6) return true;
-  }
-  if (
-    /what does .* stand for|what is the meaning of|what does .* mean|what does .* refer to|what is .* an acronym for|full meaning|full form|abbreviation|acronym/i.test(
-      q.question,
-    )
-  ) {
-    return true;
-  }
-  return false;
 }
 
 function replaceDuplicateOptions(
@@ -146,50 +152,52 @@ function optionShape(value: string): string {
   return `${kind}:${Math.min(6, words.length)}:${Math.min(4, Math.round(normalized.length / 12))}`;
 }
 
-function choosePlausibleDistractors(q: Question, pool: string[]): string[] {
+/** Fill genuinely missing options only (fewer than 4, or blank entries).
+ *  Replacements come from same-format options in the same exam's pool, so
+ *  a port-number question can only gain number-shaped options — never
+ *  protocol names. Returns the question unchanged when it already has
+ *  four valid options. */
+function fillMissingOptions(q: Question): Question {
+  const valid = q.options.filter((o) => o && o.trim().length > 0);
+  if (valid.length >= 4 && q.options.length === 4) return q;
+  const category = q.category;
   const correct = q.options[q.correctIndex];
-  const targetShape = optionShape(correct);
+  const targetShape = correct ? optionShape(correct) : "";
+  const pool = optionPools[category] ?? [];
   const sameShape = shuffleArray(
-    pool.filter((candidate) => candidate !== correct && optionShape(candidate) === targetShape),
+    pool.filter(
+      (candidate) =>
+        candidate !== correct &&
+        !q.options.includes(candidate) &&
+        (!targetShape || optionShape(candidate) === targetShape),
+    ),
   );
-  const nearby = shuffleArray(
-    pool.filter((candidate) => candidate !== correct && Math.abs(candidate.length - correct.length) < 18),
+  const anyShape = shuffleArray(
+    pool.filter((candidate) => candidate !== correct && !q.options.includes(candidate)),
   );
-  return Array.from(new Set([...sameShape, ...nearby])).slice(0, 3);
+  const fillers = Array.from(new Set([...sameShape, ...anyShape]));
+  const options = [...q.options];
+  let fillerIndex = 0;
+  for (let i = 0; i < options.length && valid.length + fillerIndex < 4; i++) {
+    if (!options[i] || options[i].trim().length === 0) {
+      if (fillers[fillerIndex]) options[i] = fillers[fillerIndex++];
+    }
+  }
+  while (options.length < 4 && fillers[fillerIndex]) {
+    options.push(fillers[fillerIndex++]);
+  }
+  if (options.length < 4) return q;
+  return { ...q, options };
 }
 
+/** Keep each question's own options. Distractors are only generated when
+ *  a question genuinely has missing options (see fillMissingOptions), and
+ *  duplicated options are replaced from the same exam's pool. Definition
+ *  questions keep their authored distractors — the old behaviour of
+ *  replacing all three distractors with random correct answers from a
+ *  global pool is what put protocol names on port-number questions. */
 function enhanceDistractors(q: Question): Question {
-  const category = categoryFromQuestion(q.question);
-  const sourcePool = category ? optionPools[category] : allCorrectAnswers;
-  const plausible = choosePlausibleDistractors(q, sourcePool);
-  if (!isDefinitionQuestion(q)) {
-    return replaceDuplicateOptions(q);
-  }
-  const correct = q.options[q.correctIndex];
-  const distractors = plausible.length >= 3
-    ? plausible
-    : shuffleArray(sourcePool.filter((a) => a !== correct)).slice(0, 3);
-  if (distractors.length < 3) return replaceDuplicateOptions(q);
-  const newOptions = shuffleArray([correct, ...distractors]);
-  const newCorrectIndex = newOptions.indexOf(correct);
-  return replaceDuplicateOptions({
-    ...q,
-    options: newOptions,
-    correctIndex: newCorrectIndex,
-  });
-}
-
-function applyMediumScenario(q: Question): Question {
-  if (q.question.startsWith("Applied constraint:") || q.question.length > 210) {
-    return { ...q, difficulty: "medium" };
-  }
-  return {
-    ...q,
-    difficulty: "medium",
-    question:
-      `Applied constraint: a technician must preserve the stated requirement while changing only the affected layer. ` +
-      `Evidence has been gathered before remediation. Which answer best fits both the observation and the required outcome? ${q.question}`,
-  };
+  return replaceDuplicateOptions(fillMissingOptions(q));
 }
 
 export function getExamBank(): ExamBank {
@@ -204,23 +212,36 @@ export function getBonusQuestions(): ExamQuestion[] {
   return bank.bonus;
 }
 
-export function toQuestion(eq: ExamQuestion): Question {
+export function toQuestion(eq: ExamQuestion, difficulty: "easy" | "medium" | "hard" = "medium"): Question {
   const correctIndex = eq.opts.indexOf(eq.ans);
   // Fallback: if ans not in opts, use index 0 (should never happen with valid data)
   const safeIndex = correctIndex >= 0 ? correctIndex : 0;
   return {
     id: typeof eq.id === "string" ? parseInt(eq.id.replace(/\D/g, "") || "0", 10) : eq.id,
-    category: "A+",
+    category: examForBankEntry(eq),
     question: eq.q,
     options: eq.opts,
     correctIndex: safeIndex,
     explanation: eq.explanation || `The correct answer is: ${eq.ans}`,
-    difficulty: "medium",
+    difficulty,
   };
 }
 
 export function toQuestions(eqs: ExamQuestion[]): Question[] {
-  return eqs.map(toQuestion);
+  return eqs.map((eq) => toQuestion(eq));
+}
+
+/** The full unified bank as served questions, in stable (unshuffled)
+ *  order: Tier 1 (easy) + Tier 2 (medium) + HellMode Tier 3 (hard).
+ *  This is the single source quick modes (Fast/Full/Topic/Simulation/
+ *  Weak-area) draw from — 810 questions, 270 per tier. No shuffling,
+ *  scrambling, or distractor rewriting here; callers shuffle as needed. */
+export function getAllTierQuestions(): Question[] {
+  return [
+    ...getTierQuestions(1).map((eq) => toQuestion(eq, "easy")),
+    ...getTierQuestions(2).map((eq) => toQuestion(eq, "medium")),
+    ...curatedHellModeQuestions.map((question) => ({ ...question })),
+  ];
 }
 
 export function getTierAsQuestions(tier: ExamTier): Question[] {
@@ -229,9 +250,10 @@ export function getTierAsQuestions(tier: ExamTier): Question[] {
   }
   const questions = toQuestions(getTierQuestions(tier));
   if (tier === 2) {
-    return shuffleArray(scrambleOptions(questions.map((question) => applyMediumScenario(enhanceDistractors(question)))));
+    // Tier 2 questions show as written — no canned scenario boilerplate.
+    return shuffleArray(scrambleOptions(questions.map((question) => enhanceDistractors(question))));
   }
-  return shuffleArray(scrambleOptions(questions.map((question) => ({ ...enhanceDistractors(question), difficulty: "easy" }))));
+  return shuffleArray(scrambleOptions(questions.map((question) => ({ ...enhanceDistractors(question), difficulty: "easy" as const }))));
 }
 
 export function getBonusAsQuestions(): Question[] {
@@ -258,6 +280,11 @@ export function getTierTimeLimitSeconds(tier: ExamTier): number {
   return count * secondsPerQuestion;
 }
 
+/** Total served tier questions: Tier 1 + Tier 2 + served Tier 3
+ *  (HellMode). The dead tier3 JSON is NOT counted — getTierQuestions(3)
+ *  serves the HellMode bank instead. Must equal EXAM_COUNTS.all (810). */
 export function allTiersQuestionCount(): number {
-  return bank.tier1.length + bank.tier2.length + bank.tier3.length;
+  return (
+    getTierQuestions(1).length + getTierQuestions(2).length + getTierQuestions(3).length
+  );
 }

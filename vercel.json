@@ -1,0 +1,22 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "pnpm --filter @workspace/db build && pnpm --filter @workspace/api-zod build && pnpm --filter @workspace/db push --force && pnpm --filter @workspace/comptia-quiz run build",
+  "framework": null,
+  "functions": {
+    "api/index.ts": {
+      "includeFiles": "artifacts/comptia-quiz/src/data/**"
+    }
+  },
+  "installCommand": "pnpm install",
+  "outputDirectory": "artifacts/comptia-quiz/dist/public",
+  "rewrites": [
+    {
+      "destination": "/api/index",
+      "source": "/api/:path*"
+    },
+    {
+      "destination": "/index.html",
+      "source": "/(.*)"
+    }
+  ]
+}

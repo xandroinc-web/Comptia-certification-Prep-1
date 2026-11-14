@@ -5,7 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { ProductsResponseDataItem } from "./productsResponseDataItem";
+import type { ProductsResponseDataItem } from "./productsResponseDataItem.js";
 
 export interface ProductsResponse {
   data: ProductsResponseDataItem[];

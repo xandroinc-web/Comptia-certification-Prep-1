@@ -5,7 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { AdminUserActionAction } from "./adminUserActionAction";
+import type { AdminUserActionAction } from "./adminUserActionAction.js";
 
 export interface AdminUserAction {
   action: AdminUserActionAction;

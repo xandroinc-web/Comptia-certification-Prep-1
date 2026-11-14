@@ -1,26 +1,15 @@
 import { Router, type IRouter } from "express";
-import type { Request, Response, NextFunction } from "express";
-import { getAuth } from "@clerk/express";
+import type { Request, Response } from "express";
+import { requireAuth, getUserId } from "../lib/entitlements.js";
 import { db } from "@workspace/db";
 import { quizResultsTable, insertQuizResultSchema } from "@workspace/db/schema";
 import { eq, desc } from "drizzle-orm";
 
 const router: IRouter = Router();
 
-function requireAuth(req: Request, res: Response, next: NextFunction): void {
-  const auth = getAuth(req);
-  const userId = (auth as any)?.userId || (auth as any)?.sessionClaims?.userId;
-  if (!userId || typeof userId !== "string") {
-    res.status(401).json({ error: "Unauthorized" });
-    return;
-  }
-  (req as any).userId = userId;
-  next();
-}
-
 router.get("/quiz-results", requireAuth, async (req, res) => {
   try {
-    const userId = (req as any).userId as string;
+    const userId = getUserId(req);
     const results = await db
       .select()
       .from(quizResultsTable)
@@ -35,7 +24,7 @@ router.get("/quiz-results", requireAuth, async (req, res) => {
 
 router.post("/quiz-results", requireAuth, async (req, res) => {
   try {
-    const userId = (req as any).userId as string;
+    const userId = getUserId(req);
     const parsed = insertQuizResultSchema.parse(req.body);
     const [result] = await db
       .insert(quizResultsTable)

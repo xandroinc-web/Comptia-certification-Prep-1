@@ -5,7 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { AdminSettingValue } from "./adminSettingValue";
+import type { AdminSettingValue } from "./adminSettingValue.js";
 
 export interface AdminSetting {
   key: string;

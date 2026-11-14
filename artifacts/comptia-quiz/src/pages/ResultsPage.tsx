@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react";
-import { Question, ExamCategory, Difficulty, comptiaScaledScore, isCompTiaPass, COMPTIA_PASS_SCORE, weightedScore, DIFFICULTY_LABELS } from "@/data/questions";
+import { type Question, type ExamCategory, type Difficulty, comptiaScaledScore, isCompTiaPass, COMPTIA_PASS_SCORE, COMPTIA_PASS_RAW_PCT, weightedScore, DIFFICULTY_LABELS } from "@/lib/scoring";
 import { DOMAIN_METADATA, getDomainColor } from "@/data/topics";
-import { ExamTier } from "@/data/exam-bank";
+import type { ExamTier } from "@/data/exam-bank";
 import { playBadgeSound, playBonusUnlockSound } from "@/lib/sound-effects";
+import Confetti from "@/components/Confetti";
 
 interface ResultsPageProps {
   questions: Question[];
@@ -34,9 +35,11 @@ const CATEGORY_COLOR: Record<string, { badge: string; bar: string }> = {
 
 function gradeLabel(pct: number): { label: string; color: string } {
   if (pct >= 90) return { label: "Excellent", color: "text-emerald-400" };
-  if (pct >= 80) return { label: "Great", color: "text-blue-400" };
-  if (pct >= 70) return { label: "Pass", color: "text-amber-400" };
-  if (pct >= 60) return { label: "Almost", color: "text-orange-400" };
+  // A grade label must never say "Pass" below the single pass standard
+  // (82% raw = 750 scaled). Below that it is progress, not a pass.
+  if (pct >= COMPTIA_PASS_RAW_PCT) return { label: "Pass", color: "text-emerald-400" };
+  if (pct >= 70) return { label: "Almost There", color: "text-amber-400" };
+  if (pct >= 60) return { label: "Keep Going", color: "text-orange-400" };
   return { label: "Keep Studying", color: "text-red-400" };
 }
 
@@ -78,7 +81,10 @@ export default function ResultsPage({
   const isFinalTier = isExamMode && examTier === 3;
   const isLastTier = isExamMode && examTier === 3;
   const nextTier = examTier && examTier < 3 ? ((examTier + 1) as ExamTier) : null;
-  const tierPassed = isExamMode ? rawPct >= 80 : null;
+  // Tier pass uses the same standard as the displayed PASS/FAIL
+  // (scaled >= 750, i.e. 82% raw) and as the tier unlock in App.tsx —
+  // never a hardcoded 80.
+  const tierPassed = isExamMode ? passed : null;
   const showBadge = isFinalTier && (examFinalPct ?? 0) >= 90;
   const showBonus = isFinalTier && (examFinalPct ?? 0) >= 95;
   const bonusAvailable = isFinalTier && showBonus && !isBonusMode && canStartBonus;
@@ -129,6 +135,8 @@ export default function ResultsPage({
 
   return (
     <div className="min-h-screen py-8 px-4">
+      {/* Fireworks on pass, alongside the badge/bonus sounds above. */}
+      {passed && <Confetti />}
       <div className="max-w-2xl mx-auto">
         {/* Score card */}
         <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 mb-6 text-center">
@@ -190,7 +198,7 @@ export default function ResultsPage({
                   <span
                     key={t}
                     className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold border ${
-                      examTierScores[t as ExamTier] >= 80
+                      examTierScores[t as ExamTier] >= COMPTIA_PASS_RAW_PCT
                         ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
                         : examTierScores[t as ExamTier] > 0
                         ? "bg-red-500/10 text-red-400 border-red-500/30"
@@ -199,7 +207,7 @@ export default function ResultsPage({
                         : "bg-gray-900/50 text-gray-600 border-gray-800 opacity-60"
                     }`}
                   >
-                    {examTierScores[t as ExamTier] >= 80 ? "✓" : examTierScores[t as ExamTier] > 0 ? "✗" : examUnlocked?.[t as ExamTier] ? "○" : "🔒"}
+                    {examTierScores[t as ExamTier] >= COMPTIA_PASS_RAW_PCT ? "✓" : examTierScores[t as ExamTier] > 0 ? "✗" : examUnlocked?.[t as ExamTier] ? "○" : "🔒"}
                     Tier {t} {examTierScores[t as ExamTier] > 0 ? `— ${examTierScores[t as ExamTier]}%` : ""}
                   </span>
                 ))}

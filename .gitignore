@@ -48,3 +48,8 @@ Thumbs.db
 .cache/
 .local/
 .vercel
+
+# local env (never commit)
+.env.local
+.env.*.local
+.env*

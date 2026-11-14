@@ -1,11 +1,10 @@
 import { useMemo } from "react";
 import { QuizResult } from "@workspace/api-client-react";
 import {
-  ExamCategory,
-  Difficulty,
+  type ExamCategory,
+  type Difficulty,
   DIFFICULTY_LABELS,
-  questions,
-} from "@/data/questions";
+} from "@/lib/scoring";
 import {
   analyzeProgress,
   OverallProgress,
@@ -167,19 +166,14 @@ export default function ProgressPage({ quizHistory, onBack, onStartQuiz, isPro }
                       <span className="text-gray-600 text-xs">Pass rate: {cat.passingRate}%</span>
                       <span className="text-gray-600 text-xs">{cat.correctQuestions}/{cat.totalQuestions} correct</span>
                     </div>
+                    {/* Weak-topic detail needs server-provided question
+                        metadata (the browser no longer ships the bank);
+                        the count is shown until that lands. */}
                     {cat.weakTopicIds.length > 0 && (
                       <div className="mt-2 bg-gray-800/50 rounded-lg p-2">
-                        <p className="text-gray-500 text-xs mb-1">Weak topics ({cat.weakTopicIds.length}):</p>
-                        <div className="flex flex-wrap gap-1">
-                          {cat.weakTopicIds.slice(0, 5).map((id) => {
-                            const q = questions.find((q) => q.id === id);
-                            return q ? (
-                              <span key={id} className="text-gray-400 text-xs bg-gray-800 px-2 py-0.5 rounded truncate max-w-[200px]">
-                                {q.question.substring(0, 40)}...
-                              </span>
-                            ) : null;
-                          })}
-                        </div>
+                        <p className="text-gray-500 text-xs">
+                          {cat.weakTopicIds.length} weak question{cat.weakTopicIds.length > 1 ? "s" : ""} — review them with Study Weak Areas on the home page.
+                        </p>
                       </div>
                     )}
                     {/* Topic breakdown for A+ */}
@@ -342,7 +336,7 @@ export default function ProgressPage({ quizHistory, onBack, onStartQuiz, isPro }
                 </h2>
                 <div className="grid grid-cols-3 gap-3 mb-4">
                   {[
-                    { label: "80% Club", score: 80, color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/30" },
+                    { label: "82% Club", score: 82, color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/30" },
                     { label: "90% Club", score: 90, color: "text-amber-400 bg-amber-500/10 border-amber-500/30" },
                     { label: "Perfect 100", score: 100, color: "text-red-400 bg-red-500/10 border-red-500/30" },
                   ].map((badge) => {

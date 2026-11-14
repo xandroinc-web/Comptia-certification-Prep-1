@@ -5,7 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { ProductsResponseDataItemPricesItem } from "./productsResponseDataItemPricesItem";
+import type { ProductsResponseDataItemPricesItem } from "./productsResponseDataItemPricesItem.js";
 
 export type ProductsResponseDataItem = {
   id?: string;

@@ -5,7 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { AdminUser } from "./adminUser";
+import type { AdminUser } from "./adminUser.js";
 
 export interface AdminUsersResponse {
   data: AdminUser[];

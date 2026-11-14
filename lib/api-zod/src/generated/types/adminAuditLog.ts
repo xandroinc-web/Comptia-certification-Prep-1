@@ -5,7 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { AdminAuditLogMetadata } from "./adminAuditLogMetadata";
+import type { AdminAuditLogMetadata } from "./adminAuditLogMetadata.js";
 
 export interface AdminAuditLog {
   id: number;

@@ -5,7 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { AdminQuestion } from "./adminQuestion";
+import type { AdminQuestion } from "./adminQuestion.js";
 
 export interface AdminQuestionsResponse {
   data: AdminQuestion[];

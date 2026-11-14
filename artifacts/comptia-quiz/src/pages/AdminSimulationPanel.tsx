@@ -122,7 +122,7 @@ export default function AdminSimulationPanel({
         {config.profile === "restricted" && (
           <div className="mt-4 flex gap-2 rounded-xl border border-amber-400/20 bg-amber-400/5 p-3 text-xs leading-5 text-amber-200">
             <AlertTriangle className="mt-0.5 shrink-0" size={15} />
-            This profile only displays a simulated restricted-access screen. It does not ban, lock, or otherwise modify any Clerk user.
+            This profile only displays a simulated restricted-access screen. It does not ban, lock, or otherwise modify any Supabase user.
           </div>
         )}
 
@@ -148,7 +148,7 @@ export default function AdminSimulationPanel({
           </div>
         </div>
         <div className="mt-5 space-y-3 text-sm leading-6 text-slate-400">
-          <p>Admin API permissions remain based on the signed-in Clerk identity and server-side role assignment.</p>
+          <p>Admin API permissions remain based on the signed-in Supabase identity and server-side role assignment.</p>
           <p>Simulated Free, Pro, HellMode, and Restricted states are not written to subscriptions, user metadata, or account records.</p>
           <p>Simulation starts and learner journey events are recorded in the protected admin audit log.</p>
         </div>

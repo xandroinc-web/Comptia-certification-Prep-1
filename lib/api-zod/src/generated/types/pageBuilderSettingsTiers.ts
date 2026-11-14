@@ -5,7 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { PageBuilderTierSettings } from "./pageBuilderTierSettings";
+import type { PageBuilderTierSettings } from "./pageBuilderTierSettings.js";
 
 export type PageBuilderSettingsTiers = {
   "1": PageBuilderTierSettings;

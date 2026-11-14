@@ -1,7 +1,7 @@
 import { runMigrations } from "stripe-replit-sync";
-import { getStripeSync } from "./stripeClient";
-import app from "./app";
-import { logger } from "./lib/logger";
+import { getStripeSync } from "./stripeClient.js";
+import app from "./app.js";
+import { logger } from "./lib/logger.js";
 
 const rawPort = process.env["PORT"];
 
@@ -35,7 +35,9 @@ async function initStripe() {
     await runMigrations({ databaseUrl });
     logger.info("Stripe schema ready");
 
-    // Ensure stripe_customers table exists in public schema
+    // Ensure stripe_customers table exists in public schema.
+    // NOTE: clerk_user_id predates the Supabase Auth migration and
+    // now stores Supabase user UUIDs (kept to avoid a live-DB rename).
     const { db } = await import("@workspace/db");
     const { sql } = await import("drizzle-orm");
     await db.execute(

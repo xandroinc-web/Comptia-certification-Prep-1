@@ -5,8 +5,8 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { AdminQuestionInputDifficulty } from "./adminQuestionInputDifficulty";
-import type { AdminQuestionInputTier } from "./adminQuestionInputTier";
+import type { AdminQuestionInputDifficulty } from "./adminQuestionInputDifficulty.js";
+import type { AdminQuestionInputTier } from "./adminQuestionInputTier.js";
 
 export interface AdminQuestionInput {
   externalId?: string;

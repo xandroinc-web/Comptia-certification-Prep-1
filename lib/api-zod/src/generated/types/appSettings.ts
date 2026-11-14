@@ -5,7 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { PageBuilderSettings } from "./pageBuilderSettings";
+import type { PageBuilderSettings } from "./pageBuilderSettings.js";
 
 export interface AppSettings {
   announcement: string;

@@ -18,9 +18,10 @@ export default function CheckoutSuccessPage({ onHome }: CheckoutSuccessPageProps
         <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
           <CheckCircle size={40} className="text-emerald-500" />
         </div>
-        <h1 className="text-2xl font-bold mb-3">Welcome to Pro!</h1>
+        <h1 className="text-2xl font-bold mb-3">Payment successful!</h1>
         <p className="text-gray-400 mb-8">
-          Your subscription is active. You now have unlimited access to all CompTIA Pro features.
+          Your purchase is active. Head back to the dashboard to start
+          using your new access.
         </p>
         <Button
           onClick={onHome}

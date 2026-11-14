@@ -1,5 +1,11 @@
 import { Router, type IRouter, type Request, type Response, type NextFunction } from "express";
-import { getAuth, clerkClient } from "@clerk/express";
+import {
+  listSupabaseUsers,
+  createSupabaseUser,
+  setSupabaseUserBan,
+  deleteSupabaseUser,
+  countSupabaseUsers,
+} from "../lib/supabase.js";
 import { desc, eq, sql } from "drizzle-orm";
 import { db } from "@workspace/db";
 import {
@@ -9,8 +15,8 @@ import {
   adminSettingsTable,
   quizResultsTable,
 } from "@workspace/db";
-import { stripeStorage } from "../stripeStorage";
-import { getUncachableStripeClient } from "../stripeClient";
+import { stripeStorage } from "../stripeStorage.js";
+import { getUncachableStripeClient } from "../stripeClient.js";
 import { CreateAdminSimulationEventBody, GetAppSettingsResponse } from "@workspace/api-zod";
 
 const router: IRouter = Router();
@@ -145,8 +151,7 @@ const rolePermissions: Record<AdminRole, AdminPermission[]> = {
 };
 
 function getRequestUserId(req: Request): string | null {
-  const auth = getAuth(req);
-  const userId = (auth as any)?.userId || (auth as any)?.sessionClaims?.userId;
+  const userId = (req as unknown as { authUserId?: unknown })?.authUserId;
   return typeof userId === "string" ? userId : null;
 }
 
@@ -174,7 +179,7 @@ function requirePermission(permission: AdminPermission) {
     const role = getAdminRole(userId);
     if (!role || !rolePermissions[role].includes(permission)) {
       res.status(403).json({
-        error: "Admin access is not enabled for this Clerk user.",
+        error: "Admin access is not enabled for this user.",
         code: "ADMIN_NOT_ALLOWED",
       });
       return;
@@ -388,20 +393,25 @@ router.delete("/admin/questions/:id", requirePermission("quiz:manage"), async (r
   }
 });
 
+/** Shape the admin UI expects, from a Supabase Auth user. */
 function serializeUser(user: any) {
-  const primaryEmail = user.emailAddresses?.find(
-    (email: any) => email.id === user.primaryEmailAddressId,
-  )?.emailAddress ?? user.emailAddresses?.[0]?.emailAddress ?? null;
+  const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
+  const firstName =
+    typeof meta.first_name === "string" ? meta.first_name : typeof meta.firstName === "string" ? meta.firstName : null;
+  const lastName =
+    typeof meta.last_name === "string" ? meta.last_name : typeof meta.lastName === "string" ? meta.lastName : null;
+  const fullName = typeof meta.full_name === "string" ? meta.full_name : null;
   return {
     id: user.id,
-    email: primaryEmail,
-    firstName: user.firstName ?? null,
-    lastName: user.lastName ?? null,
-    imageUrl: user.imageUrl ?? null,
-    banned: Boolean(user.banned),
-    locked: Boolean(user.locked),
-    createdAt: new Date(user.createdAt).toISOString(),
-    lastSignInAt: user.lastSignInAt ? new Date(user.lastSignInAt).toISOString() : null,
+    email: user.email ?? null,
+    firstName: firstName ?? fullName?.split(" ")[0] ?? null,
+    lastName: lastName ?? fullName?.split(" ").slice(1).join(" ") ?? null,
+    imageUrl:
+      typeof meta.avatar_url === "string" ? meta.avatar_url : typeof meta.picture === "string" ? meta.picture : null,
+    banned: Boolean(user.banned_until && new Date(user.banned_until).getTime() > Date.now()),
+    locked: false,
+    createdAt: user.created_at ? new Date(user.created_at).toISOString() : null,
+    lastSignInAt: user.last_sign_in_at ? new Date(user.last_sign_in_at).toISOString() : null,
   };
 }
 
@@ -427,10 +437,9 @@ router.get("/admin/overview", requirePermission("dashboard:overview"), async (re
 
     let users = 0;
     try {
-      const response = await clerkClient.users.getUserList({ limit: 1 });
-      users = response.totalCount ?? response.data.length;
+      users = await countSupabaseUsers();
     } catch (error) {
-      req.log.warn({ err: error }, "Unable to read Clerk user count");
+      req.log.warn({ err: error }, "Unable to read Supabase user count");
     }
 
     let products: unknown[] = [];
@@ -612,18 +621,14 @@ router.get("/admin/users", requirePermission("users:read"), async (req, res): Pr
   const rawLimit = Array.isArray(req.query.limit) ? req.query.limit[0] : req.query.limit;
   const limit = Math.min(Math.max(Number(rawLimit) || 25, 1), 100);
   try {
-    const response = await clerkClient.users.getUserList({
-      limit,
-      ...(query ? { query } : {}),
-      orderBy: "-created_at",
-    });
+    const { users, total } = await listSupabaseUsers({ query, limit });
     res.json({
-      data: response.data.map(serializeUser),
-      totalCount: response.totalCount ?? response.data.length,
+      data: users.map(serializeUser),
+      totalCount: total,
     });
   } catch (error) {
-    req.log.error({ err: error }, "Failed to list Clerk users");
-    res.status(502).json({ error: "Unable to load users from Clerk" });
+    req.log.error({ err: error }, "Failed to list Supabase users");
+    res.status(502).json({ error: "Unable to load users from Supabase Auth" });
   }
 });
 
@@ -634,17 +639,16 @@ router.post("/admin/users", requirePermission("users:manage"), async (req, res):
     return;
   }
   try {
-    const user = await clerkClient.users.createUser({
-      emailAddress: [email.trim()],
+    const user = await createSupabaseUser({
+      email: email.trim(),
       ...(typeof firstName === "string" && firstName.trim() ? { firstName: firstName.trim() } : {}),
       ...(typeof lastName === "string" && lastName.trim() ? { lastName: lastName.trim() } : {}),
-      skipPasswordRequirement: true,
     });
     await writeAudit(req, "user.created", "user", user.id, { email: email.trim() });
     res.status(201).json(serializeUser(user));
   } catch (error) {
-    req.log.error({ err: error }, "Failed to create Clerk user");
-    res.status(502).json({ error: "Unable to create user in Clerk" });
+    req.log.error({ err: error }, "Failed to create Supabase user");
+    res.status(502).json({ error: "Unable to create user in Supabase Auth" });
   }
 });
 
@@ -661,11 +665,11 @@ router.post("/admin/users/:userId/action", requirePermission("users:manage"), as
   }
   try {
     if (action === "ban") {
-      await clerkClient.users.banUser(userId);
+      await setSupabaseUserBan(userId, true);
     } else if (action === "unban") {
-      await clerkClient.users.unbanUser(userId);
+      await setSupabaseUserBan(userId, false);
     } else if (action === "delete") {
-      await clerkClient.users.deleteUser(userId);
+      await deleteSupabaseUser(userId);
     } else {
       const customerResult = await db.execute(
         sql`SELECT stripe_customer_id FROM stripe_customers WHERE clerk_user_id = ${userId} LIMIT 1`,

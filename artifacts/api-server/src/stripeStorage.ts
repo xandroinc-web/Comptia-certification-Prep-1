@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
 import { db } from "@workspace/db";
-import { getUncachableStripeClient } from "./stripeClient";
+import { getUncachableStripeClient } from "./stripeClient.js";
 
 export class StripeStorage {
   async listProductsWithPrices(active = true, limit = 20, offset = 0) {

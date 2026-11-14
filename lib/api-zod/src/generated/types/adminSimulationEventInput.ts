@@ -5,9 +5,9 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { AdminSimulationEventInputEvent } from "./adminSimulationEventInputEvent";
-import type { AdminSimulationEventInputFeatureFlags } from "./adminSimulationEventInputFeatureFlags";
-import type { AdminSimulationEventInputProfile } from "./adminSimulationEventInputProfile";
+import type { AdminSimulationEventInputEvent } from "./adminSimulationEventInputEvent.js";
+import type { AdminSimulationEventInputFeatureFlags } from "./adminSimulationEventInputFeatureFlags.js";
+import type { AdminSimulationEventInputProfile } from "./adminSimulationEventInputProfile.js";
 
 export interface AdminSimulationEventInput {
   profile: AdminSimulationEventInputProfile;

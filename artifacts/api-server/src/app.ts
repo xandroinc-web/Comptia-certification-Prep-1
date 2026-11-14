@@ -1,16 +1,10 @@
 import express, { type Express, type Request, type Response } from "express";
 import cors from "cors";
-import pinoHttp from "pino-http";
-import { clerkMiddleware } from "@clerk/express";
-import { publishableKeyFromHost } from "@clerk/shared/keys";
-import {
-  CLERK_PROXY_PATH,
-  clerkProxyMiddleware,
-  getClerkProxyHost,
-} from "./middlewares/clerkProxyMiddleware";
-import { WebhookHandlers } from "./webhookHandlers";
-import router from "./routes";
-import { logger } from "./lib/logger";
+import { pinoHttp } from "pino-http";
+import { supabaseAuth } from "./lib/supabaseAuth.js";
+import { WebhookHandlers } from "./webhookHandlers.js";
+import router from "./routes/index.js";
+import { logger } from "./lib/logger.js";
 
 const app: Express = express();
 
@@ -60,20 +54,16 @@ app.use(
   }),
 );
 
-app.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
-
 app.use(cors({ credentials: true, origin: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(
-  clerkMiddleware((req) => ({
-    publishableKey: publishableKeyFromHost(
-      getClerkProxyHost(req) ?? "",
-      process.env.CLERK_PUBLISHABLE_KEY,
-    ),
-  })),
-);
+// Supabase auth (replaces Clerk). supabaseAuth reads
+// SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY from the environment,
+// validates the Bearer token the frontend sends, and attaches the
+// Supabase user id to the request. It never rejects on its own —
+// routes that require a signed-in user enforce it with requireAuth.
+app.use(supabaseAuth);
 
 app.use("/api", router);
 

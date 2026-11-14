@@ -134,6 +134,24 @@ function playNoiseBurst(duration: number, gain = 0.25) {
   }
 }
 
+/**
+ * Unlock the shared AudioContext from inside a user gesture (e.g. the
+ * answer click). Browsers create a fresh AudioContext suspended when
+ * it is first built outside a gesture — server-driven feedback plays
+ * its sound from a fetch callback, so the context must already be
+ * running by then. Safe to call repeatedly; no-ops when running.
+ */
+export function unlockAudioContext(): void {
+  try {
+    const ctx = getAudioContext();
+    if (ctx.state === "suspended") {
+      void ctx.resume();
+    }
+  } catch {
+    // ignore
+  }
+}
+
 /** Sharp, metallic correct-answer sting — clear and consequential, not cuddly. */
 export function playWinnerSound() {
   // Main piercing ping

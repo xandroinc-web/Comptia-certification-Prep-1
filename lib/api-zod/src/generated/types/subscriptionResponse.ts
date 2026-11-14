@@ -5,7 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { SubscriptionResponseSubscription } from "./subscriptionResponseSubscription";
+import type { SubscriptionResponseSubscription } from "./subscriptionResponseSubscription.js";
 
 export interface SubscriptionResponse {
   subscription?: SubscriptionResponseSubscription;

@@ -10,7 +10,13 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+export const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  // Serverless (Vercel) + Supabase Session pooler: each function instance
+  // must hold at most one connection, or concurrent instances exhaust the
+  // pooler's 15-client limit (EMAXCONNSESSION) and /api/admin/overview 500s.
+  max: 1,
+});
 export const db = drizzle(pool, { schema });
 
 export * from "./schema/index.js";

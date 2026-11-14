@@ -417,13 +417,21 @@ function serializeUser(user: any) {
 
 router.get("/admin/overview", requirePermission("dashboard:overview"), async (req, res): Promise<void> => {
   try {
-    const [settings, media, auditLogs, resultCount] =
-      await Promise.all([
-        db.select().from(adminSettingsTable).orderBy(adminSettingsTable.key),
-        db.select().from(adminMediaTable).orderBy(desc(adminMediaTable.updatedAt)),
-        db.select().from(adminAuditLogsTable).orderBy(desc(adminAuditLogsTable.createdAt)).limit(12),
-        db.select({ count: sql<number>`count(*)` }).from(quizResultsTable),
-      ]);
+    // Each query is individually guarded: a single failure (e.g. a
+    // transient pool error) must not 500 the whole overview and blank
+    // the admin panel. Failed parts fall back to empty data.
+    const settled = await Promise.allSettled([
+      db.select().from(adminSettingsTable).orderBy(adminSettingsTable.key),
+      db.select().from(adminMediaTable).orderBy(desc(adminMediaTable.updatedAt)),
+      db.select().from(adminAuditLogsTable).orderBy(desc(adminAuditLogsTable.createdAt)).limit(12),
+      db.select({ count: sql<number>`count(*)` }).from(quizResultsTable),
+    ]);
+    const valueOr = <T>(result: PromiseSettledResult<T>, fallback: T): T =>
+      result.status === "fulfilled" ? result.value : fallback;
+    const settings = valueOr(settled[0], [] as any[]);
+    const media = valueOr(settled[1], [] as any[]);
+    const auditLogs = valueOr(settled[2], [] as any[]);
+    const resultCount = valueOr(settled[3], [{ count: 0 }] as any[]);
 
     let activeSubscriptions = 0;
     try {

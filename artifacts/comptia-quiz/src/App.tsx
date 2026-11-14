@@ -32,7 +32,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Switch, Route, useLocation } from "wouter";
 import { ShieldCheck } from "lucide-react";
-import { supabase } from "./lib/supabase";
+import { supabase, recoveryLinkDetected } from "./lib/supabase";
 import { useAuth } from "./lib/auth";
 import TechBackground from "@/components/TechBackground";
 import Footer from "@/components/Footer";
@@ -230,15 +230,103 @@ function AuthCard({
   );
 }
 
+/**
+ * One-tap sign-in / sign-up with Google or Facebook via Supabase OAuth.
+ * Each provider must be enabled in the Supabase dashboard
+ * (Authentication → Providers) with its OAuth client credentials, or the
+ * call fails and the error is shown inline. On success the browser leaves
+ * for the provider's consent screen and Supabase redirects back to `/`.
+ * Apple is deliberately NOT here — it needs a paid Apple Developer
+ * membership ($99/yr), on hold.
+ */
+function OAuthButtons({
+  disabled,
+  onError,
+}: {
+  disabled?: boolean;
+  onError: (message: string | null) => void;
+}) {
+  const [oauthPending, setOAuthPending] = useState<string | null>(null);
+
+  async function handleOAuth(provider: "google" | "facebook") {
+    onError(null);
+    setOAuthPending(provider);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: { redirectTo: `${window.location.origin}${basePath}/` },
+      });
+      if (error) throw error;
+      // Success navigates away to the provider's consent screen.
+    } catch (err: unknown) {
+      setOAuthPending(null);
+      onError(
+        err instanceof Error
+          ? err.message
+          : `Could not continue with ${provider === "google" ? "Google" : "Facebook"}. Please try again.`,
+      );
+    }
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center gap-3 pt-1">
+        <span className="h-px flex-1 bg-gray-700" />
+        <span className="text-xs text-gray-500">or continue with</span>
+        <span className="h-px flex-1 bg-gray-700" />
+      </div>
+      <button
+        type="button"
+        disabled={disabled || oauthPending !== null}
+        onClick={() => handleOAuth("google")}
+        className="w-full rounded-xl bg-red-600 px-4 py-3 text-sm font-semibold text-white hover:bg-red-500 disabled:opacity-50"
+      >
+        {oauthPending === "google" ? "Connecting to Google…" : "Continue with Google"}
+      </button>
+      <button
+        type="button"
+        disabled={disabled || oauthPending !== null}
+        onClick={() => handleOAuth("facebook")}
+        className="w-full rounded-xl bg-red-600 px-4 py-3 text-sm font-semibold text-white hover:bg-red-500 disabled:opacity-50"
+      >
+        {oauthPending === "facebook" ? "Connecting to Facebook…" : "Continue with Facebook"}
+      </button>
+    </div>
+  );
+}
+
 function SignInPage() {
   const [, setLocation] = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [mode, setMode] = useState<"sign-in" | "reset">("sign-in");
+  const [mode, setMode] = useState<"sign-in" | "reset" | "new-password">("sign-in");
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+
+  // Password recovery: Supabase redirects the reset link back here with
+  // `#access_token=...&type=recovery` (and fires a PASSWORD_RECOVERY
+  // event). The hash is cleaned by the Supabase client during its own
+  // init, so a component that reads it after mounting can miss it — use
+  // the module-level flag captured in lib/supabase.ts before the client
+  // was created, plus the `?recovery=1` query flag new links carry.
+  useEffect(() => {
+    if (recoveryLinkDetected) {
+      setMode("new-password");
+    }
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") {
+        setMode("new-password");
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   async function handleSignIn(event: React.FormEvent) {
     event.preventDefault();
@@ -266,7 +354,10 @@ function SignInPage() {
     setPending(true);
     try {
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: `${window.location.origin}${basePath}/sign-in`,
+        // `?recovery=1` survives the redirect (Supabase only appends the
+        // token as a hash), so the sign-in page can reliably show the
+        // new-password form even after the hash is cleaned.
+        redirectTo: `${window.location.origin}${basePath}/sign-in?recovery=1`,
       });
       if (resetError) throw resetError;
       setNotice(`If an account exists for ${email.trim()}, a password-reset link is on its way.`);
@@ -277,15 +368,53 @@ function SignInPage() {
     }
   }
 
+  async function handleNewPassword(event: React.FormEvent) {
+    event.preventDefault();
+    setError(null);
+    setNotice(null);
+    if (newPassword.length < 6) {
+      setError("Your new password must be at least 6 characters.");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setError("The two passwords do not match.");
+      return;
+    }
+    setPending(true);
+    try {
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+      if (updateError) throw updateError;
+      setNotice("Your password has been updated. Signing you in…");
+      // The recovery session is now a normal session; clear the token
+      // from the URL and go home.
+      window.history.replaceState(null, "", `${basePath}/sign-in`);
+      window.setTimeout(() => setLocation(basePath || "/"), 900);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Could not update your password. Please request a new reset link.");
+    } finally {
+      setPending(false);
+    }
+  }
+
   return (
     <div className="flex min-h-[100dvh] flex-col">
       <div className="flex flex-1 items-center justify-center px-4 py-8">
         <AuthCard
-          title={mode === "reset" ? "Reset your password" : "Welcome back"}
+          title={
+            mode === "reset"
+              ? "Reset your password"
+              : mode === "new-password"
+                ? "Choose a new password"
+                : "Welcome back"
+          }
           subtitle={
             mode === "reset"
               ? "Enter your email and we'll send you a reset link"
-              : "Sign in to track your quiz progress"
+              : mode === "new-password"
+                ? "Enter your new password below"
+                : "Sign in to track your quiz progress"
           }
         >
           {error && (
@@ -334,7 +463,55 @@ function SignInPage() {
                 Back to sign-in
               </button>
             </form>
+          ) : mode === "new-password" ? (
+            <form onSubmit={handleNewPassword} className="space-y-3">
+              <div>
+                <label htmlFor="new-password" className="mb-1 block text-sm text-gray-300">
+                  New password
+                </label>
+                <input
+                  id="new-password"
+                  type={showNewPassword ? "text" : "password"}
+                  required
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className={inputClass}
+                  placeholder="At least 6 characters"
+                  autoComplete="new-password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword((v) => !v)}
+                  className="mt-1 text-xs text-gray-400 hover:text-gray-300"
+                >
+                  {showNewPassword ? "Hide password" : "Show password"}
+                </button>
+              </div>
+              <div>
+                <label htmlFor="confirm-password" className="mb-1 block text-sm text-gray-300">
+                  Confirm new password
+                </label>
+                <input
+                  id="confirm-password"
+                  type={showNewPassword ? "text" : "password"}
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className={inputClass}
+                  placeholder="Type it again"
+                  autoComplete="new-password"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={pending}
+                className="w-full rounded-xl bg-red-600 px-4 py-3 text-sm font-semibold text-white hover:bg-red-500 disabled:opacity-50"
+              >
+                {pending ? "Updating…" : "Update password"}
+              </button>
+            </form>
           ) : (
+            <>
             <form onSubmit={handleSignIn} className="space-y-3">
               <div>
                 <label htmlFor="signin-email" className="mb-1 block text-sm text-gray-300">
@@ -400,6 +577,8 @@ function SignInPage() {
                 </span>
               </div>
             </form>
+              <OAuthButtons disabled={pending} onError={setError} />
+            </>
           )}
         </AuthCard>
       </div>
@@ -472,6 +651,7 @@ function SignUpPage() {
               </button>
             </div>
           ) : (
+            <>
             <form onSubmit={handleSignUp} className="space-y-3">
               <div>
                 <label htmlFor="signup-name" className="mb-1 block text-sm text-gray-300">
@@ -539,6 +719,8 @@ function SignUpPage() {
                 </button>
               </p>
             </form>
+              <OAuthButtons disabled={pending} onError={setError} />
+            </>
           )}
         </AuthCard>
       </div>
@@ -588,7 +770,7 @@ function AppContent() {
   const [, setLocation] = useLocation();
   const [state, setState] = useState<AppState>("home");
   const [mode, setMode] = useState<string>("all");
-  const [difficulty, setDifficulty] = useState<Difficulty>("medium");
+  const [difficulty, setDifficulty] = useState<Difficulty>("easy");
   const [activeQuestions, setActiveQuestions] = useState<Question[]>([]);
   const [finalAnswers, setFinalAnswers] = useState<(number | null)[]>([]);
   const [isWeakMode, setIsWeakMode] = useState(false);
@@ -1744,6 +1926,7 @@ function AppContent() {
                 examTierScores={effectiveExamScores}
                 onPricing={() => setState("pricing")}
                 onProgress={() => setState("progress")}
+                onAdmin={() => setLocation("/admin")}
                 quizHistory={adminSimulation ? [] : quizHistory || []}
                 historyLoading={adminSimulation ? false : historyLoading}
                 isPro={effectiveIsPro}

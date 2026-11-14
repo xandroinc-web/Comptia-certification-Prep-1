@@ -23,6 +23,26 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error("Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY");
 }
 
+// ---------------------------------------------------------------------------
+// Password-recovery detection (module level, BEFORE the client is created).
+//
+// A recovery link lands on /sign-in with `#access_token=...&type=recovery`.
+// The Supabase client cleans that hash asynchronously during its own
+// initialization, so a component that checks the hash after mounting can
+// miss it entirely (that is why the reset link used to land on the plain
+// sign-in form). Capture it here, synchronously, before createClient runs.
+//
+// `window` is not referenced directly: this module is typechecked in a
+// context without the DOM lib, so read it off globalThis instead.
+// ---------------------------------------------------------------------------
+type WindowLike = { location?: { hash?: string; search?: string } };
+const win = globalThis as unknown as WindowLike;
+const loc = win.location;
+export const recoveryLinkDetected: boolean =
+  !!loc &&
+  ((loc.hash ?? "").includes("type=recovery") ||
+    (loc.search ?? "").includes("recovery=1"));
+
 export const supabase: SupabaseClient = createClient(supabaseUrl, supabaseAnonKey);
 
 // ---------------------------------------------------------------------------

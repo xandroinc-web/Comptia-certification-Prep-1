@@ -32,6 +32,7 @@ interface HomePageProps {
   examTierScores: Record<ExamTier, number>;
   onPricing: () => void;
   onProgress: () => void;
+  onAdmin: () => void;
   quizHistory: QuizResult[];
   historyLoading: boolean;
   isPro: boolean;
@@ -89,10 +90,10 @@ const DOMAIN_ICONS: Record<DomainTopic, React.ReactNode> = {
   "4.0 Operational Procedures": <ClipboardList size={14} />,
 };
 
-export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onStudyTopic, onStartExamTier, examUnlocked, examTierScores, onPricing, onProgress, quizHistory, historyLoading, isPro, isAdmin, isSignedIn, testAttempts, remainingTrials, trialStatusMessage, simulationProfile, simulationFeatures, simulationRunsRemaining, onEndSimulation }: HomePageProps) {
+export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onStudyTopic, onStartExamTier, examUnlocked, examTierScores, onPricing, onProgress, onAdmin, quizHistory, historyLoading, isPro, isAdmin, isSignedIn, testAttempts, remainingTrials, trialStatusMessage, simulationProfile, simulationFeatures, simulationRunsRemaining, onEndSimulation }: HomePageProps) {
   const [selected, setSelected] = useState<"all" | ExamCategory>("all");
   const [testLength, setTestLength] = useState<TestLength>("full");
-  const [difficulty, setDifficulty] = useState<Difficulty>("medium");
+  const [difficulty, setDifficulty] = useState<Difficulty>("easy");
   const [weakCount, setWeakCount] = useState(0);
   const [previewSettings] = useState(() => loadBuilderPreview(isAdmin));
   const [, setLocation] = useLocation();
@@ -791,6 +792,16 @@ export default function HomePage({ onStart, onStartSimulation, onStudyWeak, onSt
           </svg>
           View Progress & Analytics
         </button>
+
+        {/* Admin console — only visible to admins */}
+        {isAdmin && (
+          <button
+            onClick={onAdmin}
+            className="w-full mt-3 py-3 rounded-xl border border-amber-500/40 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 font-semibold text-sm transition-colors flex items-center justify-center gap-2"
+          >
+            Open Admin Console
+          </button>
+        )}
 
         {!isPro && (
           <button
